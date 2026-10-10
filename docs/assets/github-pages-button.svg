@@ -1,6 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="48" viewBox="0 0 256 48">
-  <rect width="256" height="48" rx="12" fill="#176b58"/>
-  <circle cx="25" cy="24" r="9" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width="1.5"/>
-  <path d="m23 20 6 4-6 4z" fill="#fff"/>
-  <text x="47" y="29" fill="#fff" font-family="Segoe UI,Microsoft YaHei,PingFang SC,sans-serif" font-size="14" font-weight="600">在线体验 · GitHub Pages</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="288" height="80" viewBox="0 0 288 80" role="img" aria-labelledby="title desc">
+  <title id="title">在线体验 · GitHub Pages</title>
+  <desc id="desc">打开层知 Anatolume 的 GitHub Pages 在线图谱</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="288" y2="76" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#224b41"/>
+      <stop offset="1" stop-color="#176b58"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="4" width="286" height="76" rx="18" fill="#102e25" opacity=".12"/>
+  <rect x=".5" y=".5" width="287" height="75" rx="17.5" fill="url(#background)" stroke="#83b6a0" stroke-opacity=".38"/>
+  <rect x="17" y="16" width="44" height="44" rx="13" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".12"/>
+  <g transform="translate(26 25) scale(1.0833)" fill="#f5fcf8">
+    <path d="M12 .75a11.25 11.25 0 0 0-3.558 21.923c.563.103.773-.244.773-.543 0-.267-.01-.973-.016-1.91-3.14.682-3.803-1.513-3.803-1.513-.514-1.306-1.255-1.654-1.255-1.654-1.026-.702.078-.688.078-.688 1.135.08 1.733 1.165 1.733 1.165 1.009 1.729 2.647 1.229 3.293.94.103-.73.395-1.229.718-1.51-2.507-.285-5.143-1.254-5.143-5.588 0-1.234.442-2.243 1.165-3.033-.117-.286-.505-1.437.11-2.994 0 0 .95-.305 3.093 1.16a10.79 10.79 0 0 1 5.631 0c2.142-1.465 3.09-1.16 3.09-1.16.617 1.557.23 2.708.113 2.994.725.79 1.163 1.8 1.163 3.033 0 4.345-2.64 5.3-5.155 5.578.406.35.769 1.039.769 2.096 0 1.513-.014 2.734-.014 3.104 0 .3.203.65.779.54A11.25 11.25 0 0 0 12 .75Z"/>
+  </g>
+  <g font-family="Segoe UI,Microsoft YaHei,PingFang SC,sans-serif">
+    <text x="77" y="34" fill="#fff" font-size="17" font-weight="600">GitHub Pages</text>
+    <text x="77" y="54" fill="#c0e0d1" font-size="12">在线体验 · 即刻探索人体</text>
+  </g>
+  <circle cx="256" cy="38" r="13" fill="#fff" fill-opacity=".08"/>
+  <path d="m251 43 10-10m-9 0h9v9" fill="none" stroke="#e0f4e9" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

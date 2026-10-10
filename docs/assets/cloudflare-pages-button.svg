@@ -1,6 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="48" viewBox="0 0 256 48">
-  <rect width="256" height="48" rx="12" fill="#31554d"/>
-  <circle cx="25" cy="24" r="9" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width="1.5"/>
-  <path d="m23 20 6 4-6 4z" fill="#fff"/>
-  <text x="47" y="29" fill="#fff" font-family="Segoe UI,Microsoft YaHei,PingFang SC,sans-serif" font-size="14" font-weight="600">在线体验 · Cloudflare Pages</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="288" height="80" viewBox="0 0 288 80" role="img" aria-labelledby="title desc">
+  <title id="title">在线体验 · Cloudflare Pages</title>
+  <desc id="desc">打开层知 Anatolume 的 Cloudflare Pages 在线图谱</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="288" y2="76" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#243e37"/>
+      <stop offset="1" stop-color="#365f52"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="4" width="286" height="76" rx="18" fill="#102e25" opacity=".12"/>
+  <rect x=".5" y=".5" width="287" height="75" rx="17.5" fill="url(#background)" stroke="#83b6a0" stroke-opacity=".38"/>
+  <rect x="17" y="16" width="44" height="44" rx="13" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".12"/>
+  <path d="M24 42a7 7 0 0 1 6-7 10 10 0 0 1 19 2 5 5 0 0 1 5 5Z" fill="#f5a14a"/>
+  <path d="M23 44h25m-21 4h29" fill="none" stroke="#ffcb85" stroke-width="2.5" stroke-linecap="round"/>
+  <g font-family="Segoe UI,Microsoft YaHei,PingFang SC,sans-serif">
+    <text x="77" y="34" fill="#fff" font-size="17" font-weight="600">Cloudflare Pages</text>
+    <text x="77" y="54" fill="#c0e0d1" font-size="12">在线体验 · 即刻探索人体</text>
+  </g>
+  <circle cx="256" cy="38" r="13" fill="#fff" fill-opacity=".08"/>
+  <path d="m251 43 10-10m-9 0h9v9" fill="none" stroke="#e0f4e9" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
