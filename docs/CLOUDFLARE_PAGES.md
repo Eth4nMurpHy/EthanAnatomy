@@ -2,7 +2,7 @@
 
 本项目使用 React + Vite，Pages 直接构建静态站点。仓库：<https://github.com/isunky/Anatolume>。
 
-生产站点：[层知 · Anatolume](https://anatolume.pages.dev)。已连接 `main` 分支，启用生产自动构建和分支预览。
+生产站点：[层知 · Anatolume](https://anatolume.sunky.net/)。已连接 `main` 分支，启用生产自动构建和分支预览。
 
 ## 连接设置
 

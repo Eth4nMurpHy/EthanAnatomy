@@ -18,7 +18,7 @@
 <p align="center">
   <a href="https://isunky.github.io/Anatolume/"><img src="docs/assets/github-pages-card.svg" width="288" height="80" alt="在线体验 · GitHub Pages"></a>
   &nbsp;&nbsp;
-  <a href="https://anatolume.pages.dev"><img src="docs/assets/cloudflare-pages-card.svg" width="288" height="80" alt="在线体验 · Cloudflare Pages"></a>
+  <a href="https://anatolume.sunky.net/"><img src="docs/assets/cloudflare-pages-card.svg" width="288" height="80" alt="在线体验 · Cloudflare Pages"></a>
 </p>
 
 **[下载客户端](https://github.com/isunky/Anatolume/releases) · [开发文档](client/README.md)**
