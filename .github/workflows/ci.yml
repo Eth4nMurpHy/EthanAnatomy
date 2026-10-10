@@ -135,7 +135,8 @@ jobs:
         shell: bash
         run: |
           app="src-tauri/target/universal-apple-darwin/release/bundle/macos/Human Atlas.app"
-          binary="$app/Contents/MacOS/human-atlas"
+          executable="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")"
+          binary="$app/Contents/MacOS/$executable"
           archs="$(lipo -archs "$binary")"
           [[ "$archs" == *arm64* && "$archs" == *x86_64* ]]
           codesign --verify --deep --strict --verbose=2 "$app"
