@@ -15,7 +15,7 @@
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-31554D?style=flat-square)](LICENSE)
 [![Data: CC BY 4.0](https://img.shields.io/badge/Data-CC_BY_4.0-31554D?style=flat-square)](public/ATTRIBUTION.md)
 
-**[在线体验](https://isunky.github.io/Anatolume/) · [下载客户端](https://github.com/isunky/Anatolume/releases) · [开发文档](client/README.md)**
+**[在线体验](https://isunky.github.io/Anatolume/) · [Cloudflare Pages](https://anatolume.pages.dev) · [下载客户端](https://github.com/isunky/Anatolume/releases) · [开发文档](client/README.md)**
 
 [界面预览](#界面预览) · [核心体验](#核心体验) · [开始使用](#开始使用) · [开发与构建](#开发与构建) · [开源致谢](#开源致谢)
 

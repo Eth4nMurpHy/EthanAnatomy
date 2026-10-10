@@ -2,6 +2,8 @@
 
 本项目使用 React + Vite，Pages 直接构建静态站点。仓库：<https://github.com/isunky/Anatolume>。
 
+生产站点：[层知 · Anatolume](https://anatolume.pages.dev)。已连接 `main` 分支，启用生产自动构建和分支预览。
+
 ## 连接设置
 
 在 Cloudflare 控制台进入 **Workers & Pages → 创建应用 → Pages → 连接 Git**，选择 `isunky/Anatolume`。首次连接时需为 Cloudflare GitHub App 授予此仓库访问权限。
