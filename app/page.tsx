@@ -401,7 +401,6 @@ export default function Home() {
         <button className="brand" onClick={goHome} aria-label={t("Go to homepage")}>
           <span className="brand-mark"><img src={staticAssetUrl("/branding/256x256.png")} width={40} height={40} alt="" /></span>
           <span className="brand-copy"><strong>{t("Anatolume")}</strong><small>{t("A new perspective on anatomy")}</small></span>
-          <span className="brand-edition">3D</span>
         </button>
         <nav className="primary-nav" aria-label={t("Main navigation")}>
           <button className={screen === "home" ? "active" : ""} onClick={goHome} aria-current={screen === "home" ? "page" : undefined}>{t("Home")}</button>

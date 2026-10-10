@@ -30,7 +30,6 @@ button svg,a svg { flex-shrink:0; } a { color:inherit; }
 .brand-copy { display:flex; flex-direction:column; gap:3px; }
 .brand-copy strong { font-size:20px; font-weight:650; letter-spacing:-.7px; line-height:1.15; }
 .brand-copy small { font-size:10px; color:#7c8e85; letter-spacing:.1em; }
-.brand-edition { font-size:10px; font-weight:600; align-self:flex-start; margin-top:7px; color:#176b58; background:#eaf4ee; padding:2px 5px; border-radius:4px; }
 .primary-nav { display:flex; height:100%; align-items:center; gap:6px; margin-left:26px; margin-right:auto; }
 .primary-nav button { height:100%; padding:0 16px; font-size:13px; color:#78877f; position:relative; white-space:nowrap; }
 .primary-nav button.active { color:#176b58; font-weight:600; }
@@ -197,7 +196,7 @@ kbd { font-size:11px; border:1px solid #dce5df; background:#fff; padding:1px 5px
   .detail-sheet,.detail-sheet.is-wide { top:100px!important; bottom:56px!important; width:310px!important; max-width:310px!important; }.detail-width-control { display:none!important; }.has-inspector .scene-status { display:none; }.home-paths { gap:8px; }.home-path { padding:14px 11px!important; }.home-stats strong { font-size:21px; }
 }
 @media(max-width:767px) {
-  .desktop-only,.primary-nav,.brand-edition { display:none; }.mobile-only { display:flex; }
+  .desktop-only,.primary-nav { display:none; }.mobile-only { display:flex; }
   .app-header { height:66px; padding:0 16px; gap:10px; }.brand { gap:8px; margin-right:auto; }.brand-mark { width:32px; height:32px; border-radius:9px; }.brand-mark svg { width:20px; }.brand-copy strong { font-size:16px; }.brand-copy small { font-size:8px; letter-spacing:0; }
   .language-choice select { font-size:10px; max-width:87px; padding:8px 0; }.top-actions { gap:2px; }.top-actions .header-search { padding:0; border:0; background:transparent; width:36px; min-height:40px; }.top-actions kbd,.top-actions .icon-button { display:none; }
   .studio { --sidebar:12px; --inspector:12px; }.scene { top:152px; bottom:216px; border-radius:0; }.vignette { inset:66px 0 32px; }
