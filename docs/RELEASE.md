@@ -49,7 +49,7 @@ gh workflow run ci.yml --repo isunky/human-atlas --ref main -f bump=minor
 
 5. 先创建草稿 Release，上传完整资源后才公开发布。
 
-发布附件为 `Human Atlas_X.Y.Z_x64-setup.exe`、`SHA256SUMS` 与 `BUILD-REPORT.md`。Actions 也保留名为 `Human-Atlas-X.Y.Z-Windows-x64` 的 artifact，保留 30 天。
+发布附件为 `Human-Atlas_X.Y.Z_x64-setup.exe`、`SHA256SUMS` 与 `BUILD-REPORT.md`。发布前统一安装包文件名，避免 GitHub 改写空格而使下载后的校验文件失效。Actions 也保留名为 `Human-Atlas-X.Y.Z-Windows-x64` 的 artifact，保留 30 天。
 
 版本提交只修改项目版本，不升级依赖。标签源码和安装包的版本一致；构建记录包含原始源码 SHA、运行链接与安装包 SHA256。
 

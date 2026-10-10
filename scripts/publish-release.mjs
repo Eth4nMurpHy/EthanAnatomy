@@ -7,11 +7,15 @@ import {fileURLToPath} from 'node:url';
 import {git, parseVersion, readVersions, repositoryRoot, syncVersion, versionFiles} from './release-version.mjs';
 
 const run = (command, args) => execFileSync(command, args, {cwd: repositoryRoot, encoding: 'utf8'}).trim();
-const installerName = version => `Human Atlas_${version}_x64-setup.exe`;
+const installerName = version => `Human-Atlas_${version}_x64-setup.exe`;
 
 export function createAssets({version, directory, source, runUrl}) {
   parseVersion(version);
   const installer = installerName(version);
+  // GitHub normalizes spaces in asset names. Name the artifact before hashing
+  // so the downloaded installer, checksum file and retry checks agree.
+  const destination = path.join(directory, installer);
+  if (!fs.existsSync(destination)) fs.renameSync(path.join(directory, `Human Atlas_${version}_x64-setup.exe`), destination);
   const checksum = createHash('sha256').update(fs.readFileSync(path.join(directory, installer))).digest('hex');
   fs.writeFileSync(path.join(directory, 'SHA256SUMS'), `${checksum}  ${installer}\n`);
   fs.writeFileSync(path.join(directory, 'BUILD-REPORT.md'), [
@@ -104,6 +108,9 @@ function publish(version) {
       '--notes-file', notes, '--generate-notes', ...(parseVersion(version)[0] === 0 ? ['--prerelease', '--latest=false'] : ['--latest'])]);
   }
   run('gh', ['release', 'upload', tag, '--repo', repository, ...assetNames.map(name => path.join(assetsDirectory, name)), '--clobber']);
+  const uploaded = JSON.parse(run('gh', ['release', 'view', tag, '--repo', repository, '--json', 'assets']));
+  const uploadedNames = new Set(uploaded.assets.map(asset => asset.name));
+  assert.ok(assetNames.every(name => uploadedNames.has(name)), 'Uploaded asset names differ from the checksum file');
   run('gh', ['release', 'edit', tag, '--repo', repository, '--draft=false']);
   summary(`Published [Human Atlas ${tag}](https://github.com/${repository}/releases/tag/${tag}) with installer, SHA256 and build report.`);
 }

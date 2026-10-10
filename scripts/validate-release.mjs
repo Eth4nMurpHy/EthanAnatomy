@@ -73,8 +73,12 @@ try {
   const installer = path.join(root, 'Human Atlas_0.1.11_x64-setup.exe');
   fs.writeFileSync(installer, 'Fixture installer');
   createAssets({version: '0.1.11', directory: root, source, runUrl: 'https://github.com/example/project/actions/runs/100'});
-  assert.equal(verifyAssets('0.1.11', root).length, 3);
-  fs.appendFileSync(installer, 'changed');
+  assert.equal(fs.existsSync(installer), false, 'The source filename must be normalized before uploading');
+  const publicInstaller = path.join(root, 'Human-Atlas_0.1.11_x64-setup.exe');
+  assert.deepEqual(verifyAssets('0.1.11', root), ['Human-Atlas_0.1.11_x64-setup.exe', 'SHA256SUMS', 'BUILD-REPORT.md']);
+  createAssets({version: '0.1.11', directory: root, source, runUrl: 'https://github.com/example/project/actions/runs/100'});
+  assert.equal(verifyAssets('0.1.11', root).length, 3, 'Repeating asset preparation preserves the canonical filename');
+  fs.appendFileSync(publicInstaller, 'changed');
   assert.throws(() => verifyAssets('0.1.11', root), /checksum does not match/);
 } finally {
   // Remove only this test's freshly-created directory inside the resolved temp parent.

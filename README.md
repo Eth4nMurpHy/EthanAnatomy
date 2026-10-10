@@ -122,7 +122,7 @@ npm run build
 
 ### 下载与安装
 
-前往 [Windows 发布页](https://github.com/isunky/human-atlas/releases)，选择所需版本，下载并运行 `Human Atlas_<版本号>_x64-setup.exe`。安装完成后，从开始菜单启动 **Human Atlas**。每个自动发布的版本同时提供 `SHA256SUMS` 和 `BUILD-REPORT.md`。
+前往 [Windows 发布页](https://github.com/isunky/human-atlas/releases)，选择所需版本，下载并运行 x64 安装包。自动发布的文件名为 `Human-Atlas_<版本号>_x64-setup.exe`。安装完成后，从开始菜单启动 **Human Atlas**。每个自动发布的版本同时提供 `SHA256SUMS` 和 `BUILD-REPORT.md`。
 
 | 项目 | 说明 |
 | --- | --- |
