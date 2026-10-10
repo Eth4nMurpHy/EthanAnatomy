@@ -59,6 +59,7 @@ import {
   ComboboxEmpty,
 } from "@/components/ui/combobox";
 import AnatomyScene from "./scene";
+import About from "./about";
 import {
   DEFAULT_VISIBLE,
   SYSTEMS,
@@ -96,6 +97,7 @@ export default function Home() {
     }
   });
   const [linkError, setLinkError] = useState(false);
+  const [creditsOpen, setCreditsOpen] = useState(false);
   const t = (english: string, values: Record<string, string | number> = {}) =>
     text(english, locale, values);
   const dn = (english?: string) => (english ? displayName(english, locale) : "");
@@ -405,6 +407,7 @@ export default function Home() {
           <button className={screen === "home" ? "active" : ""} onClick={goHome} aria-current={screen === "home" ? "page" : undefined}>{t("Home")}</button>
           <button className={screen === "explore" ? "active" : ""} onClick={() => startExploring()} aria-current={screen === "explore" ? "page" : undefined}>{t("3D atlas")}</button>
           <button onClick={() => setAbout(true)}>{t("Learning guide")}</button>
+          <button className="about-nav" onClick={() => setCreditsOpen(true)}>{t("About")}</button>
         </nav>
       <div className="language-choice">
         <label className="sr-only" htmlFor="atlas-language">{t("Language")}</label>
@@ -433,7 +436,7 @@ export default function Home() {
           className="icon-button"
           aria-label={t("About this atlas")}
           onClick={() => {
-            setAbout(true);
+            setCreditsOpen(true);
           }}
         >
           <Info size={18} />
@@ -787,7 +790,7 @@ export default function Home() {
         </span>
         <span className="caption-line" />
       </div>
-      {selectedParts.length > 0 && !details && !about && (
+      {selectedParts.length > 0 && !details && !about && !creditsOpen && (
         <div
           className="selection-summary glass"
           role="group"
@@ -875,10 +878,10 @@ export default function Home() {
         <Button
           variant="ghost"
           onClick={() => {
-            setAbout(true);
+            setCreditsOpen(true);
           }}
         >
-          {t("Source & credits")} <ArrowUpRight size={12} />
+          <span>{"Sunky"}</span><span aria-hidden="true">·</span>{t("About & acknowledgements")} <ArrowUpRight size={12} />
         </Button>
       </footer>
       {progress < 100 && !error && (
@@ -1057,6 +1060,7 @@ export default function Home() {
           </div>
         </SheetContent>
       </Sheet>
+      <About locale={locale} open={creditsOpen} onOpenChange={setCreditsOpen} />
       <Sheet open={about} onOpenChange={setAbout}>
         <SheetContent closeLabel={t("Close")} className="about-sheet glass">
           <div className="eyebrow"><BookOpen size={15} />{t("Learning guide")}</div>

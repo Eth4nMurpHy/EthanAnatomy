@@ -35,4 +35,12 @@ assert.equal(config.version, manifest.version);
 assert.equal(readVersions(), manifest.version);
 assert.equal(config.build.frontendDist, '../dist-client');
 assert.deepEqual(config.bundle.targets, ['nsis']);
+const capability = JSON.parse(fs.readFileSync(new URL('src-tauri/capabilities/main.json', root), 'utf8'));
+const linkPermission = capability.permissions.find(permission => permission.identifier === 'opener:allow-open-url');
+const aboutSource = fs.readFileSync(new URL('app/about.tsx', root), 'utf8');
+const aboutLinks = new Set([...aboutSource.matchAll(/"(https:\/\/[^"\s]+)"/g)].map(match => new URL(match[1]).href));
+for (const url of aboutLinks) {
+  assert.ok(linkPermission.allow.some(({url: allowed}) => allowed.endsWith('*') ? url.startsWith(allowed.slice(0,-1)) : url === new URL(allowed).href), `About link blocked by native permissions: ${url}`);
+}
+console.log(`Verified ${aboutLinks.size} author and credit links are available in the native client.`);
 console.log(`Verified native/fallback gzip decoding, error cases, ${atlas.chunks.length} offline model chunks and Windows bundle configuration.`);
