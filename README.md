@@ -16,9 +16,9 @@
 [![Data: CC BY 4.0](https://img.shields.io/badge/Data-CC_BY_4.0-31554D?style=flat-square)](public/ATTRIBUTION.md)
 
 <p align="center">
-  <a href="https://isunky.github.io/Anatolume/"><img src="docs/assets/github-pages-button.svg" width="288" height="80" alt="在线体验 · GitHub Pages"></a>
+  <a href="https://isunky.github.io/Anatolume/"><img src="docs/assets/github-pages-button.svg?v=soft" width="288" height="80" alt="在线体验 · GitHub Pages"></a>
   &nbsp;&nbsp;
-  <a href="https://anatolume.pages.dev"><img src="docs/assets/cloudflare-pages-button.svg" width="288" height="80" alt="在线体验 · Cloudflare Pages"></a>
+  <a href="https://anatolume.pages.dev"><img src="docs/assets/cloudflare-pages-button.svg?v=soft" width="288" height="80" alt="在线体验 · Cloudflare Pages"></a>
 </p>
 
 **[下载客户端](https://github.com/isunky/Anatolume/releases) · [开发文档](client/README.md)**
