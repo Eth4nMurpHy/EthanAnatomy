@@ -1,105 +1,141 @@
 <div align="center">
 
-# Human Atlas
+# 层知 · Anatolume
 
-**看见身体。理解每一层。**
+**看见身体，理解每一层。**
 
-交互式三维人体图谱 · 中英双语 · Windows / macOS 离线客户端
+三维人体图谱 · 中英双语 · 网页探索与离线桌面客户端
 
-[![React 19](https://img.shields.io/badge/React-19-1B6B5B?style=flat-square)](https://react.dev/)
-[![Three.js](https://img.shields.io/badge/Three.js-WebGL-1B6B5B?style=flat-square)](https://threejs.org/)
-[![Tauri 2](https://img.shields.io/badge/Tauri-2-1B6B5B?style=flat-square)](https://tauri.app/)
-[![GitHub Actions](https://github.com/isunky/human-atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/isunky/human-atlas/actions/workflows/ci.yml)
+*3D Anatomy Explorer · Explore the body, layer by layer.*
+
+[![中文 / English](https://img.shields.io/badge/语言-中文%20%2F%20English-1B6B5B?style=flat-square)](#核心体验)
+[![Windows / macOS](https://img.shields.io/badge/桌面-Windows%20%2F%20macOS-1B6B5B?style=flat-square)](#开始使用)
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-31554D?style=flat-square)](LICENSE)
 [![Data: CC BY 4.0](https://img.shields.io/badge/Data-CC_BY_4.0-31554D?style=flat-square)](public/ATTRIBUTION.md)
 
-[在线演示](https://human-atlas-seven.vercel.app) · [全平台下载](https://github.com/isunky/human-atlas/releases) · [快速开始](#快速开始) · [开发文档](client/README.md)
+**[在线体验](https://human-atlas-seven.vercel.app) · [下载客户端](https://github.com/isunky/human-atlas/releases) · [开发文档](client/README.md)**
+
+[界面预览](#界面预览) · [核心体验](#核心体验) · [开始使用](#开始使用) · [开发与构建](#开发与构建) · [开源致谢](#开源致谢)
 
 </div>
 
-Human Atlas 将 BodyParts3D 的成年男性参考解剖模型变成可旋转、可拆解、可搜索的学习空间。从全身关系出发，逐层探索骨骼、肌肉与器官，也可以直接找到一个结构，单独观察并阅读说明。无需账号或 API 密钥。
+层知将人体结构变成可以旋转、分层、拆解和搜索的学习空间。从全身关系出发，探索骨骼、肌肉与器官；也可以直接找到一个结构，单独观察并阅读说明。无需账号，桌面客户端随包提供模型，可离线探索。
 
-| 独立模型零件 | 人体系统 | 具名解剖概念 | 界面语言 |
+| 模型零件 | 人体系统 | 解剖概念 | 界面语言 |
 | :---: | :---: | :---: | :---: |
-| **2,234** | **15** | **3,432** | **简体中文 / English** |
-
-> 零件是独立网格，概念可以由多个零件组成。中文术语与新增学习说明尚未经医学专家审校；英文源名和源 ID 保留用于核对。本项目用于解剖学习与探索。
-
-**导航** · [界面预览](#界面预览) · [核心体验](#核心体验) · [使用指南](#使用指南) · [Windows 客户端](#windows-客户端) · [开发与验证](#开发与验证) · [数据与授权](#数据与授权)
+| **2,234** | **15** | **3,432** | **中文 / English** |
 
 ## 界面预览
 
-### 主页 · 从感兴趣的结构开始
+搜索结构、调整图层、观察模型和阅读说明，在同一个探索界面完成。选中心脏等内部结构后，可单独查看，也可恢复周围结构，理解它们的位置关系。
 
-实时三维模型搭配全身、骨骼、器官三个探索入口。最近查看的结构会保存在本机，方便继续学习。
-
-[![Human Atlas 新版主页：实时人体模型、探索入口与最近浏览](docs/screenshots/home.jpg)](docs/screenshots/home.jpg)
-
-### 图谱 · 搜索、模型与详情各就其位
-
-左侧查找结构或控制系统图层，中央观察三维模型，右侧阅读说明与源信息。搜索结果可直接进入单独查看，深入观察心脏等容易被外层遮挡的结构。
-
-[![Human Atlas 核心界面：心脏搜索、三维模型与结构详情](docs/screenshots/explorer.jpg)](docs/screenshots/explorer.jpg)
-
-以上截图以 **2× 尺寸渲染，原图为 2560 × 1800**。点击图片可查看原图。
+[![层知图谱界面：心脏搜索、三维人体模型与结构详情](docs/screenshots/explorer.jpg)](docs/screenshots/explorer.jpg)
 
 <details>
-<summary><strong>查看结构详情近景</strong> · 阅读说明、定位与周围结构切换</summary>
+<summary><strong>查看更多界面</strong> · 主页、结构详情与手机视图</summary>
+
+### 主页
+
+从全身、骨骼、器官三个入口开始，或继续查看最近探索的结构。
+
+[![层知主页：实时人体模型、探索入口与最近浏览](docs/screenshots/home.jpg)](docs/screenshots/home.jpg)
+
+### 结构详情与手机视图
 
 <p align="center">
-  <a href="docs/screenshots/structure-detail.jpg"><img src="docs/screenshots/structure-detail.jpg" width="360" alt="心脏详情近景：结构说明、定位到结构、显示周围结构和返回整体"></a>
+  <a href="docs/screenshots/structure-detail.jpg"><img src="docs/screenshots/structure-detail.jpg" width="320" alt="结构详情：说明、定位与周围结构切换"></a>
+  &nbsp;
+  <a href="docs/screenshots/home-mobile.jpg"><img src="docs/screenshots/home-mobile.jpg" width="320" alt="手机主页：人体模型、开始探索按钮和模型统计"></a>
 </p>
+
+截图以两倍尺寸采集，点击图片可查看原图。桌面截图为 2560 × 1800，手机主页对应 390 × 844 视口。
 
 </details>
 
-<details>
-<summary><strong>查看手机界面</strong> · 紧凑导航与适配触控的布局</summary>
-
-手机图谱使用弹出的探索工具和底部详情卡，选中结构后可展开阅读。下图展示 390 × 844 视口下的主页，以两倍尺寸采集。
-
-<p align="center">
-  <a href="docs/screenshots/home-mobile.jpg"><img src="docs/screenshots/home-mobile.jpg" width="390" alt="Human Atlas 手机主页：人体模型、开始探索按钮和模型统计"></a>
-</p>
-
-</details>
-
-截图来自当前源码运行的真实界面，保存在 [`docs/screenshots/`](docs/screenshots/)。在线演示及已发布安装包的界面以各自版本为准。
+<sub>截图来自当前源码界面，仍显示旧名称 Human Atlas；程序内名称将在后续更新。在线演示与已发布安装包的界面以各自版本为准。</sub>
 
 ## 核心体验
 
 | 功能 | 可以做什么 |
 | --- | --- |
-| **整体与分层探索** | 在全身、骨骼、器官预设之间切换；显示、隐藏或仅看某个人体系统。 |
-| **直接操作模型** | 拖动旋转、滚轮或双指缩放，点击结构查看详情；切换斜视、正面、侧面与背面。 |
-| **双语结构搜索** | 按中文、英文、俗称或源 ID 查找，结果包含系统、左右信息和零件数。 |
-| **聚焦与对照** | 单独查看选中结构，或恢复周围图层观察位置关系；支持定位与返回整体。 |
-| **连续分解** | 从完整组装过渡到分离与零件总览，可使用滑条或桌面快捷档位。 |
-| **有层次的详情** | 优先展示说明与观察提示，按需展开源信息与零件；可收起详情或加宽阅读。 |
-| **连续学习** | 首页与空搜索提供最近探索入口；语言偏好和最近结构保存在本机。 |
-| **网页与离线桌面** | 网页可静态部署；Windows / macOS 客户端随包提供模型，无需启动本地服务器。 |
+| **逐层看清身体** | 在全身、骨骼与器官视图间切换，显示、隐藏或仅看某个人体系统。 |
+| **从任意角度观察** | 旋转、缩放并点击模型；快速切换正面、侧面、背面与斜视。 |
+| **中英双语查找** | 搜索中文、英文、俗称或源 ID，例如“心脏”“大腿骨”“FMA7088”。 |
+| **聚焦一个结构** | 单独观察目标，再恢复周围组织，对照位置与关系。 |
+| **拆开理解层次** | 从完整人体平滑过渡到分离视图与零件总览。 |
+| **随时继续探索** | 本机保存语言偏好和最近查看的结构，支持网页与离线桌面使用。 |
 
-## 使用指南
+## 开始使用
 
-1. **选择入口**：在主页打开全身结构、骨骼与支撑或内部器官，也可以点击“开始探索”。
-2. **找到目标**：直接点击模型，或搜索名称、俗称和源 ID，例如“心脏”“大腿骨”“FMA7088”。
-3. **看清关系**：搜索选中后会单独显示结构；点击“显示周围结构”恢复当前图层，比较它与周围组织的位置。
-4. **换个视角**：切换观察方向、拖动模型，或调节分解程度。“恢复全部”可回到默认图层与整体视角。
+**直接探索：** 打开 [在线演示](https://human-atlas-seven.vercel.app)，选择入口，点击模型或搜索一个结构，再试试旋转、分层与拆解。
+
+**离线使用：** 前往 [下载页](https://github.com/isunky/human-atlas/releases)，选择对应平台的安装包。
+
+| 平台 | 使用方式 |
+| --- | --- |
+| **Windows x64** | 运行安装包；也可下载便携版，解压后启动。 |
+| **macOS 11+** | 下载通用 DMG，拖入 Applications；支持 Intel 与 Apple Silicon。 |
+| **网页** | 浏览器直接访问；Web ZIP 可用于自行部署。 |
+| **Android** | 暂未提供安装包，可使用网页版。 |
+
+> **更名进度：** README 已采用「层知 · Anatolume」。现有仓库地址、程序界面与发布包仍沿用 Human Atlas，下载时请按旧名称查找。
+
+<details>
+<summary><strong>安装说明与发布文件</strong></summary>
+
+| 文件 | 说明 |
+| --- | --- |
+| `Human-Atlas_<版本号>_x64-setup.exe` | Windows 安装版，按当前用户安装。 |
+| `Human-Atlas_<版本号>_Windows-x64-portable.zip` | Windows 便携版，解压运行 `Human-Atlas.exe`。 |
+| `Human-Atlas_<版本号>_macOS-universal.dmg` | macOS 通用安装包。 |
+| `Human-Atlas_<版本号>_Web.zip` | 完整静态页面与模型，部署后通过 HTTP/HTTPS 访问。 |
+
+- **Windows：** 需要 WebView2。已安装运行时时可离线安装；缺少运行时时，安装程序会联网下载。便携版需要事先安装运行时。安装后从开始菜单启动 **Human Atlas**。
+- **macOS：** 当前使用 ad-hoc 签名，尚未经过 Apple 公证；首次打开可能需要在“系统设置 → 隐私与安全性”中允许。
+- **安装提示：** Windows 测试版尚未签名，可能显示未知发布者提示。每个自动发布的版本提供 `SHA256SUMS` 和 `BUILD-REPORT.md`。
+- **离线范围：** 桌面模型随包提供；查看外部数据来源和参考资料需要联网。语言偏好与最近探索记录保存在本机。
+
+</details>
+
+<details>
+<summary><strong>操作与快捷键</strong></summary>
 
 | 操作 | 方法 |
 | --- | --- |
-| 旋转模型 | 拖动三维区域 |
-| 缩放模型 | 鼠标滚轮 / 双指缩放 |
-| 查看结构 | 点击模型，或选择搜索结果 |
-| 打开并聚焦搜索 | 点击搜索入口，或在非输入状态按 `/` |
-| 选择搜索结果 | `↑` / `↓` 移动高亮，`Enter` 选择 |
-| 退出搜索 | 在搜索框按 `Esc`，或点击“关闭搜索” |
-| 恢复默认浏览 | 点击底部“恢复全部” |
+| 旋转 / 缩放 | 拖动模型区域 / 鼠标滚轮或双指缩放。 |
+| 查看结构 | 点击模型，或选择搜索结果。 |
+| 聚焦搜索 | 点击搜索入口，或在非输入状态按 `/`。 |
+| 选择搜索结果 | `↑` / `↓` 移动高亮，`Enter` 选择。 |
+| 退出搜索 | 按 `Esc`，或点击“关闭搜索”。 |
+| 对照周围组织 | 选中结构后点击“显示周围结构”。 |
+| 回到默认视图 | 点击底部“恢复全部”。 |
 
-左右均以**人体自身**为准。更多操作与中文术语维护说明见 [客户端开发文档](client/README.md)。
+左右均以**人体自身**为准。更多操作说明见 [客户端文档](client/README.md)。
 
-## 快速开始
+</details>
 
-需要 **Node.js 22.18 或更新版本**。仓库已包含可用模型，普通运行和构建无需重新转换解剖数据。
+<details>
+<summary><strong>常见问题</strong></summary>
+
+| 情况 | 排查方法 |
+| --- | --- |
+| 客户端窗口空白 | 检查 WebView2 与显卡驱动，关闭后重新启动。 |
+| 模型加载失败 | 网页检查网络与模型资源；客户端尝试重新启动或重新安装。 |
+| 看不到内部器官 | 搜索并单独查看目标，或关闭遮挡它的外层系统。 |
+| 卸载 Windows 客户端 | 使用 Windows 设置中的“已安装的应用”。 |
+
+</details>
+
+## 开发与构建
+
+前端使用 React、TypeScript 与 Three.js，桌面端使用 Tauri。网页与客户端共享界面和三维渲染逻辑，仓库已包含可用模型。
+
+[客户端开发文档](client/README.md) · [代码结构与 CI](docs/PROJECT_STRUCTURE.md) · [版本与发布指南](docs/RELEASE.md) · [CI 状态](https://github.com/isunky/human-atlas/actions/workflows/ci.yml)
+
+<details>
+<summary><strong>快速开始</strong> · 本地运行与网页构建</summary>
+
+需要 **Node.js 22.18 或更新版本**。仓库地址暂时沿用原名称。
 
 ```sh
 git clone https://github.com/isunky/human-atlas.git
@@ -108,168 +144,112 @@ npm ci
 npm run dev
 ```
 
-打开 **<http://127.0.0.1:3016/>**。开发服务器默认绑定本机，端口为 `3016`。
-
-构建网页：
+打开 <http://127.0.0.1:3016/>。开发服务器默认仅绑定本机。
 
 ```sh
 npm run build
 ```
 
-静态产物位于 `dist/`，可部署到静态托管服务。每次成功发布还会生成 Web ZIP，并部署到 [GitHub Pages](https://isunky.github.io/human-atlas/)。资源路径支持根目录和子目录；下载 ZIP 后请通过 HTTP/HTTPS 服务器访问，不要直接双击 HTML。Vercel 项目选择 Vite，使用 `npm ci`、`npm run build` 和 `dist` 输出目录；仓库中的 [`vercel.json`](vercel.json) 已配置这些选项。
+静态产物位于 `dist/`，支持根目录与子目录部署。Web ZIP 解压后需通过 HTTP/HTTPS 服务器访问。GitHub Pages 地址为 <https://isunky.github.io/human-atlas/>；Vercel 使用 Vite、`npm ci`、`npm run build` 和 `dist` 输出目录，配置见 [`vercel.json`](vercel.json)。
 
-## Windows 客户端
+</details>
 
-### 下载与安装
+<details>
+<summary><strong>桌面构建、验证与发布</strong></summary>
 
-前往 [全平台发布页](https://github.com/isunky/human-atlas/releases)，选择所需版本，下载并运行 x64 安装包。自动发布的文件名为 `Human-Atlas_<版本号>_x64-setup.exe`。安装完成后，从开始菜单启动 **Human Atlas**。每个自动发布的版本同时提供 `SHA256SUMS` 和 `BUILD-REPORT.md`。
-
-| 项目 | 说明 |
-| --- | --- |
-| 支持平台 | Windows x64，按当前用户安装 |
-| 离线模型 | 模型随安装包提供，启动与浏览不需要服务器、账号或网络 |
-| WebView2 | 已安装运行时可离线安装；缺少运行时时，安装程序需要联网下载 |
-| 语言与记录 | 首次默认简体中文，顶部可切换 English；语言与最近探索保存在本机 |
-| 外部链接 | 查看数据来源和参考资料需要联网 |
-| Windows 便携版 | 下载 `Human-Atlas_<版本号>_Windows-x64-portable.zip`，解压运行 `Human-Atlas.exe`，需要已安装 WebView2；记录保存在本机用户目录 |
-| macOS | 下载 `Human-Atlas_<版本号>_macOS-universal.dmg`，拖入 Applications；支持 macOS 11+ 的 Intel 和 Apple Silicon |
-| Web 发布包 | `Human-Atlas_<版本号>_Web.zip`，包含完整静态页面与模型，可部署到静态服务器 |
-| Android | 暂未提供安装包 |
-
-Windows 测试版尚未签名，可能显示未知发布者提示。macOS 使用 ad-hoc 签名，尚未经过 Apple 公证；首次打开可能需要在“系统设置 → 隐私与安全性”中允许。发布页提供的是对应版本的安装包；如需包含当前源码的界面更新，可按下方步骤构建。
-
-### 从源码构建
-
-除 Node.js 外，还需要 **Rust MSVC 工具链、Visual Studio C++ Build Tools、Windows SDK 与 WebView2**。
-
-```powershell
-npm ci
-# 启动桌面开发模式
-npm run client:dev
-# 生成 Windows x64 NSIS 安装包
-npm run client:build
-```
-
-安装包输出目录：
-
-```text
-src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/
-```
-
-第一次 Rust 构建可能需要数分钟。详细窗口、权限、打包与平台说明见 [客户端开发文档](client/README.md)。
-
-### 常见问题
-
-| 情况 | 排查方法 |
-| --- | --- |
-| 客户端窗口空白 | 检查 WebView2 运行时与显卡驱动，关闭后重新启动。 |
-| 模型加载失败 | 网页检查网络与静态模型资源；客户端尝试重新启动或重新安装测试包。 |
-| 看不到想找的器官 | 使用搜索选择目标进入单独查看，或关闭遮挡它的外层系统。 |
-| 需要卸载客户端 | 使用 Windows 设置中的“已安装的应用”。 |
-
-## 开发与验证
-
-前端使用 React 19、TypeScript、Three.js、Vite、Tailwind CSS 与 Base UI；桌面端使用 Tauri 2。网页与客户端共享界面和三维渲染逻辑。
-
-### 常用命令
+Windows 构建还需要 **Rust MSVC 工具链、Visual Studio C++ Build Tools、Windows SDK 与 WebView2**。
 
 | 命令 | 用途 |
 | --- | --- |
-| `npm run dev` | 启动网页开发服务器 |
-| `npm run build` | 构建网页，输出到 `dist/` |
-| `npm run build:client` | 构建客户端前端，输出到 `dist-client/` |
-| `npm run client:dev` | 启动 Tauri 桌面开发模式 |
-| `npm run client:build` | 构建 Windows x64 安装包 |
-| `npm run client:build:mac` | 在 macOS 构建 Intel / Apple Silicon 通用 DMG |
-| `npm run ci:check` | 执行类型、语言、模型、交互、前端构建与客户端资源检查 |
-| `npm run validate:release` | 检查自动版本递增、版本一致性、重试和安装包校验 |
+| `npm run client:dev` | 启动桌面开发模式。 |
+| `npm run build:client` | 构建客户端前端，输出到 `dist-client/`。 |
+| `npm run client:build` | 构建 Windows x64 NSIS 安装包。 |
+| `npm run client:build:mac` | 在 macOS 构建 Intel / Apple Silicon 通用 DMG。 |
+| `npm run ci:check` | 执行类型、语言、模型、交互、前端构建与客户端资源检查。 |
+| `npm run validate:release` | 检查版本递增、一致性、重试和安装包校验。 |
 
-```sh
-npm run ci:check
-```
+Windows 安装包输出到 `src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/`。第一次 Rust 构建可能需要数分钟。
 
-检查覆盖模型缓冲区与概念归属、中文术语及双语搜索、桌面与手机比例下的分解布局、搜索/检查工具契约、点击与拖动/多指状态，以及原生与回退 gzip 解压。
+浏览器交互已覆盖桌面及多种手机视口；真实手机性能与多指硬件操作仍需设备验证。
 
-浏览器交互已检查模型选择、图层预设、搜索、隔离、视角切换、分解、空图层恢复与详情面板，覆盖桌面、390 × 844、320 × 568 和 844 × 390 等视口。真实手机的性能与多指硬件操作仍需设备验证。
-
-[GitHub Actions](.github/workflows/ci.yml) 自动完成版本规划、Linux 检查、Windows 安装版与便携版、macOS 通用 DMG、Web ZIP 构建和发布，并部署 Web 到 GitHub Pages。`main` 更新后，成功发布会递增补丁版本；手动运行可选择 `patch / minor / major`。PR 只运行检查和构建，不写回版本或发布。
-
-发布版本同步到 npm、Tauri 与 Rust 的五个配置/锁文件，再生成 `vX.Y.Z` 标签与 GitHub Release。`0.x` 标为测试版；主版本达到 `1` 后发布为正式版。安装包、源码标签和构建记录使用同一版本号，完整规则与手动操作见 [自动版本与发布指南](docs/RELEASE.md)。
-
-### 项目结构
-
-```text
-app/
-  page.tsx                 # 主页、图层、搜索与详情交互
-  studio.css               # 主页与图谱的视觉及响应式布局
-  scene.tsx                # 三维场景、相机与按需帧调度
-  core/                    # 数据、搜索、分解布局与指针状态
-  rendering/               # 材质、着色器与可见绘制批次
-client/
-  i18n/                    # 中英界面与中文术语草稿
-  content/                 # 阅读引导、基础说明与搜索别名
-  platform/                # 运行环境与外部链接桥接
-components/ui/             # 可复用界面组件
-public/models/             # 模型清单、二进制与压缩资源
-src-tauri/                 # 原生窗口、权限与 Windows / macOS 打包
-scripts/                   # 数据转换、压缩与验证
-docs/                      # 架构文档与界面截图
-```
-
-模块边界与 CI 说明见 [核心代码与 CI](docs/PROJECT_STRUCTURE.md)。
-
-<details>
-<summary><strong>渲染与性能实现</strong></summary>
-
-几何按批次合并，显隐变化会压紧对应批次的索引，只提交可见结构；完全隐藏的批次跳过绘制。每个结构的位置与选择状态由 GPU 纹理控制，拾取仍使用独立结构几何。分解布局与点标记只包含可见零件。
-
-静止且相机阻尼结束后，动画循环停止请求帧；交互、状态变化、窗口调整和模型加载会唤醒，页面隐藏时暂停。分解动画复用缓存的可见集合与系统方向，屏幕拾取范围按需计算。隐藏系统减少绘制工作，但不释放已加载模型的显存。
-
-兼容浏览器还可使用可选 WebMCP 搜索与结构检查工具；正常浏览不依赖这些工具。
+GitHub Actions 自动检查、构建各平台发布包并部署 GitHub Pages。`main` 成功发布后递增补丁版本，手动运行可选择 `patch / minor / major`；PR 只检查和构建。`0.x` 为测试版，主版本达到 `1` 后为正式版。完整版本同步、重试与发布规则见 [发布指南](docs/RELEASE.md)。
 
 </details>
 
 <details>
-<summary><strong>重新生成模型数据（可选）</strong></summary>
+<summary><strong>项目结构与模型处理</strong></summary>
 
-仓库中的模型可直接使用。只有修改数据处理流程时，才需要获取官方 BodyParts3D OBJ 压缩包与英文元数据表，准备合并后的概念和显示系统映射，再依次使用 [`convert-anatomy.py`](scripts/convert-anatomy.py)、[`optimize-anatomy.mjs`](scripts/optimize-anatomy.mjs) 与 [`compress-models.mjs`](scripts/compress-models.mjs)。转换脚本需要源目录与元数据路径，运行前请查看脚本参数。
-
-几何简化的每结构相对误差上限为 **0.2%**，全部 2,234 个源网格均保留对应表示。修改数据后执行 `npm run ci:check` 检查模型与交互一致性。
-
-</details>
-
-## 数据与授权
-
-当前模型来自 **BodyParts3D 4.0**，为成年男性参考解剖模型，不能代表所有人体结构或个体差异。模型为浏览器性能进行简化，包含 **2,288,268 个三角形**，压缩几何约 **33 MB**。
-
-中文名称覆盖 **5,090 个唯一源名称**，目前为规则生成并补充常见词组的待审校草稿。界面保留英文原名；结构说明区分具体器官解释与一般系统概述。术语审校、搜索别名与知识内容维护方式见 [中文术语审校](client/README.md#中文术语审校)。
-
-| 内容 | 授权与要求 |
+| 目录 | 内容 |
 | --- | --- |
-| 原创应用代码 | [MIT License](LICENSE) |
-| BodyParts3D 解剖数据 | **CC BY 4.0**；再分发时保留原始署名及改编说明 |
-| 第三方依赖 | 保留各自许可证与相关要求 |
+| `app/` | 页面交互、三维场景、数据与渲染模块。 |
+| `client/` | 双语术语、学习说明与平台桥接。 |
+| `components/ui/` | 可复用界面组件。 |
+| `public/models/` | 模型清单、二进制与压缩资源。 |
+| `src-tauri/` | 原生窗口、权限与桌面打包。 |
+| `scripts/` | 模型转换、压缩、验证与发布脚本。 |
+| `docs/` | 架构文档与界面截图。 |
 
-完整数据来源、许可链接和几何改编记录见 [数据署名与授权说明](public/ATTRIBUTION.md)。本项目不用于诊断、手术规划或临床决策。
+渲染采用批次绘制与按需帧调度。结构的显隐、选择和分解由 GPU 数据控制，完全隐藏的批次跳过绘制。更多实现说明见 [代码结构与 CI](docs/PROJECT_STRUCTURE.md)。
 
-## 参与改进
+普通运行与构建**无需重新转换模型**。修改数据处理流程时，获取官方 BodyParts3D OBJ 与英文元数据，按脚本参数依次运行 [`convert-anatomy.py`](scripts/convert-anatomy.py)、[`optimize-anatomy.mjs`](scripts/optimize-anatomy.mjs) 和 [`compress-models.mjs`](scripts/compress-models.mjs)，随后执行 `npm run ci:check`。
 
-欢迎通过 [Issues](https://github.com/isunky/human-atlas/issues) 或 [Pull requests](https://github.com/isunky/human-atlas/pulls) 提交改进。
+</details>
 
-- **交互问题**：附上复现步骤、预期结果、浏览器或客户端版本、窗口尺寸与设备信息。
-- **术语与内容修正**：提供源 ID、英文源名、建议中文名称或说明，以及可核对的参考来源。
-- **代码贡献**：说明改动目的与影响，提交前运行 `npm run ci:check`；涉及 Rust 时同时运行格式检查。
-- **界面改动**：同步更新 [`docs/screenshots/`](docs/screenshots/) 中对应的实际运行截图。
+## 来源与许可
+
+| 内容 | 许可与说明 |
+| --- | --- |
+| **应用代码** | [MIT License](LICENSE)，保留原作者版权与许可声明。 |
+| **解剖模型与源数据** | BodyParts3D 4.0，采用 **CC BY 4.0**，保留署名及改编说明。 |
+| **第三方依赖** | 遵循各自许可证。 |
+
+> 本项目用于解剖学习与探索，不用于诊断、手术规划或临床决策。模型为成年男性参考解剖，不能代表所有结构或个体差异；中文术语与新增学习说明尚未经医学专家审校。
+
+<details>
+<summary><strong>数据范围与术语说明</strong></summary>
+
+- **数据范围：** 2,234 个独立网格、15 个人体系统、3,432 个具名解剖概念；一个概念可包含多个零件。
+- **模型处理：** 几何经过简化，包含 2,288,268 个三角形，压缩几何约 33 MB；每结构相对误差上限为 0.2%，保留全部源网格的对应表示。
+- **中文术语：** 覆盖 5,090 个唯一源名称，为规则生成并补充常见词组的待审校草稿。保留英文原名和源 ID 用于核对，结构说明区分具体器官解释与一般系统概述。
+- **完整记录：** 数据来源、许可链接与改编记录见 [署名与授权说明](public/ATTRIBUTION.md)；术语维护方式见 [中文术语审校](client/README.md#中文术语审校)。
+
+</details>
+
+欢迎通过 [Issues](https://github.com/isunky/human-atlas/issues) 或 [Pull requests](https://github.com/isunky/human-atlas/pulls) 改进项目。交互反馈请附复现步骤与运行环境；术语修正请附源 ID、建议名称及参考来源。代码提交前运行 `npm run ci:check`，涉及 Rust 时检查格式，界面改动同步更新截图。
 
 <details>
 <summary><strong>English overview</strong></summary>
 
-Human Atlas is an interactive 3D anatomy explorer built with React, Three.js, and Tauri. Explore **2,234 selectable meshes**, **15 anatomical systems**, and **3,432 named concepts** from the BodyParts3D adult male reference anatomy.
+**Anatolume (层知)** is an interactive 3D anatomy explorer. Rotate the body, reveal its layers, search structures in Chinese or English, and isolate a part to understand its shape and surroundings.
 
-Rotate and select structures, toggle systems, search Chinese or English names and source IDs, isolate a structure, and move from assembled anatomy to an exploded inventory. The interface supports Chinese and English, responsive layouts, and Windows x64 / macOS universal clients with bundled offline models. Releases include a Windows installer, portable ZIP, macOS DMG and deployable Web ZIP.
+Explore **2,234 selectable meshes**, **15 anatomical systems**, and **3,432 named concepts** from the BodyParts3D adult male reference anatomy. Use the web app or download an offline desktop client for Windows x64 and macOS Intel / Apple Silicon. Language preferences and recently explored structures are saved locally.
 
-For local development, use Node.js **22.18+**, run `npm ci` followed by `npm run dev`, and open <http://127.0.0.1:3016/>. Run `npm run ci:check` for project validation.
+[Try online](https://human-atlas-seven.vercel.app) · [Download](https://github.com/isunky/human-atlas/releases) · [Developer guide](client/README.md)
 
-Application code is MIT-licensed. Anatomy data is **CC BY 4.0**; see [ATTRIBUTION.md](public/ATTRIBUTION.md). Chinese terminology remains an unreviewed draft. This project is for education and exploration, not clinical use.
+The README now uses the new name. Existing application screens, release filenames and repository URLs still use **Human Atlas** while the rename is in progress.
+
+Based on [Human Atlas by ashemag](https://github.com/ashemag/human-atlas). Application code is licensed under [MIT](LICENSE); BodyParts3D data is licensed under **CC BY 4.0**, with credits and adaptations in [ATTRIBUTION.md](public/ATTRIBUTION.md). Chinese terminology and added learning content have not been professionally reviewed. This project is for education and exploration, not clinical use.
+
+For local development, use Node.js **22.18+**, run `npm ci` and `npm run dev`, then open <http://127.0.0.1:3016/>. Run `npm run ci:check` for validation.
 
 </details>
+
+## 开源致谢
+
+**层知是在开源项目与开放解剖数据的基础上继续开发的应用。感谢原作者和社区提供的代码、模型与工具，让人体结构能够被更多人观察和理解。**
+
+### 原始项目 · Human Atlas
+
+特别感谢 **[ashemag](https://github.com/ashemag)** 开源的 **[Human Atlas](https://github.com/ashemag/human-atlas)**，为本项目提供了三维人体探索的代码基础。层知在此基础上继续完善中英双语体验、交互界面与离线桌面客户端。原项目采用 MIT License，本仓库保留原作者的版权与许可声明，详见 [LICENSE](LICENSE)。
+
+### 开放数据 · BodyParts3D
+
+特别感谢 **The Database Center for Life Science** 提供的 **[BodyParts3D](https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html)**。本应用使用的解剖模型、英文名称及结构关系来自这一开放数据库；这些数据是三维图谱的核心基础。
+
+> BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International.
+
+数据采用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) 授权。完整来源、署名与改编说明见 [ATTRIBUTION.md](public/ATTRIBUTION.md)。
+
+### 开源工具与社区
+
+感谢 **[React](https://react.dev/)**、**[Three.js](https://threejs.org/)**、**[Tauri](https://tauri.app/)**、**[Vite](https://vite.dev/)**、**[Tailwind CSS](https://tailwindcss.com/)**、**[Base UI](https://base-ui.com/)**、**[Lucide](https://lucide.dev/)** 与 **[meshoptimizer](https://github.com/zeux/meshoptimizer)** 等开源项目，以及参与维护、反馈和改进的贡献者。
