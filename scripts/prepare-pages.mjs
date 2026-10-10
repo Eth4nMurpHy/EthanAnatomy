@@ -4,20 +4,25 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {gunzipSync} from 'node:zlib';
+import {MODELS} from '../app/core/model-catalogue.ts';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const dist = path.join(root, 'dist');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-const atlas = JSON.parse(fs.readFileSync(path.join(dist, 'models/atlas.json'), 'utf8'));
-assert.ok(atlas.chunks.length > 0, 'The Pages build must include the anatomy models');
-for (const chunk of atlas.chunks) {
-  assert.ok(chunk.gzip?.startsWith('/models/'), 'Every Pages model must have a compressed asset');
-  const compressed = fs.readFileSync(path.join(dist, chunk.gzip));
-  assert.equal(compressed.length, chunk.gzipBytes, `Incomplete compressed model: ${chunk.gzip}`);
-  assert.equal(gunzipSync(compressed).length, chunk.bytes, `Incomplete decoded model: ${chunk.gzip}`);
-  assert.ok(!fs.existsSync(path.join(dist, chunk.url)), 'Pages should deploy compressed models only');
+let modelChunks = 0;
+for (const {manifest} of Object.values(MODELS)) {
+  const atlas = JSON.parse(fs.readFileSync(path.join(dist, manifest), 'utf8'));
+  assert.ok(atlas.chunks.length > 0, 'The Pages build must include the anatomy models');
+  for (const chunk of atlas.chunks) {
+    assert.ok(chunk.gzip?.startsWith('/models/'), 'Every Pages model must have a compressed asset');
+    const compressed = fs.readFileSync(path.join(dist, chunk.gzip));
+    assert.equal(compressed.length, chunk.gzipBytes, `Incomplete compressed model: ${chunk.gzip}`);
+    assert.equal(gunzipSync(compressed).length, chunk.bytes, `Incomplete decoded model: ${chunk.gzip}`);
+    assert.ok(!fs.existsSync(path.join(dist, chunk.url)), 'Pages should deploy compressed models only');
+  }
+  modelChunks += atlas.chunks.length;
 }
-for (const asset of ['index.html', 'ATTRIBUTION.md', 'branding/256x256.png', 'favicon.ico']) {
+for (const asset of ['index.html', 'ATTRIBUTION.md', 'models/female-source.json', 'models/female-fit-report.json', 'branding/256x256.png', 'favicon.ico']) {
   assert.ok(fs.existsSync(path.join(dist, asset)), `Missing Pages asset: ${asset}`);
 }
 const source = process.env.CF_PAGES_COMMIT_SHA || execFileSync('git', ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).trim();
@@ -43,4 +48,4 @@ function inspect(directory) {
 }
 inspect(dist);
 assert.ok(count <= 20_000, `Pages build exceeds 20,000 files: ${count}`);
-console.log(`Pages ready: ${count} files, ${(bytes / 1024 / 1024).toFixed(1)} MiB total, ${(largest / 1024 / 1024).toFixed(1)} MiB largest; ${atlas.chunks.length} compressed models verified. Version ${manifest.version}, source ${source}.`);
+console.log(`Pages ready: ${count} files, ${(bytes / 1024 / 1024).toFixed(1)} MiB total, ${(largest / 1024 / 1024).toFixed(1)} MiB largest; ${modelChunks} compressed model chunks verified. Version ${manifest.version}, source ${source}.`);

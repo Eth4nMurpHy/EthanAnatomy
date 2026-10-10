@@ -8,6 +8,7 @@ export type SystemId =
   | "respiratory"
   | "urinary"
   | "reproductive"
+  | "mammary"
   | "lymphatic"
   | "endocrine"
   | "integumentary"
@@ -107,6 +108,13 @@ export const SYSTEMS: { id: SystemId; name: string; color: string; description: 
       "The male reproductive structures represented here contribute to sperm production, maturation, transport, and the production of sex hormones.",
   },
   {
+    id: "mammary",
+    name: "Breast tissue",
+    color: "#c6a4a0",
+    description:
+      "The breast tissue meshes include glands, ducts, fat, and supporting tissue. Their adapted placement in the female study model is experimental.",
+  },
+  {
     id: "integumentary",
     name: "Body surface",
     color: "#ba9b7d",
@@ -133,6 +141,7 @@ export interface Part {
   vertexCount: number;
   indexCount: number;
   bounds: [number[], number[]];
+  provenance?: { source: string; sourceId: string; adaptation: string };
 }
 export interface Concept {
   id: string;
@@ -141,7 +150,7 @@ export interface Concept {
 }
 export interface Atlas {
   version: string;
-  sex?: "male";
+  sex?: "male" | "female";
   source?: string;
   scope?: string;
   parts: Part[];
@@ -177,6 +186,7 @@ export const DEFAULT_VISIBLE: SystemId[] = [
   "lymphatic",
   "endocrine",
   "reproductive",
+  "mammary",
   "connective",
 ];
 export const EXPLANATIONS: Record<string, string> = {
@@ -199,8 +209,11 @@ export const EXPLANATIONS: Record<string, string> = {
   diaphragm:
     "A broad muscle separating the chest and abdomen. When it contracts, it increases chest volume and helps draw air into the lungs.",
 };
-export function explanation(name: string, system: SystemId) {
+export function explanation(name: string, system: SystemId, sex: "male" | "female" = "male") {
   return (
-    EXPLANATIONS[name.toLowerCase()] ?? SYSTEMS.find((s) => s.id === system)?.description ?? ""
+    EXPLANATIONS[name.toLowerCase()] ??
+    (sex === "female" && system === "reproductive"
+      ? "The female reproductive structures represented here include the ovaries, uterine tubes, uterus, and vagina."
+      : SYSTEMS.find((s) => s.id === system)?.description ?? "")
   );
 }

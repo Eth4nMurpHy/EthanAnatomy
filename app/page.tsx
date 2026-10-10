@@ -19,6 +19,7 @@ import {
 import { openExternal, runtimeInfo, setAppTitle } from "../client/platform";
 import { registerAtlasTools } from "./core/agent-tools";
 import { staticAssetUrl } from "./core/static-asset";
+import { MODELS, MODEL_STORAGE_KEY, defaultLayers, isModelAtlas, readModel, readRecent, recentKey, type ModelId } from "./core/model-catalogue";
 import { anatomySearchIndex, matchedSearchAlias, type SearchEntry } from "./core/anatomy-search";
 import { InputGroupButton } from "@/components/ui/input-group";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -87,8 +88,13 @@ const ORGAN_SYSTEMS: SystemId[] = [
   "urinary",
   "endocrine",
   "reproductive",
+  "mammary",
 ];
 export default function Home() {
+  const [model, setModel] = useState<ModelId>(() => {
+    try { return readModel(localStorage, location.search); }
+    catch { return readModel(undefined, location.search); }
+  });
   const [locale, setLocale] = useState<Locale>(() => {
     try {
       return readLocale(window.localStorage);
@@ -138,19 +144,21 @@ export default function Home() {
   const searchInput = useRef<HTMLInputElement>(null);
   const highlightedConcept = useRef<Concept | undefined>(undefined);
   const [recentIds, setRecentIds] = useState<string[]>(() => {
-    try {
-      const saved: unknown = JSON.parse(localStorage.getItem("human-atlas.recent") ?? "[]");
-      return Array.isArray(saved) ? saved.filter((id): id is string => typeof id === "string").slice(0, 6) : [];
-    } catch { return []; }
+    try { return readRecent(localStorage, model); } catch { return []; }
   });
   useEffect(() => {
-    try { localStorage.setItem("human-atlas.recent", JSON.stringify(recentIds)); } catch { /* Storage is optional. */ }
-  }, [recentIds]);
+    try {
+      localStorage.setItem(recentKey(model), JSON.stringify(recentIds));
+      localStorage.setItem(MODEL_STORAGE_KEY, model);
+    } catch { /* Storage is optional. */ }
+  }, [model, recentIds]);
   const [screen, setScreen] = useState<"home" | "explore">(() => location.hash === "#explore" ? "explore" : "home");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   useEffect(() => {
-    history.replaceState(null, "", `${location.pathname}${location.search}${screen === "explore" ? "#explore" : ""}`);
-  }, [screen]);
+    const search = new URLSearchParams(location.search);
+    search.set("model", model);
+    history.replaceState(null, "", `${location.pathname}?${search}${screen === "explore" ? "#explore" : ""}`);
+  }, [screen, model]);
   const [atlas, setAtlas] = useState<Atlas | null>(null),
     [state, setState] = useState(initial),
     [progress, setProgress] = useState(0),
@@ -181,18 +189,38 @@ export default function Home() {
     setAtlas(null);
     setChosen(null);
     setDetails(false);
-    setState({ ...initial, visible: DEFAULT_VISIBLE });
-    fetch(staticAssetUrl("/models/atlas.json"), { signal: abort.signal })
+    setState({ ...initial, visible: defaultLayers(model) });
+    fetch(staticAssetUrl(MODELS[model].manifest), { signal: abort.signal })
       .then((r) => {
         if (!r.ok) throw new Error("The anatomy catalogue could not be loaded.");
         return r.json();
       })
-      .then((data) => setAtlas(data as Atlas))
+      .then((data: unknown) => {
+        if (abort.signal.aborted) return;
+        if (!isModelAtlas(data, model)) throw new Error("The anatomy catalogue could not be loaded.");
+        setState({ ...initial, visible: defaultLayers(model, data) });
+        setAtlas(data);
+      })
       .catch((e) => {
-        if (e.name !== "AbortError") setError(e.message);
+        if (!abort.signal.aborted) setError(e.message);
       });
     return () => abort.abort();
-  }, []);
+  }, [model]);
+  const changeModel = (next: ModelId) => {
+    if (next === model) return;
+    setAtlas(null);
+    setProgress(0);
+    setError("");
+    setChosen(null);
+    setDetails(false);
+    setQuery("");
+    highlightedConcept.current = undefined;
+    setState({ ...initial, visible: defaultLayers(next) });
+    try { setRecentIds(readRecent(localStorage, next)); } catch { setRecentIds([]); }
+    setModel(next);
+  };
+  const defaultVisible = useMemo(() => defaultLayers(model, atlas), [model, atlas]);
+  const organVisible = useMemo(() => ORGAN_SYSTEMS.filter((id) => !atlas || atlas.parts.some((p) => p.system === id)), [atlas]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (
@@ -230,7 +258,7 @@ export default function Home() {
     ids.every((id) => state.visible.includes(id));
   const allLayers = matchesLayers(activeSystems.map((s) => s.id));
   const skeletonLayers = matchesLayers(["skeletal"]);
-  const organLayers = matchesLayers(ORGAN_SYSTEMS);
+  const organLayers = matchesLayers(organVisible);
   const singleSystem = activeSystems.find((s) => matchesLayers([s.id]));
   const layerStatus = state.isolate
     ? t("Isolated selection")
@@ -242,7 +270,7 @@ export default function Home() {
           ? t("Skeleton")
           : organLayers
             ? t("Organs")
-            : matchesLayers(DEFAULT_VISIBLE)
+            : matchesLayers(defaultVisible)
               ? t("Default layers")
               : singleSystem
                 ? t("Only {name}", { name: sn(singleSystem) })
@@ -325,7 +353,7 @@ export default function Home() {
     }));
   };
   const reset = () => {
-    setState((s) => ({ ...initial, visible: DEFAULT_VISIBLE, reset: s.reset + 1 }));
+    setState((s) => ({ ...initial, visible: defaultVisible, reset: s.reset + 1 }));
     setChosen(null);
     setDetails(false);
     setPanel(innerWidth >= 768 ? "layers" : null);
@@ -361,7 +389,7 @@ export default function Home() {
     setScreen("home");
     setDetails(false);
     setPanel(null);
-    setState((s) => ({ ...initial, visible: DEFAULT_VISIBLE, reset: s.reset + 1 }));
+    setState((s) => ({ ...initial, visible: defaultVisible, reset: s.reset + 1 }));
     setChosen(null);
   };
   const returnToOverview = () => {
@@ -381,6 +409,7 @@ export default function Home() {
     <main className={`studio mode-${screen} ${panel === "search" ? "is-search" : ""} ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${details && selectedParts.length ? "has-inspector" : ""} ${detailWide ? "inspector-wide" : ""}`} onClick={externalClick}>
       {atlas && (
         <AnatomyScene
+          key={model}
           atlas={atlas}
           locale={locale}
           state={{
@@ -408,6 +437,13 @@ export default function Home() {
           <button onClick={() => setAbout(true)}>{t("Learning guide")}</button>
           <button className="about-nav" onClick={() => setCreditsOpen(true)}>{t("About")}</button>
         </nav>
+      <div className="model-choice">
+        <label className="sr-only" htmlFor="atlas-model">{t("Anatomy model")}</label>
+        <select id="atlas-model" value={model} onChange={(event) => changeModel(event.target.value as ModelId)}>
+          <option value="male">{t("Male")}</option>
+          <option value="female">{t("Female · experimental")}</option>
+        </select>
+      </div>
       <div className="language-choice">
         <label className="sr-only" htmlFor="atlas-language">{t("Language")}</label>
         <select
@@ -450,20 +486,20 @@ export default function Home() {
             <h1>{t("See the body.")}<br /><span>{t("Understand every layer.")}</span></h1>
             <p className="home-description">{t("An entire world beneath the surface. Explore human anatomy in 3D, uncover its systems, and get to know each structure at your own pace.")}</p>
             <div className="home-cta">
-              <Button className="start-button" onClick={() => startExploring(DEFAULT_VISIBLE)}>{t("Start exploring")}<ArrowRight size={19} /></Button>
+              <Button className="start-button" onClick={() => startExploring(defaultVisible)}>{t("Start exploring")}<ArrowRight size={19} /></Button>
               <button className="guide-button" onClick={() => setAbout(true)}><BookOpen size={18} />{t("How to explore")}</button>
             </div>
             <div className="home-stats">
-              <div><strong>{atlas?.parts.length.toLocaleString() ?? "2,234"}</strong><span>{t("Individual structures")}</span></div>
-              <div><strong>{SYSTEMS.length}</strong><span>{t("Anatomical systems")}</span></div>
-              <div><strong>{atlas?.concepts.length.toLocaleString() ?? "3,432"}</strong><span>{t("Named concepts")}</span></div>
+              <div><strong>{atlas?.parts.length.toLocaleString() ?? "—"}</strong><span>{t("Individual structures")}</span></div>
+              <div><strong>{atlas ? activeSystems.length : "—"}</strong><span>{t("Anatomical systems")}</span></div>
+              <div><strong>{atlas?.concepts.length.toLocaleString() ?? "—"}</strong><span>{t("Named concepts")}</span></div>
             </div>
             <div className="home-paths">
               <div className="home-section-title"><span>{t("Choose a starting point")}</span><small>{t("One click to discover")}</small></div>
               {([
-                { icon: PersonStanding, title: "Whole body", description: "See how everything connects", visible: DEFAULT_VISIBLE, tone: "teal" },
+                { icon: PersonStanding, title: "Whole body", description: "See how everything connects", visible: defaultVisible, tone: "teal" },
                 { icon: Bone, title: "Bones & support", description: "Explore the body's framework", visible: ["skeletal"] as SystemId[], tone: "sand" },
-                { icon: Heart, title: "Internal organs", description: "Look beneath the surface", visible: ORGAN_SYSTEMS, tone: "rose" },
+                { icon: Heart, title: "Internal organs", description: "Look beneath the surface", visible: organVisible, tone: "rose" },
               ]).map(({ icon: Icon, title, description, visible, tone }) => (
                 <button className={`home-path ${tone}`} key={title} onClick={() => startExploring(visible)}>
                   <span className="path-icon"><Icon size={22} strokeWidth={1.6} /></span>
@@ -473,8 +509,8 @@ export default function Home() {
             </div>
             {recentIds.length > 0 && atlas && <div className="home-recent"><span>{t("Recently explored")}</span><div>{recentIds.flatMap((id) => searchIndex.get(id)?.concept ?? []).slice(0, 3).map((c) => <button key={c.id} onClick={() => choose(c)}>{dn(c.name)}<ArrowUpRight size={12} /></button>)}</div></div>}
           </div>
-          <div className="hero-label"><span className="status-dot" />{t("LIVE 3D MODEL")}<span>BodyParts3D</span></div>
-          <div className="hero-model-caption"><span>{t("ADULT HUMAN · MALE")}</span><p><MousePointer2 size={14} />{t("Drag to rotate. Click to discover.")}</p></div>
+          <div className="hero-label"><span className="status-dot" />{t("LIVE 3D MODEL")}<span>{MODELS[model].source}</span></div>
+          <div className="hero-model-caption"><span>{t(model === "female" ? "FEMALE · EXPERIMENTAL STUDY MODEL" : "ADULT HUMAN · MALE")}</span><p><MousePointer2 size={14} />{t("Drag to rotate. Click to discover.")}</p></div>
         </section>
       )}
       {screen === "explore" && <>
@@ -482,7 +518,7 @@ export default function Home() {
         <button className="sidebar-toggle" onClick={() => setSidebarCollapsed((v) => !v)} aria-label={sidebarCollapsed ? t("Show exploration tools") : t("Hide exploration tools")} title={sidebarCollapsed ? t("Show exploration tools") : t("Hide exploration tools")}>
           {sidebarCollapsed ? <PanelLeftOpen size={19} /> : <PanelLeftClose size={19} />}
         </button>
-        <div><h1>{t("3D anatomy explorer")}</h1><span>{t("Click a structure to discover more")}</span></div>
+        <div><h1>{t("3D anatomy explorer")}</h1><span>{t(model === "female" ? "Female study model · estimated anatomy" : "Click a structure to discover more")}</span></div>
         <span className="scene-status"><span className="status-dot" />{layerStatus}</span>
       </div>
       <aside className={`workspace-sidebar glass ${panel ? "mobile-open" : ""}`} aria-label={t("Exploration tools")}>
@@ -509,8 +545,8 @@ export default function Home() {
         <div className="layer-presets">
           <Button
             variant="ghost"
-            aria-pressed={matchesLayers(DEFAULT_VISIBLE)}
-            onClick={() => applyLayers(DEFAULT_VISIBLE)}
+            aria-pressed={matchesLayers(defaultVisible)}
+            onClick={() => applyLayers(defaultVisible)}
           >
             <PersonStanding size={17} />{t("Whole body")}
           </Button>
@@ -524,7 +560,7 @@ export default function Home() {
           <Button
             variant="ghost"
             aria-pressed={organLayers}
-            onClick={() => applyLayers(ORGAN_SYSTEMS)}
+            onClick={() => applyLayers(organVisible)}
           >
             <Heart size={17} />{t("Organs")}
           </Button>
@@ -785,7 +821,7 @@ export default function Home() {
               ? t("ANATOMICAL INVENTORY")
               : state.explode > 0.05
                 ? t("SEPARATED STRUCTURES")
-                : t("ADULT HUMAN · MALE")}
+                : t(model === "female" ? "FEMALE · EXPERIMENTAL STUDY MODEL" : "ADULT HUMAN · MALE")}
         </span>
         <span className="caption-line" />
       </div>
@@ -815,7 +851,7 @@ export default function Home() {
           </Button>
         </div>
       )}
-      {progress === 100 && visibleCount === 0 && <div className="empty-scene glass"><Layers3 size={30} /><h2>{t("No layers are visible")}</h2><p>{t("Turn on a system, or restore the whole body to keep exploring.")}</p><Button onClick={() => applyLayers(DEFAULT_VISIBLE)}>{t("Show whole body")}</Button></div>}
+      {progress === 100 && visibleCount === 0 && <div className="empty-scene glass"><Layers3 size={30} /><h2>{t("No layers are visible")}</h2><p>{t("Turn on a system, or restore the whole body to keep exploring.")}</p><Button onClick={() => applyLayers(defaultVisible)}>{t("Show whole body")}</Button></div>}
       <div className="bottom-dock glass">
         <Button
           variant="ghost"
@@ -869,7 +905,7 @@ export default function Home() {
       </div>
       </>}
       <footer className="studio-footer">
-        <span className="footer-status"><span className="status-dot" />{t(runtimeInfo().native ? "Offline client" : "Web viewer")}<span className="footer-data">BodyParts3D{" · "}{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span></span>
+        <span className="footer-status"><span className="status-dot" />{t(runtimeInfo().native ? "Offline client" : "Web viewer")}<span className="footer-data">{MODELS[model].source}{" · "}{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span></span>
         <span>
           {state.explode > 0.8 ? t("Drag to pan") : t("Drag to orbit")} <b>·</b>{" "}
           {t("Pinch to zoom")} <b>·</b> {t("Tap to inspect")}
@@ -961,8 +997,8 @@ export default function Home() {
             <SheetDescription className="structure-description">
               {chosen && selected
                 ? locale === "zh-CN"
-                  ? chineseExplanation(chosen.name, selected.system)
-                  : explanation(chosen.name, selected.system)
+                  ? chineseExplanation(chosen.name, selected.system, model)
+                  : explanation(chosen.name, selected.system, model)
                 : ""}
             </SheetDescription>
             {chosen &&
@@ -1007,14 +1043,12 @@ export default function Home() {
                   )}
                 </div>
               )}
-              <a
-                className="source-link"
-                href="https://lifesciencedb.jp/bp3d/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {t("View anatomical source")} <ArrowUpRight size={14} />
-              </a>
+              {model === "female" && <p className="context-note">{t("Derived from BodyParts3D and HRA female anatomy. Proportions and placement are estimated and have not been independently reviewed.")}</p>}
+              {[...new Set(selectedParts.map((part) => part.provenance?.source.startsWith("HRA") ? "HRA" : "BodyParts3D"))].map((source) => (
+                <a key={source} className="source-link" href={source === "HRA" ? "https://lod.humanatlas.io/ref-organ/united-female/v1.5" : "https://lifesciencedb.jp/bp3d/"} target="_blank" rel="noreferrer">
+                  {t("View anatomical source")} · {source}<ArrowUpRight size={14} />
+                </a>
+              ))}
             </details>
           </div>
           <div className="detail-actions">
@@ -1123,12 +1157,14 @@ export default function Home() {
               )}
             </p>
             <p>
-              <strong>{t("Male · BodyParts3D")}</strong>
+              <strong>{t(model === "female" ? "Female · BodyParts3D + HRA" : "Male · BodyParts3D")}</strong>
               <br />
               {t(
-                "2,234 individual meshes and 3,432 named concepts from an adult male reference anatomy.",
+                "{parts} individual meshes and {concepts} named concepts in the current model.",
+                { parts: atlas?.parts.length.toLocaleString() ?? "—", concepts: atlas?.concepts.length.toLocaleString() ?? "—" },
               )}
             </p>
+            {model === "female" && <p>{t("Derived from BodyParts3D and HRA female anatomy. Proportions and placement are estimated and have not been independently reviewed.")}</p>}
             <p>
               {t(
                 "This reference does not contain every human structure or variation. Named concepts can contain multiple pieces; each source mesh is rendered once.",

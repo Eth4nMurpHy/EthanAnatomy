@@ -9,6 +9,17 @@ export type Locale = "zh-CN" | "en";
 // Stable keys preserve preferences when upgrading to Anatolume.
 export const LANGUAGE_STORAGE_KEY = "human-atlas.language";
 export const UI_ZH: Record<string, string> = {
+  "Anatomy model": "解剖模型",
+  Male: "男性",
+  "Female · experimental": "女性 · 实验",
+  "FEMALE · EXPERIMENTAL STUDY MODEL": "女性 · 实验性学习模型",
+  "Female study model · estimated anatomy": "女性学习模型 · 比例与位置为估算",
+  "Female · BodyParts3D + HRA": "女性 · BodyParts3D + HRA",
+  "{parts} individual meshes and {concepts} named concepts in the current model.": "当前模型包含 {parts} 个独立网格和 {concepts} 个具名概念。",
+  "Derived from BodyParts3D and HRA female anatomy. Proportions and placement are estimated and have not been independently reviewed.": "基于 BodyParts3D 与 HRA 女性解剖数据改编。比例和器官位置为估算，尚未经过独立专业审校。",
+  "Female model & source": "女性模型与来源",
+  "Thanks to PrejudiceNeutrino for sharing the female study model and its adaptation records.": "感谢 PrejudiceNeutrino 分享女性学习模型及完整改编记录，让女性解剖探索成为可能。",
+  "Female geometry is adapted from Human Atlas Enhanced by PrejudiceNeutrino and the HRA female organ set by Kristen Browne and Heidi Schlehlein. Source IDs and adaptation records are preserved.": "女性几何模型引自 PrejudiceNeutrino 的 Human Atlas Enhanced，并使用 Kristen Browne 与 Heidi Schlehlein 的 HRA 女性器官数据集。保留源标识和改编记录。",
   Anatolume: "层知",
   "Go to homepage": "返回首页",
   "A new perspective on anatomy": "换个视角，认识人体",
@@ -289,6 +300,10 @@ const SYSTEM_ZH: Record<SystemId, { name: string; description: string }> = {
     name: "生殖系统",
     description: "本模型中的男性生殖结构参与精子的生成、成熟和输送，并产生性激素。",
   },
+  mammary: {
+    name: "乳房组织",
+    description: "本图层包含乳腺、乳腺导管、脂肪与支持组织。它们在女性学习模型中的改编位置属于实验性估算。",
+  },
   integumentary: {
     name: "体表",
     description: "体表提供外部解剖参考。皮肤系统形成保护屏障，并参与感觉和体温调节。",
@@ -331,11 +346,13 @@ export function searchText(english: string, id: string) {
 export function systemName(id: SystemId, english: string, locale: Locale) {
   return locale === "zh-CN" ? SYSTEM_ZH[id].name : english;
 }
-export function chineseExplanation(name: string, system: SystemId) {
+export function chineseExplanation(name: string, system: SystemId, sex: "male" | "female" = "male") {
   return (
     chineseStructureKnowledge(name)?.summary ??
     EXPLANATION_ZH[name.toLowerCase()] ??
-    SYSTEM_ZH[system].description
+    (sex === "female" && system === "reproductive"
+      ? "本模型中的女性生殖结构包括卵巢、输卵管、子宫与阴道。"
+      : SYSTEM_ZH[system].description)
   );
 }
 export function hasChineseExplanation(name: string) {

@@ -57,6 +57,15 @@ export default function About({ locale, open, onOpenChange }: {
             <p>{t("Geometry is simplified for rendering; names, identifiers and structure relationships retain their source references.")}</p>
             <a className="credit-text-link" href="https://github.com/isunky/Anatolume/blob/main/public/ATTRIBUTION.md" target="_blank" rel="noreferrer">{t("Full attribution & adaptations")}<ArrowUpRight size={13} /></a>
           </div>
+          <div className="credit-card">
+            <div className="credit-card-heading"><span className="credits-kicker">{t("Female model & source")}</span><span className="credit-license">{"CC BY 4.0"}</span></div>
+            <a className="credit-project" href="https://github.com/PrejudiceNeutrino/human-atlas-enhanced" target="_blank" rel="noreferrer"><strong>{"Human Atlas Enhanced"}</strong><ArrowUpRight size={15} /></a>
+            <p>{t("Thanks to PrejudiceNeutrino for sharing the female study model and its adaptation records.")}</p>
+            <a className="credit-text-link" href="https://github.com/PrejudiceNeutrino" target="_blank" rel="noreferrer">{"PrejudiceNeutrino"}<ArrowUpRight size={13} /></a>
+            <p>{t("Female geometry is adapted from Human Atlas Enhanced by PrejudiceNeutrino and the HRA female organ set by Kristen Browne and Heidi Schlehlein. Source IDs and adaptation records are preserved.")}</p>
+            <a className="credit-text-link" href="https://lod.humanatlas.io/ref-organ/united-female/v1.5" target="_blank" rel="noreferrer">{"Human Reference Atlas / HuBMAP"}<ArrowUpRight size={13} /></a>
+            <p>{t("Derived from BodyParts3D and HRA female anatomy. Proportions and placement are estimated and have not been independently reviewed.")}</p>
+          </div>
         </section>
 
         <section className="credits-section" aria-labelledby="tools-heading">

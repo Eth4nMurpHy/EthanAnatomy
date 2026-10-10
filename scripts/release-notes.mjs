@@ -39,7 +39,7 @@ export function generateReleaseNotes({version, source, repository, root = reposi
     '### 下载',
     'Windows x64 安装版与便携版 · macOS Intel / Apple Silicon 通用版 · Web 静态部署包。附件包含 SHA256 校验和及构建报告。',
     '',
-    `源码：[${source.slice(0, 7)}](${`https://github.com/${repository}/commit/${source}`})。应用代码采用 MIT 许可；BodyParts3D 解剖数据采用 CC BY 4.0。`,
+    `源码：[${source.slice(0, 7)}](${`https://github.com/${repository}/commit/${source}`})。应用代码采用 MIT 许可；BodyParts3D 与 HRA 女性解剖数据采用 CC BY 4.0。女性选项为实验性衍生学习模型。`,
     'Windows 程序未签名；macOS 用户建议自行从源码构建，自动生成的 DMG 未经过 Apple 公证。',
     '',
   ].join('\n');

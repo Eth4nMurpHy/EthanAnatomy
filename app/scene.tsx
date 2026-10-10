@@ -190,9 +190,10 @@ export default function AnatomyScene({
             new T.Vector3().fromArray(p.bounds[1]),
           ),
       );
+    const availableSystems = SYSTEMS.filter((system) => atlas.parts.some((part) => part.system === system.id));
     const directions = new Map(
-      SYSTEMS.map((system, group) => {
-        const angle = (group / SYSTEMS.length) * Math.PI * 2;
+      availableSystems.map((system, group) => {
+        const angle = (group / availableSystems.length) * Math.PI * 2;
         return [system.id, { x: Math.sin(angle) * 0.48, z: Math.cos(angle) * 0.48 }];
       }),
     );

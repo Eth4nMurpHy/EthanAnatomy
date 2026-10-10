@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import {gzipSync} from 'node:zlib';
 import {decodeModelResponse} from '../app/core/model-download.ts';
 import {readVersions} from './release-version.mjs';
+import {MODELS} from '../app/core/model-catalogue.ts';
 
 const sample = new TextEncoder().encode('Anatolume · 心脏');
 const gzip = gzipSync(sample);
@@ -19,15 +20,20 @@ await assert.rejects(decodeModelResponse(new Response(sample, {status:404}), sam
 await assert.rejects(decodeModelResponse(new Response(sample), sample.byteLength + 1, false), /incomplete/);
 await assert.rejects(decodeModelResponse(new Response(gzip.subarray(0,12)), sample.byteLength, true));
 const root = new URL('../', import.meta.url);
-const atlas = JSON.parse(fs.readFileSync(new URL('dist-client/models/atlas.json', root), 'utf8'));
-for (const chunk of atlas.chunks) {
-  assert.ok(chunk.gzip);
-  assert.ok(!fs.existsSync(new URL(`dist-client${chunk.url}`, root)), 'Raw models must not enter the client package');
-  const binary = fs.readFileSync(new URL(`dist-client${chunk.gzip}`, root));
-  assert.equal(binary.byteLength, chunk.gzipBytes);
-  const decoded = await decodeModelResponse(new Response(binary), chunk.bytes, true);
-  assert.equal(decoded.byteLength, chunk.bytes);
+let modelChunks = 0;
+for (const {manifest} of Object.values(MODELS)) {
+  const atlas = JSON.parse(fs.readFileSync(new URL(`dist-client${manifest}`, root), 'utf8'));
+  for (const chunk of atlas.chunks) {
+    assert.ok(chunk.gzip);
+    assert.ok(!fs.existsSync(new URL(`dist-client${chunk.url}`, root)), 'Raw models must not enter the client package');
+    const binary = fs.readFileSync(new URL(`dist-client${chunk.gzip}`, root));
+    assert.equal(binary.byteLength, chunk.gzipBytes);
+    const decoded = await decodeModelResponse(new Response(binary), chunk.bytes, true);
+    assert.equal(decoded.byteLength, chunk.bytes);
+  }
+  modelChunks += atlas.chunks.length;
 }
+for (const name of ['female-source.json','female-fit-report.json']) assert.ok(fs.existsSync(new URL(`dist-client/models/${name}`, root)), `Missing female source record: ${name}`);
 assert.ok(fs.existsSync(new URL('dist-client/ATTRIBUTION.md', root)));
 const config = JSON.parse(fs.readFileSync(new URL('src-tauri/tauri.conf.json', root), 'utf8'));
 const manifest = JSON.parse(fs.readFileSync(new URL('package.json', root), 'utf8'));
@@ -43,4 +49,4 @@ for (const url of aboutLinks) {
   assert.ok(linkPermission.allow.some(({url: allowed}) => allowed.endsWith('*') ? url.startsWith(allowed.slice(0,-1)) : url === new URL(allowed).href), `About link blocked by native permissions: ${url}`);
 }
 console.log(`Verified ${aboutLinks.size} author and credit links are available in the native client.`);
-console.log(`Verified native/fallback gzip decoding, error cases, ${atlas.chunks.length} offline model chunks and Windows bundle configuration.`);
+console.log(`Verified native/fallback gzip decoding, error cases, ${modelChunks} offline model chunks and Windows bundle configuration.`);

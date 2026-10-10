@@ -9,6 +9,7 @@ for (const script of [
   "validate:release",
   "validate:locales",
   "validate:atlas",
+  "validate:models",
   "validate:interactions",
   "build",
   "build:pages",

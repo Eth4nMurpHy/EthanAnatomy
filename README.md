@@ -27,11 +27,14 @@
 
 </div>
 
-层知将人体结构变成可以旋转、分层、拆解和搜索的学习空间。从全身关系出发，探索骨骼、肌肉与器官；也可以直接找到一个结构，单独观察并阅读说明。无需账号，桌面客户端随包提供模型，可离线探索。
+层知将人体结构变成可以旋转、分层、拆解和搜索的学习空间。从全身关系出发，探索骨骼、肌肉与器官；也可以直接找到一个结构，单独观察并阅读说明。页眉可切换男性参考模型与女性学习模型，支持中文 / English。无需账号，桌面客户端随包提供两套模型，可离线探索。
 
-| 模型零件 | 人体系统 | 解剖概念 | 界面语言 |
+| 模型 | 模型零件 | 人体系统 | 解剖概念 |
 | :---: | :---: | :---: | :---: |
-| **2,234** | **15** | **3,432** | **中文 / English** |
+| **男性 · 参考模型** | **2,234** | **15** | **3,432** |
+| **女性 · 实验性学习模型** | **2,245** | **16** | **4,248** |
+
+女性模型基于 BodyParts3D 与 HRA 女性器官数据改编，比例和位置为估算，尚未经独立解剖审校。模型范围、来源与验证说明见 [女性模型指南](docs/FEMALE_MODEL.md)。
 
 ## 界面预览
 
@@ -48,6 +51,12 @@
 
 [![层知主页：实时人体模型、探索入口与最近浏览](docs/screenshots/home.jpg)](docs/screenshots/home.jpg)
 
+### 女性模型
+
+页眉可切换女性实验性学习模型，探索子宫、卵巢、输卵管与乳腺等结构。
+
+[![女性模型主页：模型切换、来源标识与模型统计](docs/screenshots/female.png)](docs/screenshots/female.png)
+
 ### 结构详情与手机视图
 
 <p align="center">
@@ -56,7 +65,7 @@
   <a href="docs/screenshots/home-mobile.jpg"><img src="docs/screenshots/home-mobile.jpg" width="320" alt="手机主页：人体模型、开始探索按钮和模型统计"></a>
 </p>
 
-截图以两倍尺寸采集，点击图片可查看原图。桌面截图为 2560 × 1800，手机主页对应 390 × 844 视口。
+原有界面截图以两倍尺寸采集，桌面截图为 2560 × 1800，手机主页对应 390 × 844 视口；新增女性模型截图为 1280 × 900。点击图片可查看原图。
 
 </details>
 
@@ -66,6 +75,7 @@
 
 | 功能 | 可以做什么 |
 | --- | --- |
+| **切换男性与女性模型** | 在页眉选择模型，分别保存最近探索的结构；女性模型提供乳腺与女性生殖器官。 |
 | **逐层看清身体** | 在全身、骨骼与器官视图间切换，显示、隐藏或仅看某个人体系统。 |
 | **从任意角度观察** | 旋转、缩放并点击模型；快速切换正面、侧面、背面与斜视。 |
 | **中英双语查找** | 搜索中文、英文、俗称或源 ID，例如“心脏”“大腿骨”“FMA7088”。 |
@@ -226,17 +236,18 @@ GitHub Actions 将 CI 与发布分开：提交和 PR 自动运行测试及 Web�
 | 内容 | 许可与说明 |
 | --- | --- |
 | **应用代码** | [MIT License](LICENSE)，保留原作者版权与许可声明。 |
-| **解剖模型与源数据** | BodyParts3D 4.0，采用 **CC BY 4.0**，保留署名及改编说明。 |
+| **解剖模型与源数据** | BodyParts3D 4.0 与 HRA 女性器官集，采用 **CC BY 4.0**，保留原作者、来源及改编说明。女性衍生模型引自 Human Atlas Enhanced。 |
 | **第三方依赖** | 遵循各自许可证。 |
 
-> 本项目用于解剖学习与探索，不用于诊断、手术规划或临床决策。模型为成年男性参考解剖，不能代表所有结构或个体差异；中文术语与新增学习说明尚未经医学专家审校。
+> 本项目用于解剖学习与探索，不用于诊断、手术规划或临床决策。男性选项为成年男性参考解剖；女性选项为未经独立审校的实验性衍生学习模型。模型不能代表所有结构或个体差异；中文术语与新增学习说明尚未经医学专家审校。
 
 <details>
 <summary><strong>数据范围与术语说明</strong></summary>
 
-- **数据范围：** 2,234 个独立网格、15 个人体系统、3,432 个具名解剖概念；一个概念可包含多个零件。
-- **模型处理：** 几何经过简化，包含 2,288,268 个三角形，压缩几何约 33 MB；每结构相对误差上限为 0.2%，保留全部源网格的对应表示。
-- **中文术语：** 覆盖 5,090 个唯一源名称，为规则生成并补充常见词组的待审校草稿。保留英文原名和源 ID 用于核对，结构说明区分具体器官解释与一般系统概述。
+- **男性范围：** 2,234 个独立网格、15 个人体系统、3,432 个具名概念；一个概念可包含多个零件。
+- **女性范围：** 2,245 个独立网格、16 个图层、4,248 个具名概念，包含女性生殖结构与独立乳房组织图层。仍缺少女性外部皮肤、生殖器外表面和已验证的女性尿道/盆底替代结构。
+- **模型处理：** 男性包含 2,288,268 个三角形，压缩几何约 33 MB；每结构相对误差上限为 0.2%。女性包含 2,437,148 个三角形，压缩几何约 35 MB，保留上游改编记录和文件校验值。
+- **中文术语：** 覆盖两套模型的 5,172 个唯一源名称，为规则生成并补充常见词组的待审校草稿。保留英文原名和源 ID 用于核对，结构说明区分具体器官解释与一般系统概述。
 - **完整记录：** 数据来源、许可链接与改编记录见 [署名与授权说明](public/ATTRIBUTION.md)；术语维护方式见 [中文术语审校](client/README.md#中文术语审校)。
 
 </details>
@@ -248,13 +259,13 @@ GitHub Actions 将 CI 与发布分开：提交和 PR 自动运行测试及 Web�
 
 **Anatolume (层知)** is an interactive 3D anatomy explorer. Rotate the body, reveal its layers, search structures in Chinese or English, and isolate a part to understand its shape and surroundings.
 
-Explore **2,234 selectable meshes**, **15 anatomical systems**, and **3,432 named concepts** from the BodyParts3D adult male reference anatomy. Use the web app or download an offline desktop client for Windows x64 and macOS Intel / Apple Silicon. Language preferences and recently explored structures are saved locally.
+Switch between the **BodyParts3D male reference** (2,234 meshes, 15 systems, 3,432 concepts) and the **experimental female study model** (2,245 meshes, 16 layers, 4,248 concepts), adapted from BodyParts3D and HRA female anatomy through Human Atlas Enhanced. Female proportions and placement are estimated and have not been independently reviewed. Both models work in the web app and offline desktop client. Model preferences and model-specific browsing histories are saved locally.
 
 [Try online](https://isunky.github.io/Anatolume/) · [Download](https://github.com/isunky/Anatolume/releases) · [Developer guide](client/README.md)
 
 The application is named **层知** in Chinese and **Anatolume** in English. The repository and new release packages use Anatolume; historical releases retain their original names.
 
-Based on [Human Atlas by ashemag](https://github.com/ashemag/human-atlas). Application code is licensed under [MIT](LICENSE); BodyParts3D data is licensed under **CC BY 4.0**, with credits and adaptations in [ATTRIBUTION.md](public/ATTRIBUTION.md). Chinese terminology and added learning content have not been professionally reviewed. This project is for education and exploration, not clinical use.
+Based on [Human Atlas by ashemag](https://github.com/ashemag/human-atlas). Thanks to [PrejudiceNeutrino](https://github.com/PrejudiceNeutrino) for sharing the female study model in [Human Atlas Enhanced](https://github.com/PrejudiceNeutrino/human-atlas-enhanced). Application code is licensed under [MIT](LICENSE); BodyParts3D and HRA anatomy data retain **CC BY 4.0**, with original rights-holder credits and adaptations in [ATTRIBUTION.md](public/ATTRIBUTION.md). Chinese terminology and added learning content have not been professionally reviewed. This project is for education and exploration, not clinical use.
 
 For local development, use Node.js **22.18+**, run `npm ci` and `npm run dev`, then open <http://127.0.0.1:3016/>. Run `npm run ci:check` for validation.
 
@@ -275,6 +286,12 @@ For local development, use Node.js **22.18+**, run `npm ci` and `npm run dev`, t
 > BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International.
 
 数据采用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) 授权。完整来源、署名与改编说明见 [ATTRIBUTION.md](public/ATTRIBUTION.md)。
+
+### 女性模型 · Human Atlas Enhanced 与 HRA
+
+特别感谢 **[PrejudiceNeutrino](https://github.com/PrejudiceNeutrino)** 分享 **[Human Atlas Enhanced](https://github.com/PrejudiceNeutrino/human-atlas-enhanced)** 的女性学习模型与完整改编记录。本仓库保留其源标识、几何和配准记录，并接入层知的双语界面、模型切换与离线打包。
+
+女性器官源数据由 **Kristen Browne、Heidi Schlehlein** 和 **Human Reference Atlas / HuBMAP** 提供，*3D Reference Organ Set for Female v1.5*（2023），[DOI](https://doi.org/10.48539/HBM352.BTSQ.586)。女性衍生模型同时使用改编的 BodyParts3D 数据；两套源数据的 **CC BY 4.0** 许可与原作者权利声明均予以保留，详见 [完整署名与改编说明](public/ATTRIBUTION.md)。
 
 ### 开源工具与社区
 

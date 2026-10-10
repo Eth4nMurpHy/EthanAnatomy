@@ -19,6 +19,7 @@
     "validate:client": "node scripts/validate-client.mjs",
     "validate:locales": "node scripts/validate-locales.mjs",
     "validate:atlas": "node scripts/validate-atlas.mjs",
+    "validate:models": "node scripts/validate-models.mjs",
     "validate:interactions": "node scripts/validate-interactions.mjs",
     "validate:release": "node scripts/validate-release.mjs",
     "ci:check": "node scripts/ci-check.mjs"

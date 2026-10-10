@@ -3,9 +3,9 @@ import fs from 'node:fs';
 import ts from 'typescript';
 import {displayName, text, searchText, readLocale, UI_ZH, LANGUAGE_STORAGE_KEY} from '../client/i18n/index.ts';
 
-const atlas = JSON.parse(fs.readFileSync(new URL('../public/models/atlas.json', import.meta.url), 'utf8'));
+const atlases = ['atlas.json', 'atlas-female.json'].map(name => JSON.parse(fs.readFileSync(new URL(`../public/models/${name}`, import.meta.url), 'utf8')));
 const terms = JSON.parse(fs.readFileSync(new URL('../client/i18n/terms.zh-CN.json', import.meta.url), 'utf8'));
-const names = new Set([...atlas.parts, ...atlas.concepts].map(part => part.name));
+const names = new Set(atlases.flatMap(atlas => [...atlas.parts, ...atlas.concepts].map(part => part.name)));
 assert.equal(Object.keys(terms).length, names.size);
 const ordinals = {first:'第一',second:'第二',third:'第三',fourth:'第四',fifth:'第五',sixth:'第六',seventh:'第七',eighth:'第八',ninth:'第九',tenth:'第十',eleventh:'第十一',twelfth:'第十二'};
 for (const english of names) {

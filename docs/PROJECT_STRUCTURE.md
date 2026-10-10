@@ -11,6 +11,7 @@
 | `app/core/explosion-layout.ts` | 可见零件的分解布局 |
 | `app/core/pointer-tap.ts` | 点击、拖动、多指和取消状态 |
 | `app/core/model-download.ts` | 模型响应与 gzip 解压 |
+| `app/core/model-catalogue.ts` | 双模型目录、默认图层、模型与浏览历史存储 |
 | `app/core/agent-tools.ts` | 搜索/检查工具契约 |
 | `app/core/anatomy-search.ts` | 搜索索引、所属系统/左右信息与俗称匹配提示 |
 | `app/rendering/materials.ts` | 系统材质、位置/选择纹理和着色器 |
@@ -41,12 +42,13 @@ npm run ci:check
 1. `check`：TypeScript。
 2. `validate:release`：版本递增、版本文件同步、标签排序、重试和安装包校验。
 3. `validate:locales`：术语覆盖、文案、双语搜索和语言存储。
-4. `validate:atlas`：模型映射与二进制数据。
-5. `validate:interactions`：布局与交互契约。
-6. `build`：网页构建。
-7. `build:pages`：Cloudflare Pages 构建、压缩模型与文件限制检查。
-8. `build:client`：客户端前端构建。
-9. `validate:client`：解压异常、打包资产、版本一致性和 Windows 配置。
+4. `validate:atlas`：男性/女性模型映射、边界与压缩二进制数据。
+5. `validate:models`：女性来源校验、性别特定几何、模型独立性、中文检索与浏览历史。
+6. `validate:interactions`：双模型布局与交互契约。
+7. `build`：网页构建。
+8. `build:pages`：Cloudflare Pages 构建、两套压缩模型与文件限制检查。
+9. `build:client`：客户端前端构建。
+10. `validate:client`：解压异常、两套模型打包资产、版本一致性和 Windows 配置。
 
 ## GitHub Actions
 

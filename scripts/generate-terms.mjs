@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 
 const base = new URL('../', import.meta.url);
-const atlas = JSON.parse(fs.readFileSync(new URL('public/models/atlas.json', base), 'utf8'));
-const names = [...new Set([...atlas.parts, ...atlas.concepts].map(part => part.name))].sort();
+const atlases = ['atlas.json', 'atlas-female.json'].map(name => JSON.parse(fs.readFileSync(new URL(`public/models/${name}`, base), 'utf8')));
+const names = [...new Set(atlases.flatMap(atlas => [...atlas.parts, ...atlas.concepts].map(part => part.name)))].sort();
 const lexicon = Object.fromEntries(fs.readFileSync(new URL('client/i18n/lexicon.txt', base), 'utf8')
   .split('\n').filter(line => !line.trim().startsWith('#')).join(' ')
   .split(';').map(entry => entry.trim()).filter(Boolean).map(entry => entry.split('=')));
@@ -38,9 +38,9 @@ const terms = Object.fromEntries(names.map(name => [name, translate(name)]));
 if (missing.size) throw new Error(`Untranslated anatomical stems: ${[...missing].sort().join(', ')}`);
 fs.writeFileSync(new URL('client/i18n/terms.zh-CN.json', base), JSON.stringify(terms, null, 2) + '\n');
 fs.writeFileSync(new URL('client/i18n/terms.metadata.json', base), JSON.stringify({
-  status: 'draft', source: 'BodyParts3D 4.0 English names',
+  status: 'draft', source: 'BodyParts3D 4.0 and HRA female study model English names',
   method: 'Offline anatomical stem dictionary, reviewed compound terms, and qualifier-preserving composition.',
-  entries: names.length, parts: atlas.parts.length, concepts: atlas.concepts.length,
+  entries: names.length, models: atlases.map(atlas => ({sex:atlas.sex, parts:atlas.parts.length, concepts:atlas.concepts.length})),
   reviewNote: 'Full Chinese draft; not professionally reviewed. Preserve English names and source identifiers when correcting terms.',
 }, null, 2) + '\n');
 console.log(`Generated ${names.length} Chinese draft names; ${Object.keys(lexicon).length} anatomical stems, ${phraseEntries.length} compound terms.`);
