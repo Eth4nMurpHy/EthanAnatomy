@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="48" viewBox="0 0 256 48">
+  <rect width="256" height="48" rx="12" fill="#176b58"/>
+  <circle cx="25" cy="24" r="9" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width="1.5"/>
+  <path d="m23 20 6 4-6 4z" fill="#fff"/>
+  <text x="47" y="29" fill="#fff" font-family="Segoe UI,Microsoft YaHei,PingFang SC,sans-serif" font-size="14" font-weight="600">在线体验 · GitHub Pages</text>
+</svg>
