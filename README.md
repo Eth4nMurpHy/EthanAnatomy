@@ -254,26 +254,9 @@ Explore **2,234 selectable meshes**, **15 anatomical systems**, and **3,432 name
 
 The application is named **层知** in Chinese and **Anatolume** in English. The repository and new release packages use Anatolume; historical releases retain their original names.
 
-Developed and maintained by **[Sunky](https://www.sunky.net)**. The app's About panel credits the original creators, open anatomy data and open-source tools.
-
 Based on [Human Atlas by ashemag](https://github.com/ashemag/human-atlas). Application code is licensed under [MIT](LICENSE); BodyParts3D data is licensed under **CC BY 4.0**, with credits and adaptations in [ATTRIBUTION.md](public/ATTRIBUTION.md). Chinese terminology and added learning content have not been professionally reviewed. This project is for education and exploration, not clinical use.
 
 For local development, use Node.js **22.18+**, run `npm ci` and `npm run dev`, then open <http://127.0.0.1:3016/>. Run `npm run ci:check` for validation.
-
-</details>
-
-## 关于作者
-
-**[Sunky](https://www.sunky.net)** 持续开发与维护「层知 · Anatolume」，完善中英双语探索、界面交互与离线桌面体验。
-
-[访问个人网站](https://www.sunky.net) · [查看项目源码](https://github.com/isunky/Anatolume)
-
-应用顶部的「关于」和页脚的「Sunky · 关于与致谢」可查看作者、项目版本、开源来源与数据许可。层知基于 Human Atlas 与 BodyParts3D 继续开发；感谢原作者、开放数据提供者与开源社区的分享。
-
-<details>
-<summary><strong>查看关于界面</strong></summary>
-
-[![关于与致谢：作者 Sunky、个人网站及原始开源项目](docs/screenshots/about.jpg)](docs/screenshots/about.jpg)
 
 </details>
 
