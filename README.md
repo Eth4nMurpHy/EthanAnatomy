@@ -198,7 +198,7 @@ Windows 安装包输出到 `src-tauri/target/x86_64-pc-windows-msvc/release/bund
 
 浏览器交互已覆盖桌面及多种手机视口；真实手机性能与多指硬件操作仍需设备验证。
 
-GitHub Actions 自动检查、构建各平台发布包并部署 GitHub Pages。`main` 成功发布后递增补丁版本，手动运行可选择 `patch / minor / major`；PR 只检查和构建。`0.x` 为测试版，主版本达到 `1` 后为正式版。完整版本同步、重试与发布规则见 [发布指南](docs/RELEASE.md)。
+GitHub Actions 将 CI 与发布分开：提交和 PR 自动运行测试及 Web、Pages、桌面前端构建；需要发布时，手动启动版本发布工作流并选择 `patch / minor / major`，自动完成版本同步、Windows / macOS / Web 构建、GitHub Release 与 Pages 部署。Release notes 会摘要列出本次变更。`0.x` 为测试版，主版本达到 `1` 后为正式版。完整流程见 [发布指南](docs/RELEASE.md)。
 
 </details>
 

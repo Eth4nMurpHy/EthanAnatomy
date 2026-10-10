@@ -20,6 +20,7 @@
 | `src-tauri/` | 原生窗口、权限与打包 |
 | `scripts/release-version.mjs` | SemVer 规划、重试复用与五个版本文件同步 |
 | `scripts/release-assets.mjs` | Windows 安装/便携、macOS、Web 打包和平台来源/校验合并 |
+| `scripts/release-notes.mjs` | 按上一个发布标签生成简明更新摘要与完整变更链接 |
 | `scripts/publish-release.mjs` | 原子版本提交/标签与全平台 Release 发布 |
 | `scripts/prepare-pages.mjs` | Cloudflare Pages 模型/文件限制检查与版本来源记录 |
 | `wrangler.toml` / `.node-version` | Pages 输出目录、兼容日期与 Node 版本 |
@@ -49,14 +50,6 @@ npm run ci:check
 
 ## GitHub Actions
 
-`.github/workflows/ci.yml` 在 main 推送、PR 和手动启动时运行：
+`.github/workflows/ci.yml` 在所有分支的推送与 PR 更新时运行：安装锁文件依赖后执行 `npm run ci:check`，完成类型、术语、数据和交互检查，并构建 Web、Cloudflare Pages 与桌面前端。该工作流不改版本、不打安装包、不发布。
 
-- `version`（Ubuntu）：从完整标签历史规划版本；main 自动 patch，手动可选 minor/major，PR 保留源版本。
-- `checks`（Ubuntu）：同步计划版本 → `npm ci` → `npm run ci:check`。
-- `windows`（Windows，依赖 checks 成功）：同步版本 → 安装 Node/Rust 和锁文件依赖 → Rust 格式检查 → NSIS 构建 → 安装版和便携 ZIP 打包/来源记录 → 上传带版本的 artifact。
-- `macos`（macOS）：构建 universal DMG → 验证 Intel/Apple Silicon 架构与签名 → 上传带版本的 artifact。
-- `web`（Ubuntu）：静态构建 → Web ZIP 和来源记录 → 上传发布与 Pages artifact。
-- `pages`（Ubuntu，Release 完成后）：使用匹配版本的 Pages artifact 部署网页。
-- `release`（Ubuntu，仅 main 且前序任务成功）：校验所有平台版本/源码/SHA256 与 main 状态 → 原子推送版本提交和标签 → 将安装包、校验和构建记录完整上传后发布 Release。
-
-PR 的旧运行会被取消，main 发布不会因新运行而中途取消；队列保留最新待运行任务。main 有更新时，旧源码的发布步骤会跳过写回，避免覆盖新提交。仅 release 任务获得 `contents: write`，Pages 单独获得部署和 OIDC 权限，构建任务保持读取权限。版本提交使用 `GITHUB_TOKEN`，不会递归触发 push 工作流。完整规则见 [自动版本与发布指南](RELEASE.md)。CI 不包含真实设备操作或性能测量。
+`.github/workflows/release.yml` 仅可手动启动。选择 `main` 和 patch/minor/major 后，工作流规划同一版本并并行构建 Windows 安装版/便携版、macOS 通用版和 Web ZIP，校验来源与 SHA256，生成上个标签以来的提交摘要，然后同步版本文件、提交版本、创建标签并发布 GitHub Release。发布完成后部署同次运行的 Pages artifact。版本同步提交通过 `GITHUB_TOKEN` 写入，不会再次触发 CI；后续普通提交照常自动运行 CI。完整规则见 [自动版本与发布指南](RELEASE.md)。CI 不包含真实设备操作或性能测量。

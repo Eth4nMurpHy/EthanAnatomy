@@ -5,6 +5,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {git, parseVersion, repositoryRoot, syncVersion, versionFiles} from './release-version.mjs';
 import {verifyAssets} from './release-assets.mjs';
+import {generateReleaseNotes} from './release-notes.mjs';
 
 const run = (command, args) => execFileSync(command, args, {cwd: repositoryRoot, encoding: 'utf8'}).trim();
 
@@ -15,7 +16,7 @@ function publish(version) {
   const repository = process.env.GITHUB_REPOSITORY;
   const bump = process.env.VERSION_BUMP || 'patch';
   assert.equal(process.env.GITHUB_REF, 'refs/heads/main', 'Only main can publish');
-  assert.ok(['push', 'workflow_dispatch'].includes(process.env.GITHUB_EVENT_NAME), 'Only trusted main events can publish');
+  assert.equal(process.env.GITHUB_EVENT_NAME, 'workflow_dispatch', 'Releases can only be started manually');
   assert.match(source, /^[a-f0-9]{40}$/);
   assert.match(runId, /^\d+$/);
   assert.match(repository, /^[\w.-]+\/[\w.-]+$/);
@@ -68,20 +69,11 @@ function publish(version) {
     return;
   }
   const notes = path.join(assetsDirectory, 'RELEASE-NOTES.md');
-  fs.writeFileSync(notes, [
-    `## Windows / macOS / Web · ${version}`, '',
-    `自动版本发布，源码：${source}。`, '',
-    '- Windows 安装版：下载 x64-setup.exe，按当前用户安装。缺少 WebView2 时会联网下载运行时。',
-    '- Windows 便携版：解压 Windows-x64-portable.zip，运行 Anatolume.exe。需要已安装 WebView2，设置保存在本机用户目录。',
-    '- macOS：下载 universal.dmg，将 Anatolume 拖入 Applications。支持 macOS 11+ 的 Intel 与 Apple Silicon。',
-    '- Web：解压 Web.zip 后部署到静态 HTTP/HTTPS 服务器，支持子目录；不要直接双击 index.html。', '',
-    '桌面模型随包提供。Windows 程序未签名；macOS 使用 ad-hoc 签名，尚未经过 Apple 公证，首次打开可能需要在隐私与安全性中允许。',
-    '中文术语为待审校草稿。附件提供全平台 SHA256SUMS 与 BUILD-REPORT.md。', '',
-  ].join('\n'));
+  fs.writeFileSync(notes, generateReleaseNotes({version, source, repository}));
   if (!release) {
     run('gh', ['release', 'create', tag, '--repo', repository, '--verify-tag', '--draft', '--title', `Anatolume ${tag}`,
-      '--notes-file', notes, '--generate-notes', ...(parseVersion(version)[0] === 0 ? ['--prerelease', '--latest=false'] : ['--latest'])]);
-  }
+      '--notes-file', notes, ...(parseVersion(version)[0] === 0 ? ['--prerelease', '--latest=false'] : ['--latest'])]);
+  } else run('gh', ['release', 'edit', tag, '--repo', repository, '--notes-file', notes]);
   run('gh', ['release', 'upload', tag, '--repo', repository, ...assetNames.map(name => path.join(assetsDirectory, name)), '--clobber']);
   const uploaded = JSON.parse(run('gh', ['release', 'view', tag, '--repo', repository, '--json', 'assets']));
   const uploadedNames = new Set(uploaded.assets.map(asset => asset.name));
