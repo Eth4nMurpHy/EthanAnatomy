@@ -18,6 +18,8 @@
 | `client/` | 中英文与平台桥接 |
 | `client/content/zh-CN.ts` | 中文阅读引导、基础知识、搜索别名与参考来源 |
 | `src-tauri/` | 原生窗口、权限与打包 |
+| `scripts/release-version.mjs` | SemVer 规划、重试复用与五个版本文件同步 |
+| `scripts/publish-release.mjs` | 安装包校验记录、原子版本提交/标签与 Release 发布 |
 
 数据与交互模块不创建 WebGL 上下文。渲染模块不管理 React 状态；资源由场景创建并统一释放。模型 ID、源数据和已有 UI 保持不变。模型转换、压缩与检查脚本继续放在 `scripts/`。
 
@@ -33,18 +35,21 @@ npm run ci:check
 入口 `scripts/ci-check.mjs` 依次执行下列已有检查和构建，任何一步失败立即返回非零退出码。使用 npm 的 JavaScript 入口启动子进程，兼容 Windows/Linux，无需 shell 拼接。
 
 1. `check`：TypeScript。
-2. `validate:locales`：术语覆盖、文案、双语搜索和语言存储。
-3. `validate:atlas`：模型映射与二进制数据。
-4. `validate:interactions`：布局与交互契约。
-5. `build`：网页构建。
-6. `build:client`：客户端前端构建。
-7. `validate:client`：解压异常、打包资产和 Windows 配置。
+2. `validate:release`：版本递增、版本文件同步、标签排序、重试和安装包校验。
+3. `validate:locales`：术语覆盖、文案、双语搜索和语言存储。
+4. `validate:atlas`：模型映射与二进制数据。
+5. `validate:interactions`：布局与交互契约。
+6. `build`：网页构建。
+7. `build:client`：客户端前端构建。
+8. `validate:client`：解压异常、打包资产、版本一致性和 Windows 配置。
 
 ## GitHub Actions
 
 `.github/workflows/ci.yml` 在 main 推送、PR 和手动启动时运行：
 
-- `checks`（Ubuntu）：`npm ci` → `npm run ci:check`。
-- `windows`（Windows，依赖 checks 成功）：安装 Node/Rust 和锁文件依赖 → Rust 格式检查 → NSIS 构建 → 上传安装包 artifact。
+- `version`（Ubuntu）：从完整标签历史规划版本；main 自动 patch，手动可选 minor/major，PR 保留源版本。
+- `checks`（Ubuntu）：同步计划版本 → `npm ci` → `npm run ci:check`。
+- `windows`（Windows，依赖 checks 成功）：同步版本 → 安装 Node/Rust 和锁文件依赖 → Rust 格式检查 → NSIS 构建 → 生成校验/构建记录 → 上传带版本的 artifact。
+- `release`（Ubuntu，仅 main 且前序任务成功）：核对资源与 main 状态 → 原子推送版本提交和标签 → 将安装包、校验和构建记录完整上传后发布 Release。
 
-同分支旧运行会被取消；仓库权限仅为读取；工作流不发布 Release。原有 Windows 工作流由此文件替代，避免重复运行检查。CI 不包含真实设备操作或性能测量。
+PR 的旧运行会被取消，main 发布不会因新运行而中途取消；队列保留最新待运行任务。main 有更新时，旧源码的发布步骤会跳过写回，避免覆盖新提交。仅 release 任务获得 `contents: write`，其余任务保持读取权限。版本提交使用 `GITHUB_TOKEN`，不会递归触发 push 工作流。完整规则见 [自动版本与发布指南](RELEASE.md)。CI 不包含真实设备操作或性能测量。

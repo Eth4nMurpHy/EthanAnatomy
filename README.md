@@ -9,10 +9,11 @@
 [![React 19](https://img.shields.io/badge/React-19-1B6B5B?style=flat-square)](https://react.dev/)
 [![Three.js](https://img.shields.io/badge/Three.js-WebGL-1B6B5B?style=flat-square)](https://threejs.org/)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-1B6B5B?style=flat-square)](https://tauri.app/)
+[![GitHub Actions](https://github.com/isunky/human-atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/isunky/human-atlas/actions/workflows/ci.yml)
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-31554D?style=flat-square)](LICENSE)
 [![Data: CC BY 4.0](https://img.shields.io/badge/Data-CC_BY_4.0-31554D?style=flat-square)](public/ATTRIBUTION.md)
 
-[在线演示](https://human-atlas-seven.vercel.app) · [Windows 下载](https://github.com/isunky/human-atlas/releases/tag/v0.1.0) · [快速开始](#快速开始) · [开发文档](client/README.md)
+[在线演示](https://human-atlas-seven.vercel.app) · [Windows 下载](https://github.com/isunky/human-atlas/releases) · [快速开始](#快速开始) · [开发文档](client/README.md)
 
 </div>
 
@@ -121,7 +122,7 @@ npm run build
 
 ### 下载与安装
 
-前往 [v0.1.0 Windows 测试版发布页](https://github.com/isunky/human-atlas/releases/tag/v0.1.0)，下载并运行 `Human Atlas_0.1.0_x64-setup.exe`。安装完成后，从开始菜单启动 **Human Atlas**。
+前往 [Windows 发布页](https://github.com/isunky/human-atlas/releases)，选择所需版本，下载并运行 `Human Atlas_<版本号>_x64-setup.exe`。安装完成后，从开始菜单启动 **Human Atlas**。每个自动发布的版本同时提供 `SHA256SUMS` 和 `BUILD-REPORT.md`。
 
 | 项目 | 说明 |
 | --- | --- |
@@ -177,6 +178,7 @@ src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/
 | `npm run client:dev` | 启动 Tauri 桌面开发模式 |
 | `npm run client:build` | 构建 Windows x64 安装包 |
 | `npm run ci:check` | 执行类型、语言、模型、交互、前端构建与客户端资源检查 |
+| `npm run validate:release` | 检查自动版本递增、版本一致性、重试和安装包校验 |
 
 ```sh
 npm run ci:check
@@ -186,7 +188,9 @@ npm run ci:check
 
 浏览器交互已检查模型选择、图层预设、搜索、隔离、视角切换、分解、空图层恢复与详情面板，覆盖桌面、390 × 844、320 × 568 和 844 × 390 等视口。真实手机的性能与多指硬件操作仍需设备验证。
 
-[GitHub Actions](.github/workflows/ci.yml) 先在 Linux 执行统一检查，通过后在 Windows 检查 Rust 格式、构建安装包并上传 artifact。工作流不会自动发布 Release。
+[GitHub Actions](.github/workflows/ci.yml) 自动完成版本规划、Linux 检查、Windows 安装包构建和发布。`main` 更新后，成功发布会递增补丁版本；手动运行可选择 `patch / minor / major`。PR 只运行检查和构建，不写回版本或发布。
+
+发布版本同步到 npm、Tauri 与 Rust 的五个配置/锁文件，再生成 `vX.Y.Z` 标签与 GitHub Release。`0.x` 标为测试版；主版本达到 `1` 后发布为正式版。安装包、源码标签和构建记录使用同一版本号，完整规则与手动操作见 [自动版本与发布指南](docs/RELEASE.md)。
 
 ### 项目结构
 

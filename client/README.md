@@ -80,7 +80,7 @@ npm run ci:check
 cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
 ```
 
-GitHub Actions 先在独立 Linux 任务运行 `ci:check`，通过后在 Windows 检查 Rust 格式并构建、上传测试安装包，不发布 Release。相同分支有新运行时取消旧运行。模型解压兼容原生 DecompressionStream 与 fflate 回退，拒绝截断和错误长度数据。
+GitHub Actions 先规划版本，再在 Linux 运行 `ci:check`，通过后在 Windows 检查 Rust 格式、构建安装包并生成校验文件。PR 只检查与构建；`main` 的成功发布会自动递增版本，同步 npm/Tauri/Rust 配置和锁文件，提交版本、创建标签并发布 GitHub Release。`0.x` 为测试版，手动运行可选 patch/minor/major。PR 更新会取消旧检查，main 发布按并发组串行执行，过时源码不会覆盖新的 main。规则与重试说明见 [自动版本与发布指南](../docs/RELEASE.md)。模型解压兼容原生 DecompressionStream 与 fflate 回退，拒绝截断和错误长度数据。
 
 显隐变化会压紧对应批次的绘制索引，隐藏系统不提交三角形；隔离模式仅提交选中结构，分解视图的点标记也仅绘制可见零件。选中的隐藏系统零件仍按原有规则显示。索引只在批次可见集合变化时更新，分解动画不重复上传索引。为支持恢复显示，每个批次在 CPU 保留一份原始索引；切换系统减少绘制工作，但不释放已加载模型的显存。
 

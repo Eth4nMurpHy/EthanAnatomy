@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {gzipSync} from 'node:zlib';
 import {decodeModelResponse} from '../app/core/model-download.ts';
+import {readVersions} from './release-version.mjs';
 
 const sample = new TextEncoder().encode('Human Atlas · 心脏');
 const gzip = gzipSync(sample);
@@ -31,6 +32,7 @@ assert.ok(fs.existsSync(new URL('dist-client/ATTRIBUTION.md', root)));
 const config = JSON.parse(fs.readFileSync(new URL('src-tauri/tauri.conf.json', root), 'utf8'));
 const manifest = JSON.parse(fs.readFileSync(new URL('package.json', root), 'utf8'));
 assert.equal(config.version, manifest.version);
+assert.equal(readVersions(), manifest.version);
 assert.equal(config.build.frontendDist, '../dist-client');
 assert.deepEqual(config.bundle.targets, ['nsis']);
 console.log(`Verified native/fallback gzip decoding, error cases, ${atlas.chunks.length} offline model chunks and Windows bundle configuration.`);

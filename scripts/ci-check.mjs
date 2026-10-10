@@ -6,6 +6,7 @@ if (!npm) throw new Error("Run this entry point with npm run ci:check.");
 
 for (const script of [
   "check",
+  "validate:release",
   "validate:locales",
   "validate:atlas",
   "validate:interactions",

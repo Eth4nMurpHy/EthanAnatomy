@@ -1,7 +1,16 @@
-name: Checks and Windows client
+name: Checks, version and Windows release
 
 on:
   workflow_dispatch:
+    inputs:
+      bump:
+        description: Version increment (main only)
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
   push:
     branches: [main]
   pull_request:
@@ -11,41 +20,116 @@ permissions:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Finish a main release; PR updates can cancel obsolete checks.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  version:
+    name: Plan synchronized version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      tag: ${{ steps.plan.outputs.tag }}
+      release: ${{ steps.plan.outputs.release }}
+      prerelease: ${{ steps.plan.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Compute next version or reuse this run's existing tag
+        id: plan
+        env:
+          RELEASE_ENABLED: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+          VERSION_BUMP: ${{ inputs.bump || 'patch' }}
+        run: node scripts/release-version.mjs plan
+
   checks:
     name: Core checks and frontend builds
+    needs: version
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
         with:
-          node-version: '22'
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
           cache: npm
+      - name: Apply planned version
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: node scripts/release-version.mjs sync "$RELEASE_VERSION"
       - run: npm ci
       - name: Types, locales, atlas, interactions and both frontend builds
         run: npm run ci:check
 
   windows:
     name: Windows installer
-    needs: checks
+    needs: [version, checks]
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
         with:
-          node-version: '22'
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
           cache: npm
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
+      - name: Apply planned version
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: node scripts/release-version.mjs sync "$env:RELEASE_VERSION"
       - run: npm ci
       - run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
       - run: npm run client:build
-      - uses: actions/upload-artifact@v4
+      - name: Record checksum and build information
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: node scripts/publish-release.mjs assets
+      - uses: actions/upload-artifact@v7
         with:
-          name: Human-Atlas-Windows-x64-test
-          path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+          name: Human-Atlas-${{ needs.version.outputs.version }}-Windows-x64
+          path: |
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/SHA256SUMS
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/BUILD-REPORT.md
           if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+
+  release:
+    name: Publish versioned Windows release
+    if: needs.version.outputs.release == 'true' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: [version, checks, windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v8
+        with:
+          name: Human-Atlas-${{ needs.version.outputs.version }}-Windows-x64
+          path: release-assets
+      - name: Commit version, tag and publish complete release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+          VERSION_BUMP: ${{ inputs.bump || 'patch' }}
+        run: node scripts/publish-release.mjs publish
