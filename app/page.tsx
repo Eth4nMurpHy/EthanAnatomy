@@ -397,7 +397,7 @@ export default function Home() {
       <div className="vignette" />
       <header className="app-header">
         <button className="brand" onClick={goHome} aria-label={t("Go to homepage")}>
-          <span className="brand-mark"><Activity size={24} strokeWidth={1.7} /></span>
+          <span className="brand-mark"><img src={staticAssetUrl("/branding/256x256.png")} width={40} height={40} alt="" /></span>
           <span className="brand-copy"><strong>{t("Anatolume")}</strong><small>{t("A new perspective on anatomy")}</small></span>
           <span className="brand-edition">3D</span>
         </button>

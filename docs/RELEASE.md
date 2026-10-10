@@ -29,9 +29,9 @@
 
 ```sh
 # 发布下一个补丁版本
-gh workflow run ci.yml --repo isunky/human-atlas --ref main -f bump=patch
+gh workflow run ci.yml --repo isunky/Anatolume --ref main -f bump=patch
 # 发布下一个次版本
-gh workflow run ci.yml --repo isunky/human-atlas --ref main -f bump=minor
+gh workflow run ci.yml --repo isunky/Anatolume --ref main -f bump=minor
 ```
 
 ## 一个发布包含什么
@@ -48,7 +48,7 @@ gh workflow run ci.yml --repo isunky/human-atlas --ref main -f bump=minor
    - `src-tauri/Cargo.lock`（只改本项目包版本）
 
 5. 发布前校验所有平台产物的版本、源码和运行来源；缺失平台或校验失败阻止发布。先创建草稿 Release，上传完整资源后才公开发布。
-6. Release 完成后，将同一次构建的 Web 页面部署到 [GitHub Pages](https://isunky.github.io/human-atlas/)。Web 的 `version.json` 可用于核对版本和源码。
+6. Release 完成后，将同一次构建的 Web 页面部署到 [GitHub Pages](https://isunky.github.io/Anatolume/)。Web 的 `version.json` 可用于核对版本和源码。
 
 发布附件：
 

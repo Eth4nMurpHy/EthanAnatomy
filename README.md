@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/branding/anatolume-logo-v1.png" width="420" alt="层知 Anatolume：分层人体与 A 字母标志">
+
 # 层知 · Anatolume
 
 **看见身体，理解每一层。**
@@ -13,7 +15,7 @@
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-31554D?style=flat-square)](LICENSE)
 [![Data: CC BY 4.0](https://img.shields.io/badge/Data-CC_BY_4.0-31554D?style=flat-square)](public/ATTRIBUTION.md)
 
-**[在线体验](https://human-atlas-seven.vercel.app) · [下载客户端](https://github.com/isunky/human-atlas/releases) · [开发文档](client/README.md)**
+**[在线体验](https://isunky.github.io/Anatolume/) · [下载客户端](https://github.com/isunky/Anatolume/releases) · [开发文档](client/README.md)**
 
 [界面预览](#界面预览) · [核心体验](#核心体验) · [开始使用](#开始使用) · [开发与构建](#开发与构建) · [开源致谢](#开源致谢)
 
@@ -67,9 +69,9 @@
 
 ## 开始使用
 
-**直接探索：** 打开 [在线演示](https://human-atlas-seven.vercel.app)，选择入口，点击模型或搜索一个结构，再试试旋转、分层与拆解。
+**直接探索：** 打开 [在线演示](https://isunky.github.io/Anatolume/)，选择入口，点击模型或搜索一个结构，再试试旋转、分层与拆解。
 
-**离线使用：** 前往 [下载页](https://github.com/isunky/human-atlas/releases)，选择对应平台的安装包。
+**离线使用：** 前往 [下载页](https://github.com/isunky/Anatolume/releases)，选择对应平台的安装包。
 
 | 平台 | 使用方式 |
 | --- | --- |
@@ -78,7 +80,7 @@
 | **网页** | 浏览器直接访问；Web ZIP 可用于自行部署。 |
 | **Android** | 暂未提供安装包，可使用网页版。 |
 
-> 应用现采用「层知 · Anatolume」。新版本发布包使用 Anatolume 文件名；历史版本仍使用旧名称，仓库地址沿用现有地址。
+> 应用与仓库现采用「层知 · Anatolume」。新版本发布包使用 Anatolume 文件名，历史版本保留原名称。
 
 <details>
 <summary><strong>安装说明与发布文件</strong></summary>
@@ -130,16 +132,16 @@
 
 前端使用 React、TypeScript 与 Three.js，桌面端使用 Tauri。网页与客户端共享界面和三维渲染逻辑，仓库已包含可用模型。
 
-[客户端开发文档](client/README.md) · [代码结构与 CI](docs/PROJECT_STRUCTURE.md) · [版本与发布指南](docs/RELEASE.md) · [CI 状态](https://github.com/isunky/human-atlas/actions/workflows/ci.yml)
+[客户端开发文档](client/README.md) · [代码结构与 CI](docs/PROJECT_STRUCTURE.md) · [版本与发布指南](docs/RELEASE.md) · [CI 状态](https://github.com/isunky/Anatolume/actions/workflows/ci.yml)
 
 <details>
 <summary><strong>快速开始</strong> · 本地运行与网页构建</summary>
 
-需要 **Node.js 22.18 或更新版本**。仓库地址暂时沿用原名称。
+需要 **Node.js 22.18 或更新版本**。
 
 ```sh
-git clone https://github.com/isunky/human-atlas.git
-cd human-atlas
+git clone https://github.com/isunky/Anatolume.git
+cd Anatolume
 npm ci
 npm run dev
 ```
@@ -150,7 +152,7 @@ npm run dev
 npm run build
 ```
 
-静态产物位于 `dist/`，支持根目录与子目录部署。Web ZIP 解压后需通过 HTTP/HTTPS 服务器访问。GitHub Pages 地址为 <https://isunky.github.io/human-atlas/>；Vercel 使用 Vite、`npm ci`、`npm run build` 和 `dist` 输出目录，配置见 [`vercel.json`](vercel.json)。
+静态产物位于 `dist/`，支持根目录与子目录部署。Web ZIP 解压后需通过 HTTP/HTTPS 服务器访问。GitHub Pages 地址为 <https://isunky.github.io/Anatolume/>；Vercel 使用 Vite、`npm ci`、`npm run build` 和 `dist` 输出目录，配置见 [`vercel.json`](vercel.json)。
 
 </details>
 
@@ -215,7 +217,7 @@ GitHub Actions 自动检查、构建各平台发布包并部署 GitHub Pages。`
 
 </details>
 
-欢迎通过 [Issues](https://github.com/isunky/human-atlas/issues) 或 [Pull requests](https://github.com/isunky/human-atlas/pulls) 改进项目。交互反馈请附复现步骤与运行环境；术语修正请附源 ID、建议名称及参考来源。代码提交前运行 `npm run ci:check`，涉及 Rust 时检查格式，界面改动同步更新截图。
+欢迎通过 [Issues](https://github.com/isunky/Anatolume/issues) 或 [Pull requests](https://github.com/isunky/Anatolume/pulls) 改进项目。交互反馈请附复现步骤与运行环境；术语修正请附源 ID、建议名称及参考来源。代码提交前运行 `npm run ci:check`，涉及 Rust 时检查格式，界面改动同步更新截图。
 
 <details>
 <summary><strong>English overview</strong></summary>
@@ -224,9 +226,9 @@ GitHub Actions 自动检查、构建各平台发布包并部署 GitHub Pages。`
 
 Explore **2,234 selectable meshes**, **15 anatomical systems**, and **3,432 named concepts** from the BodyParts3D adult male reference anatomy. Use the web app or download an offline desktop client for Windows x64 and macOS Intel / Apple Silicon. Language preferences and recently explored structures are saved locally.
 
-[Try online](https://human-atlas-seven.vercel.app) · [Download](https://github.com/isunky/human-atlas/releases) · [Developer guide](client/README.md)
+[Try online](https://isunky.github.io/Anatolume/) · [Download](https://github.com/isunky/Anatolume/releases) · [Developer guide](client/README.md)
 
-The application is named **层知** in Chinese and **Anatolume** in English. New release packages use Anatolume filenames; historical releases and repository URLs retain their original names.
+The application is named **层知** in Chinese and **Anatolume** in English. The repository and new release packages use Anatolume; historical releases retain their original names.
 
 Based on [Human Atlas by ashemag](https://github.com/ashemag/human-atlas). Application code is licensed under [MIT](LICENSE); BodyParts3D data is licensed under **CC BY 4.0**, with credits and adaptations in [ATTRIBUTION.md](public/ATTRIBUTION.md). Chinese terminology and added learning content have not been professionally reviewed. This project is for education and exploration, not clinical use.
 

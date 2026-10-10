@@ -127,7 +127,7 @@ try {
   assert.ok(path.basename(resolved).startsWith('anatolume-release-'));
   fs.rmSync(resolved, {recursive: true, force: true});
 }
-assert.equal(staticAssetUrl('/models/atlas.json', './', 'https://isunky.github.io/human-atlas/'), 'https://isunky.github.io/human-atlas/models/atlas.json');
+assert.equal(staticAssetUrl('/models/atlas.json', './', 'https://isunky.github.io/Anatolume/'), 'https://isunky.github.io/Anatolume/models/atlas.json');
 assert.equal(staticAssetUrl('/models/model.bin.gz', '/', 'https://example.com/'), 'https://example.com/models/model.bin.gz');
 assert.equal(staticAssetUrl('/models/atlas.json', './', 'http://tauri.localhost/'), 'http://tauri.localhost/models/atlas.json');
 console.log('Verified SemVer increments, five synchronized version files, tag ordering, retry reuse, PR isolation, portable/Web ZIP contents, platform provenance and all asset checksums.');
