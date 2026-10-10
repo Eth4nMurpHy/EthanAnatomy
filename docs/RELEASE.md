@@ -54,10 +54,10 @@ gh workflow run ci.yml --repo isunky/human-atlas --ref main -f bump=minor
 
 | 文件 | 使用方式 |
 | --- | --- |
-| `Human-Atlas_X.Y.Z_x64-setup.exe` | Windows x64 安装版；缺少 WebView2 时联网下载运行时 |
-| `Human-Atlas_X.Y.Z_Windows-x64-portable.zip` | 解压运行 Human-Atlas.exe；需要已安装 WebView2；设置仍保存在本机用户目录 |
-| `Human-Atlas_X.Y.Z_macOS-universal.dmg` | macOS 11+，兼容 Intel 和 Apple Silicon；拖入 Applications |
-| `Human-Atlas_X.Y.Z_Web.zip` | 解压部署到 HTTP/HTTPS 静态服务器，支持根目录和子目录 |
+| `Anatolume_X.Y.Z_x64-setup.exe` | Windows x64 安装版；缺少 WebView2 时联网下载运行时 |
+| `Anatolume_X.Y.Z_Windows-x64-portable.zip` | 解压运行 Anatolume.exe；需要已安装 WebView2；设置仍保存在本机用户目录 |
+| `Anatolume_X.Y.Z_macOS-universal.dmg` | macOS 11+，兼容 Intel 和 Apple Silicon；拖入 Applications |
+| `Anatolume_X.Y.Z_Web.zip` | 解压部署到 HTTP/HTTPS 静态服务器，支持根目录和子目录 |
 | `SHA256SUMS` | 四个发布包的 SHA256 校验值 |
 | `BUILD-REPORT.md` | 版本、源码、构建运行、平台要求及 SHA256 |
 

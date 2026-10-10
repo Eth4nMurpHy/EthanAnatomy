@@ -20,6 +20,6 @@ pub fn run() {
             Ok(())
         })
         .run(tauri::generate_context!())
-        .expect("Could not start Human Atlas");
+        .expect("Could not start Anatolume");
 }
 use tauri::Manager;

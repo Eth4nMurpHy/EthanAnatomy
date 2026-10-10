@@ -4,7 +4,7 @@ import {gzipSync} from 'node:zlib';
 import {decodeModelResponse} from '../app/core/model-download.ts';
 import {readVersions} from './release-version.mjs';
 
-const sample = new TextEncoder().encode('Human Atlas · 心脏');
+const sample = new TextEncoder().encode('Anatolume · 心脏');
 const gzip = gzipSync(sample);
 const original = globalThis.DecompressionStream;
 for (const native of [true, false]) {

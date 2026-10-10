@@ -134,7 +134,7 @@ jobs:
       - name: Verify universal architectures and ad-hoc signature
         shell: bash
         run: |
-          app="src-tauri/target/universal-apple-darwin/release/bundle/macos/Human Atlas.app"
+          app="src-tauri/target/universal-apple-darwin/release/bundle/macos/Anatolume.app"
           executable="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")"
           binary="$app/Contents/MacOS/$executable"
           archs="$(lipo -archs "$binary")"

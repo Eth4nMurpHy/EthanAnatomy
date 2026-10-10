@@ -6,8 +6,10 @@ const normalizedTerms = new Map(
 );
 
 export type Locale = "zh-CN" | "en";
+// Stable keys preserve preferences when upgrading to Anatolume.
 export const LANGUAGE_STORAGE_KEY = "human-atlas.language";
 export const UI_ZH: Record<string, string> = {
+  Anatolume: "层知",
   "Go to homepage": "返回首页",
   "A new perspective on anatomy": "换个视角，认识人体",
   "Main navigation": "主导航",

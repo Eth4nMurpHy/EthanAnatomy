@@ -1,7 +1,16 @@
 import { isTauri } from "@tauri-apps/api/core";
+import { version } from "../../package.json";
 
 export function runtimeInfo() {
-  return { native: isTauri(), version: "0.1.0" };
+  return { native: isTauri(), version };
+}
+
+export async function setAppTitle(title: string) {
+  document.title = title;
+  if (isTauri()) {
+    const { getCurrentWindow } = await import("@tauri-apps/api/window");
+    await getCurrentWindow().setTitle(title);
+  }
 }
 
 export async function openExternal(url: string) {

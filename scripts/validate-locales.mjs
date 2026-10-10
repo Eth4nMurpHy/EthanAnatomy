@@ -31,6 +31,8 @@ for (const [english, chinese] of Object.entries(UI_ZH)) {
   assert.deepEqual([...english.matchAll(/\{(\w+)\}/g)].map(m=>m[1]).sort(), [...chinese.matchAll(/\{(\w+)\}/g)].map(m=>m[1]).sort());
 }
 assert.equal(text('Show only {name}', 'zh-CN', {name:'心脏'}), '仅显示心脏');
+assert.equal(text('Anatolume', 'zh-CN'), '层知');
+assert.equal(text('Anatolume', 'en'), 'Anatolume');
 for (const name of ['app/page.tsx','app/scene.tsx']) {
   const source = ts.createSourceFile(name, fs.readFileSync(new URL(`../${name}`, import.meta.url), 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   const visit = node => {
@@ -38,7 +40,7 @@ for (const name of ['app/page.tsx','app/scene.tsx']) {
       assert.ok(UI_ZH[node.arguments[0].text], `Missing UI string: ${node.arguments[0].text}`);
     }
     if (ts.isJsxText(node) && /[a-z]/i.test(node.text)) {
-      assert.ok(['Human Atlas','BodyParts3D','English','3D'].includes(node.text.trim()), `Untranslated JSX text: ${node.text.trim()}`);
+      assert.ok(['BodyParts3D','English','3D'].includes(node.text.trim()), `Untranslated JSX text: ${node.text.trim()}`);
     }
     ts.forEachChild(node, visit);
   };

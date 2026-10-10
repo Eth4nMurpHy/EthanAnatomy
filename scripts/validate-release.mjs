@@ -19,7 +19,7 @@ assert.throws(() => nextVersion('1.2.65535'));
 readVersions();
 
 const temporaryParent = fs.realpathSync(os.tmpdir());
-const root = fs.mkdtempSync(path.join(temporaryParent, 'human-atlas-release-'));
+const root = fs.mkdtempSync(path.join(temporaryParent, 'anatolume-release-'));
 const git = args => execFileSync('git', args, {cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']}).trim();
 try {
   for (const file of versionFiles) {
@@ -77,9 +77,10 @@ try {
   const native = path.join(root, 'src-tauri/target/x86_64-pc-windows-msvc/release');
   const dmg = path.join(root, 'src-tauri/target/universal-apple-darwin/release/bundle/dmg');
   for (const folder of [native + '/bundle/nsis', dmg, root + '/public', root + '/dist/models']) fs.mkdirSync(folder, {recursive: true});
-  fs.writeFileSync(native + '/bundle/nsis/Human Atlas_' + version + '_x64-setup.exe', 'Fixture installer');
-  fs.writeFileSync(native + '/human-atlas.exe', 'Fixture portable executable');
-  fs.writeFileSync(dmg + '/Human Atlas_' + version + '_universal.dmg', 'Fixture disk image');
+  fs.writeFileSync(native + '/bundle/nsis/Anatolume_' + version + '_x64-setup.exe', 'Fixture installer');
+  fs.writeFileSync(native + '/anatolume.exe', 'Fixture portable executable');
+  fs.writeFileSync(dmg + '/Anatolume_' + version + '_universal.dmg', 'Fixture disk image');
+  fs.writeFileSync(dmg + '/Human Atlas_0.1.0_universal.dmg', 'Stale cached bundle must not enter the release');
   fs.writeFileSync(root + '/public/ATTRIBUTION.md', 'Fixture attribution');
   fs.writeFileSync(root + '/LICENSE', 'Fixture license');
   fs.writeFileSync(root + '/dist/index.html', '<html>Fixture Web build</html>');
@@ -88,7 +89,7 @@ try {
   for (const platform of ['windows', 'macos', 'web']) prepareAssets({...options, platform});
   assert.deepEqual(combineAssets(options), [...Object.values(assetNames(version)).flat(), 'SHA256SUMS', 'BUILD-REPORT.md']);
   const portable = unzipSync(fs.readFileSync(path.join(directory, assetNames(version).windows[1])));
-  assert.equal(strFromU8(portable['Human-Atlas.exe']), 'Fixture portable executable');
+  assert.equal(strFromU8(portable['Anatolume.exe']), 'Fixture portable executable');
   assert.ok(strFromU8(portable['README.txt']).includes('WebView2'));
   assert.ok(portable['ATTRIBUTION.md'] && portable.LICENSE);
   const web = unzipSync(fs.readFileSync(path.join(directory, assetNames(version).web[0])));
@@ -123,7 +124,7 @@ try {
   // Remove only this test's freshly-created directory inside the resolved temp parent.
   const resolved = fs.realpathSync(root);
   assert.equal(path.dirname(resolved), temporaryParent);
-  assert.ok(path.basename(resolved).startsWith('human-atlas-release-'));
+  assert.ok(path.basename(resolved).startsWith('anatolume-release-'));
   fs.rmSync(resolved, {recursive: true, force: true});
 }
 assert.equal(staticAssetUrl('/models/atlas.json', './', 'https://isunky.github.io/human-atlas/'), 'https://isunky.github.io/human-atlas/models/atlas.json');

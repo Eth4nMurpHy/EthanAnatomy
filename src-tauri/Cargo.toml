@@ -1,5 +1,5 @@
 [package]
-name = "human-atlas"
+name = "anatolume"
 version = "0.1.4"
 description = "Offline bilingual anatomy explorer"
 authors = ["isunky"]
@@ -7,7 +7,7 @@ edition = "2021"
 license = "MIT"
 
 [lib]
-name = "human_atlas_lib"
+name = "anatolume_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

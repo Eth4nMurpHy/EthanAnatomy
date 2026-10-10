@@ -8,12 +8,12 @@ import {parseVersion, readVersions, repositoryRoot} from './release-version.mjs'
 
 const platforms = ['windows', 'macos', 'web'];
 export const assetNames = version => ({
-  windows: [`Human-Atlas_${version}_x64-setup.exe`, `Human-Atlas_${version}_Windows-x64-portable.zip`],
-  macos: [`Human-Atlas_${version}_macOS-universal.dmg`],
-  web: [`Human-Atlas_${version}_Web.zip`],
+  windows: [`Anatolume_${version}_x64-setup.exe`, `Anatolume_${version}_Windows-x64-portable.zip`],
+  macos: [`Anatolume_${version}_macOS-universal.dmg`],
+  web: [`Anatolume_${version}_Web.zip`],
 });
 const digest = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-const readme = version => `Human Atlas ${version}\n\n`;
+const readme = version => `Anatolume ${version}\n\n`;
 
 function archiveTree(directory, prefix = '', entries = {}) {
   for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
@@ -32,16 +32,16 @@ export function prepareAssets({platform, version, source, runUrl, root = reposit
   const names = assetNames(version)[platform];
   if (platform === 'windows') {
     const binaryDirectory = path.join(root, 'src-tauri/target/x86_64-pc-windows-msvc/release');
-    fs.copyFileSync(path.join(binaryDirectory, `bundle/nsis/Human Atlas_${version}_x64-setup.exe`), path.join(directory, names[0]));
+    fs.copyFileSync(path.join(binaryDirectory, `bundle/nsis/Anatolume_${version}_x64-setup.exe`), path.join(directory, names[0]));
     fs.writeFileSync(path.join(directory, names[1]), zipSync({
-      'Human-Atlas.exe': fs.readFileSync(path.join(binaryDirectory, 'human-atlas.exe')),
-      'README.txt': strToU8(readme(version) + 'Windows x64 portable edition / Windows x64 便携版\n\n解压后运行 Human-Atlas.exe，无需安装程序。离线模型已内嵌。\n需要已安装 Microsoft Edge WebView2 Runtime；缺少时请先安装官方运行时。\nDownload: https://developer.microsoft.com/microsoft-edge/webview2/\n本版本不内置 WebView2，浏览记录和语言设置保存在本机用户目录，不随 ZIP 迁移。\n程序未签名。\n'),
+      'Anatolume.exe': fs.readFileSync(path.join(binaryDirectory, 'anatolume.exe')),
+      'README.txt': strToU8(readme(version) + 'Windows x64 portable edition / Windows x64 便携版\n\n解压后运行 Anatolume.exe，无需安装程序。离线模型已内嵌。\n需要已安装 Microsoft Edge WebView2 Runtime；缺少时请先安装官方运行时。\nDownload: https://developer.microsoft.com/microsoft-edge/webview2/\n本版本不内置 WebView2，浏览记录和语言设置保存在本机用户目录，不随 ZIP 迁移。\n程序未签名。\n'),
       'ATTRIBUTION.md': fs.readFileSync(path.join(root, 'public/ATTRIBUTION.md')),
       'LICENSE': fs.readFileSync(path.join(root, 'LICENSE')),
     }, {level: 6}));
   } else if (platform === 'macos') {
     const bundle = path.join(root, 'src-tauri/target/universal-apple-darwin/release/bundle/dmg');
-    const images = fs.readdirSync(bundle).filter(name => name.endsWith('.dmg'));
+    const images = fs.readdirSync(bundle).filter(name => name === `Anatolume_${version}_universal.dmg`);
     assert.equal(images.length, 1, 'Expected exactly one universal macOS DMG');
     fs.copyFileSync(path.join(bundle, images[0]), path.join(directory, names[0]));
   } else {
@@ -92,7 +92,7 @@ export function combineAssets({version, directory, source}) {
   const checksums = receipts.flatMap(receipt => receipt.assets.map(asset => `${asset.sha256}  ${asset.name}`)).join('\n') + '\n';
   fs.writeFileSync(path.join(directory, 'SHA256SUMS'), checksums);
   fs.writeFileSync(path.join(directory, 'BUILD-REPORT.md'), [
-    `# Human Atlas ${version} · Windows / macOS / Web`, '',
+    `# Anatolume ${version} · Windows / macOS / Web`, '',
     `- Version: ${version}`, `- Source commit: ${receipts[0].source}`, `- Workflow: ${receipts[0].runUrl}`, '',
     'All platforms passed core checks and were built from the same source and version.', '',
     '| Platform | Package | Requirements |', '| --- | --- | --- |',

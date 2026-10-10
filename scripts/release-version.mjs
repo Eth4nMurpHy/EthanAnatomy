@@ -27,7 +27,7 @@ export function nextVersion(current, bump = 'patch') {
 }
 
 const cargoPackage = /(^\[package\]\r?\n(?:(?!\r?\n\[)[\s\S])*?^version\s*=\s*")([^"]+)(")/m;
-const cargoLockedPackage = /(\[\[package\]\]\r?\nname = "human-atlas"\r?\nversion = ")([^"]+)(")/;
+const cargoLockedPackage = /(\[\[package\]\]\r?\nname = "anatolume"\r?\nversion = ")([^"]+)(")/;
 
 export function readVersions(root = repositoryRoot) {
   const read = name => fs.readFileSync(path.join(root, name), 'utf8');

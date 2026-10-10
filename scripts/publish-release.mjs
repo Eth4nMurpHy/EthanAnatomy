@@ -50,7 +50,7 @@ function publish(version) {
     git(['config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com']);
     git(['add', '--', ...versionFiles]);
     git(['commit', '-m', `chore(release): ${tag}`, '-m', `Release-Source: ${source}\nRelease-Run: ${runId}\nRelease-Bump: ${bump}`]);
-    git(['tag', '-a', tag, '-m', `Human Atlas ${tag}`]);
+    git(['tag', '-a', tag, '-m', `Anatolume ${tag}`]);
     // An atomic, non-force push prevents a version commit without its tag and
     // refuses to replace any main update that arrived while we were building.
     git(['push', '--atomic', 'origin', 'HEAD:refs/heads/main', `refs/tags/${tag}`]);
@@ -72,14 +72,14 @@ function publish(version) {
     `## Windows / macOS / Web · ${version}`, '',
     `自动版本发布，源码：${source}。`, '',
     '- Windows 安装版：下载 x64-setup.exe，按当前用户安装。缺少 WebView2 时会联网下载运行时。',
-    '- Windows 便携版：解压 Windows-x64-portable.zip，运行 Human-Atlas.exe。需要已安装 WebView2，设置保存在本机用户目录。',
-    '- macOS：下载 universal.dmg，将 Human Atlas 拖入 Applications。支持 macOS 11+ 的 Intel 与 Apple Silicon。',
+    '- Windows 便携版：解压 Windows-x64-portable.zip，运行 Anatolume.exe。需要已安装 WebView2，设置保存在本机用户目录。',
+    '- macOS：下载 universal.dmg，将 Anatolume 拖入 Applications。支持 macOS 11+ 的 Intel 与 Apple Silicon。',
     '- Web：解压 Web.zip 后部署到静态 HTTP/HTTPS 服务器，支持子目录；不要直接双击 index.html。', '',
     '桌面模型随包提供。Windows 程序未签名；macOS 使用 ad-hoc 签名，尚未经过 Apple 公证，首次打开可能需要在隐私与安全性中允许。',
     '中文术语为待审校草稿。附件提供全平台 SHA256SUMS 与 BUILD-REPORT.md。', '',
   ].join('\n'));
   if (!release) {
-    run('gh', ['release', 'create', tag, '--repo', repository, '--verify-tag', '--draft', '--title', `Human Atlas ${tag}`,
+    run('gh', ['release', 'create', tag, '--repo', repository, '--verify-tag', '--draft', '--title', `Anatolume ${tag}`,
       '--notes-file', notes, '--generate-notes', ...(parseVersion(version)[0] === 0 ? ['--prerelease', '--latest=false'] : ['--latest'])]);
   }
   run('gh', ['release', 'upload', tag, '--repo', repository, ...assetNames.map(name => path.join(assetsDirectory, name)), '--clobber']);
@@ -88,7 +88,7 @@ function publish(version) {
   assert.ok(assetNames.every(name => uploadedNames.has(name)), 'Uploaded asset names differ from the checksum file');
   run('gh', ['release', 'edit', tag, '--repo', repository, '--draft=false']);
   complete();
-  summary(`Published [Human Atlas ${tag}](https://github.com/${repository}/releases/tag/${tag}) with Windows installer/portable, macOS universal, Web, SHA256 and build report.`);
+  summary(`Published [Anatolume ${tag}](https://github.com/${repository}/releases/tag/${tag}) with Windows installer/portable, macOS universal, Web, SHA256 and build report.`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

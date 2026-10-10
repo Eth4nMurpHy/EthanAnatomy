@@ -52,7 +52,7 @@
 
 </details>
 
-<sub>截图来自当前源码界面，仍显示旧名称 Human Atlas；程序内名称将在后续更新。在线演示与已发布安装包的界面以各自版本为准。</sub>
+<sub>截图来自更名后的真实应用界面。在线演示与已发布安装包的界面以各自版本为准。</sub>
 
 ## 核心体验
 
@@ -78,19 +78,19 @@
 | **网页** | 浏览器直接访问；Web ZIP 可用于自行部署。 |
 | **Android** | 暂未提供安装包，可使用网页版。 |
 
-> **更名进度：** README 已采用「层知 · Anatolume」。现有仓库地址、程序界面与发布包仍沿用 Human Atlas，下载时请按旧名称查找。
+> 应用现采用「层知 · Anatolume」。新版本发布包使用 Anatolume 文件名；历史版本仍使用旧名称，仓库地址沿用现有地址。
 
 <details>
 <summary><strong>安装说明与发布文件</strong></summary>
 
 | 文件 | 说明 |
 | --- | --- |
-| `Human-Atlas_<版本号>_x64-setup.exe` | Windows 安装版，按当前用户安装。 |
-| `Human-Atlas_<版本号>_Windows-x64-portable.zip` | Windows 便携版，解压运行 `Human-Atlas.exe`。 |
-| `Human-Atlas_<版本号>_macOS-universal.dmg` | macOS 通用安装包。 |
-| `Human-Atlas_<版本号>_Web.zip` | 完整静态页面与模型，部署后通过 HTTP/HTTPS 访问。 |
+| `Anatolume_<版本号>_x64-setup.exe` | Windows 安装版，按当前用户安装。 |
+| `Anatolume_<版本号>_Windows-x64-portable.zip` | Windows 便携版，解压运行 `Anatolume.exe`。 |
+| `Anatolume_<版本号>_macOS-universal.dmg` | macOS 通用安装包。 |
+| `Anatolume_<版本号>_Web.zip` | 完整静态页面与模型，部署后通过 HTTP/HTTPS 访问。 |
 
-- **Windows：** 需要 WebView2。已安装运行时时可离线安装；缺少运行时时，安装程序会联网下载。便携版需要事先安装运行时。安装后从开始菜单启动 **Human Atlas**。
+- **Windows：** 需要 WebView2。已安装运行时时可离线安装；缺少运行时时，安装程序会联网下载。便携版需要事先安装运行时。安装后从开始菜单启动 **Anatolume**。
 - **macOS：** 当前使用 ad-hoc 签名，尚未经过 Apple 公证；首次打开可能需要在“系统设置 → 隐私与安全性”中允许。
 - **安装提示：** Windows 测试版尚未签名，可能显示未知发布者提示。每个自动发布的版本提供 `SHA256SUMS` 和 `BUILD-REPORT.md`。
 - **离线范围：** 桌面模型随包提供；查看外部数据来源和参考资料需要联网。语言偏好与最近探索记录保存在本机。
@@ -226,7 +226,7 @@ Explore **2,234 selectable meshes**, **15 anatomical systems**, and **3,432 name
 
 [Try online](https://human-atlas-seven.vercel.app) · [Download](https://github.com/isunky/human-atlas/releases) · [Developer guide](client/README.md)
 
-The README now uses the new name. Existing application screens, release filenames and repository URLs still use **Human Atlas** while the rename is in progress.
+The application is named **层知** in Chinese and **Anatolume** in English. New release packages use Anatolume filenames; historical releases and repository URLs retain their original names.
 
 Based on [Human Atlas by ashemag](https://github.com/ashemag/human-atlas). Application code is licensed under [MIT](LICENSE); BodyParts3D data is licensed under **CC BY 4.0**, with credits and adaptations in [ATTRIBUTION.md](public/ATTRIBUTION.md). Chinese terminology and added learning content have not been professionally reviewed. This project is for education and exploration, not clinical use.
 

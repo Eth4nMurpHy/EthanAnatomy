@@ -16,7 +16,7 @@ import {
   LANGUAGE_STORAGE_KEY,
   type Locale,
 } from "../client/i18n";
-import { openExternal, runtimeInfo } from "../client/platform";
+import { openExternal, runtimeInfo, setAppTitle } from "../client/platform";
 import { registerAtlasTools } from "./core/agent-tools";
 import { staticAssetUrl } from "./core/static-asset";
 import { anatomySearchIndex, matchedSearchAlias, type SearchEntry } from "./core/anatomy-search";
@@ -102,6 +102,8 @@ export default function Home() {
   const sn = (system: (typeof SYSTEMS)[number]) => systemName(system.id, system.name, locale);
   useEffect(() => {
     document.documentElement.lang = locale;
+    const title = locale === "zh-CN" ? "层知 · Anatolume — 三维人体图谱" : "Anatolume — 3D Anatomy Explorer";
+    void setAppTitle(title).catch(() => { /* The browser title remains available if the native bridge is unavailable. */ });
     try {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, locale);
     } catch {
@@ -396,7 +398,7 @@ export default function Home() {
       <header className="app-header">
         <button className="brand" onClick={goHome} aria-label={t("Go to homepage")}>
           <span className="brand-mark"><Activity size={24} strokeWidth={1.7} /></span>
-          <span className="brand-copy"><strong>Human Atlas</strong><small>{t("A new perspective on anatomy")}</small></span>
+          <span className="brand-copy"><strong>{t("Anatolume")}</strong><small>{t("A new perspective on anatomy")}</small></span>
           <span className="brand-edition">3D</span>
         </button>
         <nav className="primary-nav" aria-label={t("Main navigation")}>
