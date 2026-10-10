@@ -1,6 +1,6 @@
 [package]
 name = "human-atlas"
-version = "0.1.0"
+version = "0.1.1"
 description = "Offline bilingual anatomy explorer"
 authors = ["isunky"]
 edition = "2021"
