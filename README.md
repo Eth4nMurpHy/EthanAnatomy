@@ -157,6 +157,24 @@ npm run build
 </details>
 
 <details>
+<summary><strong>Cloudflare Pages</strong> · 连接 GitHub 自动构建</summary>
+
+在 Cloudflare Pages 连接 `isunky/Anatolume`，生产分支选择 `main`：
+
+| 设置 | 值 |
+| --- | --- |
+| 框架 | React (Vite) |
+| 根目录 | 留空，使用仓库根目录 |
+| 构建命令 | `npm ci && npm run build:pages` |
+| 输出目录 | `dist` |
+| 环境变量 | `SKIP_DEPENDENCY_INSTALL=1`，生产与预览均设置 |
+| Node | `.node-version` 已指定 `24` |
+
+专用构建验证压缩模型和 Pages 文件限制，生成版本与源码记录。后续推送自动构建，详见 [Cloudflare Pages 配置指南](docs/CLOUDFLARE_PAGES.md)。
+
+</details>
+
+<details>
 <summary><strong>桌面构建、验证与发布</strong></summary>
 
 Windows 构建还需要 **Rust MSVC 工具链、Visual Studio C++ Build Tools、Windows SDK 与 WebView2**。

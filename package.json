@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 3016 --strictPort",
     "build": "vite build",
+    "build:pages": "vite build --mode pages && node scripts/prepare-pages.mjs",
     "build:vercel": "vite build",
     "check": "tsc --noEmit",
     "build:client": "vite build --mode client",

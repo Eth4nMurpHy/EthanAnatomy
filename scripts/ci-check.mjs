@@ -11,6 +11,7 @@ for (const script of [
   "validate:atlas",
   "validate:interactions",
   "build",
+  "build:pages",
   "build:client",
   "validate:client",
 ]) {

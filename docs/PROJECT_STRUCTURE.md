@@ -21,6 +21,8 @@
 | `scripts/release-version.mjs` | SemVer 规划、重试复用与五个版本文件同步 |
 | `scripts/release-assets.mjs` | Windows 安装/便携、macOS、Web 打包和平台来源/校验合并 |
 | `scripts/publish-release.mjs` | 原子版本提交/标签与全平台 Release 发布 |
+| `scripts/prepare-pages.mjs` | Cloudflare Pages 模型/文件限制检查与版本来源记录 |
+| `wrangler.toml` / `.node-version` | Pages 输出目录、兼容日期与 Node 版本 |
 
 数据与交互模块不创建 WebGL 上下文。渲染模块不管理 React 状态；资源由场景创建并统一释放。模型 ID、源数据和已有 UI 保持不变。模型转换、压缩与检查脚本继续放在 `scripts/`。
 
@@ -41,8 +43,9 @@ npm run ci:check
 4. `validate:atlas`：模型映射与二进制数据。
 5. `validate:interactions`：布局与交互契约。
 6. `build`：网页构建。
-7. `build:client`：客户端前端构建。
-8. `validate:client`：解压异常、打包资产、版本一致性和 Windows 配置。
+7. `build:pages`：Cloudflare Pages 构建、压缩模型与文件限制检查。
+8. `build:client`：客户端前端构建。
+9. `validate:client`：解压异常、打包资产、版本一致性和 Windows 配置。
 
 ## GitHub Actions
 

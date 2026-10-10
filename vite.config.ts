@@ -11,12 +11,12 @@ export default defineConfig(({ mode }) => ({
   publicDir: path("./public"),
   plugins: [
     react(),
-    ...(mode === "client"
+    ...(["client", "pages"].includes(mode)
       ? [
           {
-            name: "client-compressed-models",
+            name: "compressed-models",
             async closeBundle() {
-              const directory = path("./dist-client/models");
+              const directory = path(mode === "client" ? "./dist-client/models" : "./dist/models");
               for (const filename of await readdir(directory)) {
                 if (filename.endsWith(".bin")) await unlink(`${directory}/${filename}`);
               }
