@@ -23,8 +23,6 @@
 
 **[下载客户端](https://github.com/isunky/Anatolume/releases) · [开发文档](client/README.md)**
 
-由 **[Sunky](https://www.sunky.net)** 持续开发与维护 · [关于作者](#关于作者) · 致敬开源
-
 [界面预览](#界面预览) · [核心体验](#核心体验) · [开始使用](#开始使用) · [开发与构建](#开发与构建) · [开源致谢](#开源致谢)
 
 </div>
