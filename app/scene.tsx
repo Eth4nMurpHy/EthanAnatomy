@@ -83,7 +83,7 @@ export default function AnatomyScene({
       return;
     }
     renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 768 ? 1.5 : 2));
-    renderer.setClearColor("#f2f3f3");
+    renderer.setClearColor("#f3f6f5");
     renderer.outputColorSpace = T.SRGBColorSpace;
     renderer.toneMapping = T.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.12;
@@ -129,8 +129,8 @@ export default function AnatomyScene({
     rim.position.set(2, 2, -3);
     scene.add(rim);
     const ground = new T.Mesh(
-      new T.CircleGeometry(30, 96),
-      new T.MeshStandardMaterial({ color: 0xd5d9dc, roughness: 1 }),
+      new T.CircleGeometry(0.76, 96),
+      new T.MeshStandardMaterial({ color: 0xe7eee9, roughness: 1, transparent: true, opacity: 0.25 }),
     );
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -0.019;
@@ -360,26 +360,14 @@ export default function AnatomyScene({
     const fit = (view: string, extent = 0) => {
       camera.clearViewOffset();
       controls.maxDistance = 40;
+      // The scene now occupies the space between the tool panels. Fit its own
+      // viewport rather than reserving space for controls inside a full-screen canvas.
       const aspect = camera.aspect,
-        mobile = el.clientWidth < 768,
-        normalDistance = mobile
-          ? Math.max(
-              4.5,
-              (1.8 * el.clientHeight) /
-                Math.max(160, el.clientHeight - 350) /
-                (2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2))),
-            )
-          : 4;
-      const reservedHeight = mobile ? 350 : 270;
-      const availableAspect = Math.max(
-        0.35,
-        (el.clientWidth - (mobile ? 40 : 340)) / Math.max(160, el.clientHeight - reservedHeight),
-      );
+        normalDistance = Math.max(1.95, 1.05 / aspect) /
+          (2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2))) * 1.12;
       const atlasDistance =
-        (Math.max(packingHeight, packingWidth / availableAspect) /
-          (2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2)))) *
-        (el.clientHeight / Math.max(160, el.clientHeight - reservedHeight)) *
-        1.08;
+        Math.max(packingHeight, packingWidth / aspect) /
+          (2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2))) * 1.12;
       const distance = T.MathUtils.lerp(normalDistance, Math.max(0.2, atlasDistance), extent);
       if (extent > 0.8) view = "front";
       const direction =
@@ -390,11 +378,7 @@ export default function AnatomyScene({
             : view === "side"
               ? new T.Vector3(1, 0.02, 0)
               : new T.Vector3(0.35, 0.06, 1).normalize();
-      controls.target.set(
-        extent > 0.1 && el.clientWidth > 767 ? -packingWidth * 0.12 : 0,
-        extent > 0.1 || mobile ? 0.85 : 0.68,
-        0,
-      );
+      controls.target.set(0, 0.85, 0);
       camera.position.copy(controls.target).addScaledVector(direction, distance);
       controls.update();
       dirty = true;
@@ -614,28 +598,17 @@ export default function AnatomyScene({
           if (!box.isEmpty()) {
             const center = box.getCenter(new T.Vector3()),
               size = box.getSize(new T.Vector3());
-            const w = el.clientWidth,
-              h = el.clientHeight,
-              mobile = w < 768,
-              landscape = w > h && h <= 600;
-            let left = 20,
-              right = w - 20,
-              top = mobile ? 175 : 110,
-              bottom = h - 170;
+            const w = el.clientWidth, h = el.clientHeight;
+            const sceneRect = el.getBoundingClientRect();
+            let left = 16, right = w - 16, top = 16, bottom = h - 16;
             if (s.inspectorOpen) {
               const sheet = document.querySelector(".detail-sheet")?.getBoundingClientRect();
-              if (landscape) {
-                right = (sheet?.left ?? w - 319) - 16;
-                top = 100;
-                bottom = h - 125;
-              } else if (mobile) {
-                const header = document.querySelector(".identity")?.getBoundingClientRect();
-                top = (header?.bottom ?? 94) + 16;
-                bottom = (sheet?.top ?? h * 0.58 - 139) - 16;
-              } else {
-                right = (sheet?.left ?? w - 354) - 16;
-                const layers = document.querySelector(".layers-panel")?.getBoundingClientRect();
-                left = layers?.width ? layers.right + 16 : 25;
+              if (sheet && sheet.left < sceneRect.right && sheet.right > sceneRect.left && sheet.top < sceneRect.bottom && sheet.bottom > sceneRect.top) {
+                if (innerWidth < 768) {
+                  bottom = Math.max(80, sheet.top - sceneRect.top - 16);
+                } else {
+                  right = Math.max(140, sheet.left - sceneRect.left - 16);
+                }
               }
             }
             const availableWidth = Math.max(150, right - left),

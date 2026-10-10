@@ -25,6 +25,15 @@ import {
   Activity,
   ArrowUpRight,
   ArrowLeft,
+  ArrowRight,
+  Bone,
+  BookOpen,
+  Compass,
+  Heart,
+  MousePointer2,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PersonStanding,
   ChevronDown,
   ChevronRight,
   Focus,
@@ -122,16 +131,44 @@ export default function Home() {
     return () => observer.disconnect();
   }, [detailElement]);
   const searchInput = useRef<HTMLInputElement>(null);
-  const [recentIds, setRecentIds] = useState<string[]>([]);
+  const highlightedConcept = useRef<Concept | undefined>(undefined);
+  const [recentIds, setRecentIds] = useState<string[]>(() => {
+    try {
+      const saved: unknown = JSON.parse(localStorage.getItem("human-atlas.recent") ?? "[]");
+      return Array.isArray(saved) ? saved.filter((id): id is string => typeof id === "string").slice(0, 6) : [];
+    } catch { return []; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem("human-atlas.recent", JSON.stringify(recentIds)); } catch { /* Storage is optional. */ }
+  }, [recentIds]);
+  const [screen, setScreen] = useState<"home" | "explore">(() => location.hash === "#explore" ? "explore" : "home");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  useEffect(() => {
+    history.replaceState(null, "", `${location.pathname}${location.search}${screen === "explore" ? "#explore" : ""}`);
+  }, [screen]);
   const [atlas, setAtlas] = useState<Atlas | null>(null),
     [state, setState] = useState(initial),
     [progress, setProgress] = useState(0),
     [error, setError] = useState(""),
-    [panel, setPanel] = useState<"layers" | "search" | null>(null),
+    [panel, setPanel] = useState<"layers" | "search" | null>(() => innerWidth >= 768 ? "layers" : null),
     [details, setDetails] = useState(false),
     [about, setAbout] = useState(false),
     [query, setQuery] = useState(""),
     [chosen, setChosen] = useState<Concept | null>(null);
+  useEffect(() => {
+    const compact = matchMedia("(max-width: 767px)");
+    const resizePanels = () => {
+      if (compact.matches) {
+        setPanel(null);
+        setDetailCompact(true);
+      } else {
+        setPanel((current) => current ?? "layers");
+        setDetailCompact(false);
+      }
+    };
+    compact.addEventListener("change", resizePanels);
+    return () => compact.removeEventListener("change", resizePanels);
+  }, []);
   useEffect(() => {
     const abort = new AbortController();
     setProgress(0);
@@ -159,8 +196,11 @@ export default function Home() {
         !(e.target instanceof HTMLTextAreaElement)
       ) {
         e.preventDefault();
+        setScreen("explore");
+        setSidebarCollapsed(false);
         setPanel("search");
-        setDetails(false);
+        requestAnimationFrame(() => searchInput.current?.focus());
+        if (innerWidth < 768) setDetails(false);
       }
     };
     window.addEventListener("keydown", key);
@@ -244,12 +284,14 @@ export default function Home() {
   const remember = (id: string) =>
     setRecentIds((ids) => [id, ...ids.filter((existing) => existing !== id)].slice(0, 6));
   const choose = (c: Concept) => {
-    setDetailCompact(false);
+    setScreen("explore");
+    if (innerWidth >= 768 && innerWidth < 900) setSidebarCollapsed(true);
+    setDetailCompact(innerWidth < 768);
     remember(c.id);
     setChosen(c);
-    setState((s) => ({ ...s, selected: c.elements, isolate: false, rotate: false, focus: 0 }));
+    setState((s) => ({ ...s, selected: c.elements, isolate: true, explode: 0, rotate: false, focus: 0 }));
     setDetails(true);
-    setPanel(null);
+    if (innerWidth < 768) setPanel(null);
   };
   useEffect(() => {
     if (!atlas) return;
@@ -258,12 +300,14 @@ export default function Home() {
   const choosePart = (id: string) => {
     const p = parts.get(id);
     if (!p) return;
-    setDetailCompact(false);
+    setScreen("explore");
+    if (innerWidth >= 768 && innerWidth < 900) setSidebarCollapsed(true);
+    setDetailCompact(innerWidth < 768);
     remember(p.conceptId);
     setChosen({ id: p.conceptId, name: p.name, elements: [id] });
-    setState((s) => ({ ...s, selected: [id], isolate: false, rotate: false, focus: 0 }));
+    setState((s) => ({ ...s, selected: [id], rotate: false, focus: 0 }));
     setDetails(true);
-    setPanel(null);
+    if (innerWidth < 768) setPanel(null);
   };
   const toggle = (id: SystemId) => {
     setDetails(false);
@@ -279,7 +323,8 @@ export default function Home() {
     setState((s) => ({ ...initial, visible: DEFAULT_VISIBLE, reset: s.reset + 1 }));
     setChosen(null);
     setDetails(false);
-    setPanel(null);
+    setPanel(innerWidth >= 768 ? "layers" : null);
+    setQuery("");
   };
   const resetView = () => {
     setState((s) => ({
@@ -291,8 +336,28 @@ export default function Home() {
     }));
   };
   const openPanel = (next: "layers" | "search") => {
+    setScreen("explore");
+    setSidebarCollapsed(false);
+    if (innerWidth < 768) setDetails(false);
+    setPanel((p) => innerWidth < 768 && p === next ? null : next);
+    if (next === "search") requestAnimationFrame(() => searchInput.current?.focus());
+  };
+  const startExploring = (visible?: SystemId[]) => {
+    setScreen("explore");
+    setSidebarCollapsed(false);
+    setPanel(innerWidth >= 768 ? "layers" : null);
+    if (visible) {
+      setChosen(null);
+      setDetails(false);
+      setState((s) => ({ ...initial, visible, reset: s.reset + 1 }));
+    }
+  };
+  const goHome = () => {
+    setScreen("home");
     setDetails(false);
-    setPanel((p) => (p === next ? null : next));
+    setPanel(null);
+    setState((s) => ({ ...initial, visible: DEFAULT_VISIBLE, reset: s.reset + 1 }));
+    setChosen(null);
   };
   const returnToOverview = () => {
     setChosen(null);
@@ -308,7 +373,7 @@ export default function Home() {
     }));
   };
   return (
-    <main className="studio" onClick={externalClick}>
+    <main className={`studio mode-${screen} ${panel === "search" ? "is-search" : ""} ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${details && selectedParts.length ? "has-inspector" : ""} ${detailWide ? "inspector-wide" : ""}`} onClick={externalClick}>
       {atlas && (
         <AnatomyScene
           atlas={atlas}
@@ -327,23 +392,19 @@ export default function Home() {
         />
       )}
       <div className="vignette" />
-      <header className="identity">
-        <div className="eyebrow">
-          <span className="status-dot" /> {t("INTERACTIVE ANATOMY")}
-        </div>
-        <h1>
-          Human Atlas
-          <Badge variant="outline" className="edition">
-            3D
-          </Badge>
-        </h1>
-        <div className="identity-meta">
-          {atlas ? atlas.parts.length.toLocaleString() : "2,234"} {t("modeled pieces")}{" "}
-          <span>·</span> BodyParts3D
-        </div>
-      </header>
+      <header className="app-header">
+        <button className="brand" onClick={goHome} aria-label={t("Go to homepage")}>
+          <span className="brand-mark"><Activity size={24} strokeWidth={1.7} /></span>
+          <span className="brand-copy"><strong>Human Atlas</strong><small>{t("A new perspective on anatomy")}</small></span>
+          <span className="brand-edition">3D</span>
+        </button>
+        <nav className="primary-nav" aria-label={t("Main navigation")}>
+          <button className={screen === "home" ? "active" : ""} onClick={goHome} aria-current={screen === "home" ? "page" : undefined}>{t("Home")}</button>
+          <button className={screen === "explore" ? "active" : ""} onClick={() => startExploring()} aria-current={screen === "explore" ? "page" : undefined}>{t("3D atlas")}</button>
+          <button onClick={() => setAbout(true)}>{t("Learning guide")}</button>
+        </nav>
       <div className="language-choice">
-        <label htmlFor="atlas-language">{t("Language")}</label>
+        <label className="sr-only" htmlFor="atlas-language">{t("Language")}</label>
         <select
           id="atlas-language"
           value={locale}
@@ -353,20 +414,15 @@ export default function Home() {
           <option value="en">English</option>
         </select>
       </div>
-      {linkError && (
-        <div className="link-status glass" role="status">
-          {t("Could not open this link.")}
-        </div>
-      )}
       <nav className="top-actions" aria-label={t("Explorer panels")}>
         <Button
           variant="ghost"
-          className={panel === "search" ? "active" : ""}
+          className={`header-search ${panel === "search" && screen === "explore" ? "active" : ""}`}
           onClick={() => openPanel("search")}
           aria-label={t("Search anatomy")}
         >
           <Search size={18} />
-          <span>{t("Find a structure")}</span>
+          <span>{t("Search anatomy")}</span>
           <kbd>/</kbd>
         </Button>
         <Button
@@ -374,28 +430,69 @@ export default function Home() {
           className="icon-button"
           aria-label={t("About this atlas")}
           onClick={() => {
-            setDetails(false);
-            setPanel(null);
             setAbout(true);
           }}
         >
           <Info size={18} />
         </Button>
       </nav>
+      </header>
+      {linkError && <div className="link-status glass" role="status">{t("Could not open this link.")}</div>}
+      {screen === "home" && (
+        <section className="home-screen" aria-label={t("Home")}>
+          <div className="home-intro">
+            <div className="home-eyebrow"><span className="status-dot" />{t("YOUR INTERACTIVE ANATOMY ATLAS")}</div>
+            <h1>{t("See the body.")}<br /><span>{t("Understand every layer.")}</span></h1>
+            <p className="home-description">{t("An entire world beneath the surface. Explore human anatomy in 3D, uncover its systems, and get to know each structure at your own pace.")}</p>
+            <div className="home-cta">
+              <Button className="start-button" onClick={() => startExploring(DEFAULT_VISIBLE)}>{t("Start exploring")}<ArrowRight size={19} /></Button>
+              <button className="guide-button" onClick={() => setAbout(true)}><BookOpen size={18} />{t("How to explore")}</button>
+            </div>
+            <div className="home-stats">
+              <div><strong>{atlas?.parts.length.toLocaleString() ?? "2,234"}</strong><span>{t("Individual structures")}</span></div>
+              <div><strong>{SYSTEMS.length}</strong><span>{t("Anatomical systems")}</span></div>
+              <div><strong>{atlas?.concepts.length.toLocaleString() ?? "3,432"}</strong><span>{t("Named concepts")}</span></div>
+            </div>
+            <div className="home-paths">
+              <div className="home-section-title"><span>{t("Choose a starting point")}</span><small>{t("One click to discover")}</small></div>
+              {([
+                { icon: PersonStanding, title: "Whole body", description: "See how everything connects", visible: DEFAULT_VISIBLE, tone: "teal" },
+                { icon: Bone, title: "Bones & support", description: "Explore the body's framework", visible: ["skeletal"] as SystemId[], tone: "sand" },
+                { icon: Heart, title: "Internal organs", description: "Look beneath the surface", visible: ORGAN_SYSTEMS, tone: "rose" },
+              ]).map(({ icon: Icon, title, description, visible, tone }) => (
+                <button className={`home-path ${tone}`} key={title} onClick={() => startExploring(visible)}>
+                  <span className="path-icon"><Icon size={22} strokeWidth={1.6} /></span>
+                  <span><strong>{t(title)}</strong><small>{t(description)}</small></span><ArrowUpRight size={18} />
+                </button>
+              ))}
+            </div>
+            {recentIds.length > 0 && atlas && <div className="home-recent"><span>{t("Recently explored")}</span><div>{recentIds.flatMap((id) => searchIndex.get(id)?.concept ?? []).slice(0, 3).map((c) => <button key={c.id} onClick={() => choose(c)}>{dn(c.name)}<ArrowUpRight size={12} /></button>)}</div></div>}
+          </div>
+          <div className="hero-label"><span className="status-dot" />{t("LIVE 3D MODEL")}<span>BodyParts3D</span></div>
+          <div className="hero-model-caption"><span>{t("ADULT HUMAN · MALE")}</span><p><MousePointer2 size={14} />{t("Drag to rotate. Click to discover.")}</p></div>
+        </section>
+      )}
+      {screen === "explore" && <>
+      <div className="scene-heading">
+        <button className="sidebar-toggle" onClick={() => setSidebarCollapsed((v) => !v)} aria-label={sidebarCollapsed ? t("Show exploration tools") : t("Hide exploration tools")} title={sidebarCollapsed ? t("Show exploration tools") : t("Hide exploration tools")}>
+          {sidebarCollapsed ? <PanelLeftOpen size={19} /> : <PanelLeftClose size={19} />}
+        </button>
+        <div><h1>{t("3D anatomy explorer")}</h1><span>{t("Click a structure to discover more")}</span></div>
+        <span className="scene-status"><span className="status-dot" />{layerStatus}</span>
+      </div>
+      <aside className={`workspace-sidebar glass ${panel ? "mobile-open" : ""}`} aria-label={t("Exploration tools")}>
+        <div className="sidebar-head"><span><Compass size={17} />{t("Exploration tools")}</span><button className="mobile-only icon-button" onClick={() => setPanel(null)} aria-label={t("Close exploration tools")}><X size={18} /></button><span className="desktop-only sidebar-subtitle">{t("Explore at your own pace")}</span></div>
+        <div className="sidebar-tabs">
+          <button className={panel !== "search" ? "active" : ""} aria-pressed={panel !== "search"} onClick={() => setPanel("layers")}><Layers3 size={16} />{t("Systems")}</button>
+          <button className={panel === "search" ? "active" : ""} aria-pressed={panel === "search"} onClick={() => setPanel("search")}><Search size={16} />{t("Find a structure")}<kbd>/</kbd></button>
+        </div>
+      {panel !== "search" && (
       <section
-        className={`layers-panel glass ${panel === "layers" ? "mobile-open" : ""}`}
+        className="layers-panel"
         aria-label={t("Anatomical layers")}
       >
         <div className="panel-heading">
-          <span>{t("Systems")}</span>
-          <Button
-            variant="ghost"
-            className="mobile-only icon-button"
-            onClick={() => setPanel(null)}
-            aria-label={t("Close systems")}
-          >
-            <X size={18} />
-          </Button>
+          <span>{t("Anatomical layers")}</span>
           <Badge
             variant="secondary"
             className="desktop-only small-number"
@@ -407,24 +504,24 @@ export default function Home() {
         <div className="layer-presets">
           <Button
             variant="ghost"
-            aria-pressed={allLayers}
-            onClick={() => applyLayers(activeSystems.map((s) => s.id))}
+            aria-pressed={matchesLayers(DEFAULT_VISIBLE)}
+            onClick={() => applyLayers(DEFAULT_VISIBLE)}
           >
-            {t("All")}
+            <PersonStanding size={17} />{t("Whole body")}
           </Button>
           <Button
             variant="ghost"
             aria-pressed={skeletonLayers}
             onClick={() => applyLayers(["skeletal"])}
           >
-            {t("Skeleton")}
+            <Bone size={17} />{t("Skeleton")}
           </Button>
           <Button
             variant="ghost"
             aria-pressed={organLayers}
             onClick={() => applyLayers(ORGAN_SYSTEMS)}
           >
-            {t("Organs")}
+            <Heart size={17} />{t("Organs")}
           </Button>
         </div>
         <div className="layer-context">
@@ -445,13 +542,13 @@ export default function Home() {
               className={`system-row ${state.visible.includes(s.id) ? "enabled" : ""}`}
               key={s.id}
             >
-              <div className="system-name" title={sn(s)}>
+              <button className="system-name" title={sn(s)} onClick={() => toggle(s.id)} aria-label={t(state.visible.includes(s.id) ? "Hide {name}" : "Show {name}", { name: sn(s) })}>
                 <span className="system-dot" style={{ background: s.color }} />
                 <span className="system-label">{sn(s)}</span>
                 <span className="system-count" title={t("{count} pieces", { count: counts[s.id] })}>
                   {counts[s.id]}
                 </span>
-              </div>
+              </button>
               <Button
                 variant="ghost"
                 className="system-only"
@@ -482,14 +579,15 @@ export default function Home() {
           </Button>
         </div>
       </section>
+      )}
       {panel === "search" && (
-        <section className="search-panel glass" aria-label={t("Find a structure")}>
+        <section className="search-panel" aria-label={t("Find a structure")}>
           <div className="panel-heading">
             <span>{t("Find a structure")}</span>
             <Button
               variant="ghost"
               className="icon-button"
-              onClick={() => setPanel(null)}
+              onClick={() => { setPanel(innerWidth >= 768 ? "layers" : null); setQuery(""); }}
               aria-label={t("Close search")}
             >
               <X size={18} />
@@ -498,12 +596,17 @@ export default function Home() {
           <Combobox<Concept>
             items={results}
             inline
+            autoHighlight
+            onItemHighlighted={(value) => { highlightedConcept.current = value; }}
             value={null}
             onValueChange={(value) => {
               if (value) choose(value);
             }}
             inputValue={query}
-            onInputValueChange={setQuery}
+            onInputValueChange={(value) => {
+              highlightedConcept.current = undefined;
+              setQuery(value);
+            }}
             itemToStringLabel={(c) => dn(c.name)}
             filter={null}
           >
@@ -515,7 +618,14 @@ export default function Home() {
               showTrigger={false}
               aria-describedby="search-help"
               onKeyDown={(event) => {
-                if (event.key === "Escape") setPanel(null);
+                if (event.key === "Escape") setPanel(innerWidth >= 768 ? "layers" : null);
+                if (event.key === "Enter" && !event.nativeEvent.isComposing) {
+                  const concept = results.find((item) => item.id === highlightedConcept.current?.id) ?? results[0];
+                  if (concept) {
+                    event.preventDefault();
+                    choose(concept);
+                  }
+                }
               }}
               endAdornment={
                 query && (
@@ -536,7 +646,7 @@ export default function Home() {
               }
             />
             <p id="search-help" className="search-help">
-              {t("Select a result to highlight it and open details.")}
+              {t("Select a result to inspect it on its own.")}
               <br />
               {t("Left and right refer to the body's own sides.")}
             </p>
@@ -620,6 +730,7 @@ export default function Home() {
           </p>
         </section>
       )}
+      </aside>
       <nav className="view-controls glass" aria-label={t("Camera controls")}>
         {(["three-quarter", "front", "side", "back"] as View[]).map((v, i) => (
           <Button
@@ -634,7 +745,7 @@ export default function Home() {
             title={t(`${v} view`)}
             aria-label={t(`${v} view`)}
           >
-            <span>{(locale === "zh-CN" ? ["¾", "正", "侧", "背"] : ["¾", "F", "S", "B"])[i]}</span>
+            <span>{t(["Oblique", "Front", "Side", "Back"][i])}</span>
           </Button>
         ))}
         <i />
@@ -647,6 +758,7 @@ export default function Home() {
           onClick={() => setState((s) => ({ ...s, rotate: !s.rotate }))}
         >
           {state.rotate ? <Pause size={17} /> : <RotateCw size={18} />}
+          <span className="rotate-label">{t("Auto rotate")}</span>
         </Button>
         <Button
           variant="ghost"
@@ -672,7 +784,7 @@ export default function Home() {
         </span>
         <span className="caption-line" />
       </div>
-      {selectedParts.length > 0 && !details && !panel && !about && (
+      {selectedParts.length > 0 && !details && !about && (
         <div
           className="selection-summary glass"
           role="group"
@@ -698,6 +810,7 @@ export default function Home() {
           </Button>
         </div>
       )}
+      {progress === 100 && visibleCount === 0 && <div className="empty-scene glass"><Layers3 size={30} /><h2>{t("No layers are visible")}</h2><p>{t("Turn on a system, or restore the whole body to keep exploring.")}</p><Button onClick={() => applyLayers(DEFAULT_VISIBLE)}>{t("Show whole body")}</Button></div>}
       <div className="bottom-dock glass">
         <Button
           variant="ghost"
@@ -710,7 +823,8 @@ export default function Home() {
         </Button>
         <div className="explode-control">
           <div className="explode-label">
-            <label id="explode-label">{t("Explode anatomy")}</label>
+            <label id="explode-label"><Layers3 size={17} />{t("Explode anatomy")}</label>
+            <div className="explode-steps">{[0, 50, 100].map((amount) => <button key={amount} aria-pressed={Math.round(state.explode * 100) === amount} onClick={() => setState((s) => ({ ...s, explode: amount / 100, view: amount > 80 ? "front" : s.view, rotate: false, focus: 0 }))}>{t(amount === 0 ? "Assemble" : amount === 50 ? "Separate" : "Inventory")}</button>)}</div>
             <output>
               {Math.round(state.explode * 100)}
               <span>%</span>
@@ -748,7 +862,9 @@ export default function Home() {
           <span>{t("Reset all")}</span>
         </Button>
       </div>
+      </>}
       <footer className="studio-footer">
+        <span className="footer-status"><span className="status-dot" />{t(runtimeInfo().native ? "Offline client" : "Web viewer")}<span className="footer-data">BodyParts3D{" · "}{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span></span>
         <span>
           {state.explode > 0.8 ? t("Drag to pan") : t("Drag to orbit")} <b>·</b>{" "}
           {t("Pinch to zoom")} <b>·</b> {t("Tap to inspect")}
@@ -756,8 +872,6 @@ export default function Home() {
         <Button
           variant="ghost"
           onClick={() => {
-            setDetails(false);
-            setPanel(null);
             setAbout(true);
           }}
         >
@@ -801,6 +915,7 @@ export default function Home() {
           initialFocus={detailTitle}
           className={`detail-sheet glass ${state.isolate ? "is-isolated" : ""} ${detailCompact ? "is-compact" : ""} ${detailWide ? "is-wide" : ""}`}
           showCloseButton={true}
+          showOverlay={false}
         >
           <div className="detail-header">
             <div className="detail-accent" style={{ background: system?.color }} />
@@ -809,6 +924,7 @@ export default function Home() {
               {dn(chosen?.name)}
             </SheetTitle>
             {locale === "zh-CN" && chosen && <p className="source-name">{chosen.name}</p>}
+            <div className="detail-mode"><Layers3 size={13} />{state.isolate ? t("Isolated selection") : t("Surrounding anatomy visible")}</div>
             <div className="detail-display-controls">
               <Button
                 variant="ghost"
@@ -909,6 +1025,7 @@ export default function Home() {
             <Button
               variant="outline"
               className={`isolate-action ${state.isolate ? "active" : ""}`}
+              aria-pressed={state.isolate}
               title={t(
                 "Isolate hides other structures; surrounding anatomy restores the current layers",
               )}
@@ -922,7 +1039,7 @@ export default function Home() {
                 }))
               }
             >
-              <Focus size={18} />
+              <Layers3 size={18} />
               {state.isolate ? t("Show surrounding anatomy") : t("Isolate structure")}
             </Button>
             <Button
@@ -939,11 +1056,19 @@ export default function Home() {
       </Sheet>
       <Sheet open={about} onOpenChange={setAbout}>
         <SheetContent closeLabel={t("Close")} className="about-sheet glass">
-          <div className="eyebrow">{t("SOURCE & SCOPE")}</div>
-          <SheetTitle className="structure-title">{t("A body, revealed.")}</SheetTitle>
+          <div className="eyebrow"><BookOpen size={15} />{t("Learning guide")}</div>
+          <SheetTitle className="structure-title">{t("From the whole body to every detail.")}</SheetTitle>
           <SheetDescription>
-            {t("Explore the adult male reference anatomy from BodyParts3D.")}
+            {t("Three simple steps to find your way around the atlas.")}
           </SheetDescription>
+          <div className="guide-steps">
+            {([
+              ["Choose your layers", "Start with the whole body, bones or organs. Toggle systems to build your own view."],
+              ["Find a structure", "Click the model or search a name. Search results open an isolated view so nothing gets in the way."],
+              ["Look a little closer", "Rotate, zoom or separate the model. Open details to learn more, then show surrounding anatomy for context."],
+            ]).map(([title, description], index) => <div className="guide-step" key={title}><span>{index + 1}</span><div><strong>{t(title)}</strong><p>{t(description)}</p></div></div>)}
+            <Button onClick={() => { setAbout(false); startExploring(); }}>{t("Open the 3D atlas")}<ArrowRight size={16} /></Button>
+          </div>
           <div className="about-copy">
             {locale === "zh-CN" && (
               <section className="reading-guide" aria-label="中文阅读指南">
@@ -971,7 +1096,7 @@ export default function Home() {
                 <details>
                   <summary>内容参考</summary>
                   <p>
-                    中文学习说明为自行编写的简要内容，解剖事实参考 OpenStax
+                    中文学习说明为自行编写的简要内容，解剖事实参考 {"OpenStax"}
                     教材，可联网查看以下页面。
                   </p>
                   {CONTENT_REFERENCES.map((reference) => (
