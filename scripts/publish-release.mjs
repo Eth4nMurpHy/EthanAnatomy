@@ -1,44 +1,12 @@
 import assert from 'node:assert/strict';
-import {createHash} from 'node:crypto';
 import {execFileSync, spawnSync} from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {git, parseVersion, readVersions, repositoryRoot, syncVersion, versionFiles} from './release-version.mjs';
+import {git, parseVersion, repositoryRoot, syncVersion, versionFiles} from './release-version.mjs';
+import {verifyAssets} from './release-assets.mjs';
 
 const run = (command, args) => execFileSync(command, args, {cwd: repositoryRoot, encoding: 'utf8'}).trim();
-const installerName = version => `Human-Atlas_${version}_x64-setup.exe`;
-
-export function createAssets({version, directory, source, runUrl}) {
-  parseVersion(version);
-  const installer = installerName(version);
-  // GitHub normalizes spaces in asset names. Name the artifact before hashing
-  // so the downloaded installer, checksum file and retry checks agree.
-  const destination = path.join(directory, installer);
-  if (!fs.existsSync(destination)) fs.renameSync(path.join(directory, `Human Atlas_${version}_x64-setup.exe`), destination);
-  const checksum = createHash('sha256').update(fs.readFileSync(path.join(directory, installer))).digest('hex');
-  fs.writeFileSync(path.join(directory, 'SHA256SUMS'), `${checksum}  ${installer}\n`);
-  fs.writeFileSync(path.join(directory, 'BUILD-REPORT.md'), [
-    `# Human Atlas ${version} · Windows x64`, '',
-    `- Version: ${version}`, `- Source commit: ${source}`, `- Workflow: ${runUrl}`, '',
-    'Built after TypeScript, localization, atlas, interaction, version and packaged-client checks passed.',
-    'Installer: NSIS, current user, bundled offline anatomy models.',
-    'Requires WebView2. A missing runtime is downloaded by the installer.',
-    'This build is unsigned; Chinese terminology is an unreviewed draft.', '',
-    `SHA256 (${installer}):`, '', '```text', checksum, '```', '',
-  ].join('\n'));
-  return checksum;
-}
-
-export function verifyAssets(version, directory) {
-  parseVersion(version);
-  const names = [installerName(version), 'SHA256SUMS', 'BUILD-REPORT.md'];
-  for (const name of names) assert.ok(fs.statSync(path.join(directory, name)).isFile(), `Release asset missing: ${name}`);
-  const actual = createHash('sha256').update(fs.readFileSync(path.join(directory, names[0]))).digest('hex');
-  assert.equal(fs.readFileSync(path.join(directory, names[1]), 'utf8').trim(), `${actual}  ${names[0]}`, 'Installer checksum does not match');
-  assert.ok(fs.readFileSync(path.join(directory, names[2]), 'utf8').includes(`Version: ${version}`), 'Build report version does not match');
-  return names;
-}
 
 function publish(version) {
   parseVersion(version);
@@ -53,8 +21,11 @@ function publish(version) {
   assert.match(repository, /^[\w.-]+\/[\w.-]+$/);
   assert.ok(['patch', 'minor', 'major'].includes(bump));
   const assetsDirectory = path.join(repositoryRoot, 'release-assets');
-  const assetNames = verifyAssets(version, assetsDirectory);
+  const assetNames = verifyAssets(version, assetsDirectory, source);
   const tag = `v${version}`;
+  const complete = () => {
+    if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, 'published=true\n');
+  };
   const summary = message => {
     console.log(message);
     if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, message + '\n');
@@ -92,16 +63,20 @@ function publish(version) {
   if (release && !release.isDraft) {
     const names = new Set(release.assets.map(asset => asset.name));
     assert.ok(assetNames.every(name => names.has(name)), 'Published release is missing expected assets');
+    complete();
     summary(`Release already complete: ${release.url}`);
     return;
   }
   const notes = path.join(assetsDirectory, 'RELEASE-NOTES.md');
   fs.writeFileSync(notes, [
-    `## Windows x64 · ${version}`, '',
+    `## Windows / macOS / Web · ${version}`, '',
     `自动版本发布，源码：${source}。`, '',
-    '下载并运行安装包即可安装。模型随包提供，按当前用户安装。',
-    '需要 WebView2；缺少运行时时安装程序会联网下载。安装包尚未签名，中文术语为待审校草稿。', '',
-    '附件包含安装包、SHA256SUMS 校验文件和 BUILD-REPORT.md 构建记录。', '',
+    '- Windows 安装版：下载 x64-setup.exe，按当前用户安装。缺少 WebView2 时会联网下载运行时。',
+    '- Windows 便携版：解压 Windows-x64-portable.zip，运行 Human-Atlas.exe。需要已安装 WebView2，设置保存在本机用户目录。',
+    '- macOS：下载 universal.dmg，将 Human Atlas 拖入 Applications。支持 macOS 11+ 的 Intel 与 Apple Silicon。',
+    '- Web：解压 Web.zip 后部署到静态 HTTP/HTTPS 服务器，支持子目录；不要直接双击 index.html。', '',
+    '桌面模型随包提供。Windows 程序未签名；macOS 使用 ad-hoc 签名，尚未经过 Apple 公证，首次打开可能需要在隐私与安全性中允许。',
+    '中文术语为待审校草稿。附件提供全平台 SHA256SUMS 与 BUILD-REPORT.md。', '',
   ].join('\n'));
   if (!release) {
     run('gh', ['release', 'create', tag, '--repo', repository, '--verify-tag', '--draft', '--title', `Human Atlas ${tag}`,
@@ -112,17 +87,12 @@ function publish(version) {
   const uploadedNames = new Set(uploaded.assets.map(asset => asset.name));
   assert.ok(assetNames.every(name => uploadedNames.has(name)), 'Uploaded asset names differ from the checksum file');
   run('gh', ['release', 'edit', tag, '--repo', repository, '--draft=false']);
-  summary(`Published [Human Atlas ${tag}](https://github.com/${repository}/releases/tag/${tag}) with installer, SHA256 and build report.`);
+  complete();
+  summary(`Published [Human Atlas ${tag}](https://github.com/${repository}/releases/tag/${tag}) with Windows installer/portable, macOS universal, Web, SHA256 and build report.`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const version = process.env.RELEASE_VERSION;
-  if (process.argv[2] === 'assets') {
-    assert.equal(readVersions(), version);
-    const directory = path.join(repositoryRoot, 'src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis');
-    createAssets({version, directory, source: process.env.GITHUB_SHA,
-      runUrl: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`});
-    console.log(`Recorded checksum and build report for ${installerName(version)}`);
-  } else if (process.argv[2] === 'publish') publish(version);
-  else throw new Error('Usage: node scripts/publish-release.mjs assets | publish');
+  if (process.argv[2] === 'publish') publish(version);
+  else throw new Error('Usage: node scripts/publish-release.mjs publish');
 }

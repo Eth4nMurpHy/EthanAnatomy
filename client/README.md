@@ -80,12 +80,24 @@ npm run ci:check
 cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
 ```
 
-GitHub Actions 先规划版本，再在 Linux 运行 `ci:check`，通过后在 Windows 检查 Rust 格式、构建安装包并生成校验文件。PR 只检查与构建；`main` 的成功发布会自动递增版本，同步 npm/Tauri/Rust 配置和锁文件，提交版本、创建标签并发布 GitHub Release。`0.x` 为测试版，手动运行可选 patch/minor/major。PR 更新会取消旧检查，main 发布按并发组串行执行，过时源码不会覆盖新的 main。规则与重试说明见 [自动版本与发布指南](../docs/RELEASE.md)。模型解压兼容原生 DecompressionStream 与 fflate 回退，拒绝截断和错误长度数据。
+GitHub Actions 先规划版本，再在 Linux 运行 `ci:check`，通过后并行构建 Windows 安装包/便携 ZIP、macOS 通用 DMG 和 Web ZIP，验证所有产物的同版本、同源码与 SHA256 后统一发布，并部署 Web 到 GitHub Pages。PR 只检查与构建；`main` 的成功发布会自动递增版本，同步 npm/Tauri/Rust 配置和锁文件，提交版本、创建标签并发布 GitHub Release。`0.x` 为测试版，手动运行可选 patch/minor/major。PR 更新会取消旧检查，main 发布按并发组串行执行，过时源码不会覆盖新的 main。规则与重试说明见 [自动版本与发布指南](../docs/RELEASE.md)。模型解压兼容原生 DecompressionStream 与 fflate 回退，拒绝截断和错误长度数据。
 
 显隐变化会压紧对应批次的绘制索引，隐藏系统不提交三角形；隔离模式仅提交选中结构，分解视图的点标记也仅绘制可见零件。选中的隐藏系统零件仍按原有规则显示。索引只在批次可见集合变化时更新，分解动画不重复上传索引。为支持恢复显示，每个批次在 CPU 保留一份原始索引；切换系统减少绘制工作，但不释放已加载模型的显存。
 
 CPU 调度按需运行：静止且相机阻尼结束后停止请求动画帧，交互、状态修改、窗口变化和分块加载会唤醒；页面隐藏时暂停。爆炸动画缓存可见零件集合与系统展开方向，仅更新可见零件的位置，选择纹理只在选择/显隐变化时上传。屏幕拾取范围在指针需要时计算并缓存，相机或位置变化后失效。
 
-## 后续平台
+## macOS 与其他平台
 
-macOS 需要在 macOS 上构建 DMG，并配置签名、公证及 Intel/Apple Silicon 验证。Android 需要 JDK、Android SDK/NDK，初始化 Tauri Android 工程，补充手机触控、返回键、生命周期与真实设备性能验证。当前未交付这两个平台安装包。
+macOS 发布采用 universal 通用 DMG，包含 Intel x64 和 Apple Silicon arm64，要求 macOS 11+。在 macOS 安装 Xcode Command Line Tools、Node 和 Rust 后执行：
+
+```sh
+rustup target add aarch64-apple-darwin x86_64-apple-darwin
+npm ci
+npm run client:build:mac
+```
+
+配置采用 ad-hoc 签名（`signingIdentity: "-"`），不需要证书即可构建；尚未经过 Apple 公证，首次打开可能需要在隐私与安全性中允许。CI 会用 `lipo` 验证双架构，并用 `codesign` 验证签名。开发者证书签名与公证仍需 Apple 账户及仓库 Secrets，参见 [Tauri 官方说明](https://v2.tauri.app/distribute/sign/macos/)。编译检查不替代两类真实 Mac 的界面验证。
+
+Windows 便携版由同一次构建的原生 EXE、使用说明和授权文件生成，无需安装程序，模型内嵌，但需要已安装 WebView2，浏览数据保存在本机用户目录。Web ZIP 可直接部署到静态 HTTP/HTTPS 服务。
+
+Android 需要 JDK、Android SDK/NDK，初始化 Tauri Android 工程，补充手机触控、返回键、生命周期与真实设备性能验证。当前未交付 Android 安装包。

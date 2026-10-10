@@ -7,6 +7,7 @@ import tailwindcss from "@tailwindcss/postcss";
 const path = (relative: string) => fileURLToPath(new URL(relative, import.meta.url));
 export default defineConfig(({ mode }) => ({
   root: path("./web"),
+  base: "./",
   publicDir: path("./public"),
   plugins: [
     react(),

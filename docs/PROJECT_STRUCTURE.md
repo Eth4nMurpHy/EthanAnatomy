@@ -19,7 +19,8 @@
 | `client/content/zh-CN.ts` | 中文阅读引导、基础知识、搜索别名与参考来源 |
 | `src-tauri/` | 原生窗口、权限与打包 |
 | `scripts/release-version.mjs` | SemVer 规划、重试复用与五个版本文件同步 |
-| `scripts/publish-release.mjs` | 安装包校验记录、原子版本提交/标签与 Release 发布 |
+| `scripts/release-assets.mjs` | Windows 安装/便携、macOS、Web 打包和平台来源/校验合并 |
+| `scripts/publish-release.mjs` | 原子版本提交/标签与全平台 Release 发布 |
 
 数据与交互模块不创建 WebGL 上下文。渲染模块不管理 React 状态；资源由场景创建并统一释放。模型 ID、源数据和已有 UI 保持不变。模型转换、压缩与检查脚本继续放在 `scripts/`。
 
@@ -49,7 +50,10 @@ npm run ci:check
 
 - `version`（Ubuntu）：从完整标签历史规划版本；main 自动 patch，手动可选 minor/major，PR 保留源版本。
 - `checks`（Ubuntu）：同步计划版本 → `npm ci` → `npm run ci:check`。
-- `windows`（Windows，依赖 checks 成功）：同步版本 → 安装 Node/Rust 和锁文件依赖 → Rust 格式检查 → NSIS 构建 → 生成校验/构建记录 → 上传带版本的 artifact。
-- `release`（Ubuntu，仅 main 且前序任务成功）：核对资源与 main 状态 → 原子推送版本提交和标签 → 将安装包、校验和构建记录完整上传后发布 Release。
+- `windows`（Windows，依赖 checks 成功）：同步版本 → 安装 Node/Rust 和锁文件依赖 → Rust 格式检查 → NSIS 构建 → 安装版和便携 ZIP 打包/来源记录 → 上传带版本的 artifact。
+- `macos`（macOS）：构建 universal DMG → 验证 Intel/Apple Silicon 架构与签名 → 上传带版本的 artifact。
+- `web`（Ubuntu）：静态构建 → Web ZIP 和来源记录 → 上传发布与 Pages artifact。
+- `pages`（Ubuntu，Release 完成后）：使用匹配版本的 Pages artifact 部署网页。
+- `release`（Ubuntu，仅 main 且前序任务成功）：校验所有平台版本/源码/SHA256 与 main 状态 → 原子推送版本提交和标签 → 将安装包、校验和构建记录完整上传后发布 Release。
 
-PR 的旧运行会被取消，main 发布不会因新运行而中途取消；队列保留最新待运行任务。main 有更新时，旧源码的发布步骤会跳过写回，避免覆盖新提交。仅 release 任务获得 `contents: write`，其余任务保持读取权限。版本提交使用 `GITHUB_TOKEN`，不会递归触发 push 工作流。完整规则见 [自动版本与发布指南](RELEASE.md)。CI 不包含真实设备操作或性能测量。
+PR 的旧运行会被取消，main 发布不会因新运行而中途取消；队列保留最新待运行任务。main 有更新时，旧源码的发布步骤会跳过写回，避免覆盖新提交。仅 release 任务获得 `contents: write`，Pages 单独获得部署和 OIDC 权限，构建任务保持读取权限。版本提交使用 `GITHUB_TOKEN`，不会递归触发 push 工作流。完整规则见 [自动版本与发布指南](RELEASE.md)。CI 不包含真实设备操作或性能测量。

@@ -4,7 +4,7 @@
 
 **看见身体。理解每一层。**
 
-交互式三维人体图谱 · 中英双语 · Windows 离线客户端
+交互式三维人体图谱 · 中英双语 · Windows / macOS 离线客户端
 
 [![React 19](https://img.shields.io/badge/React-19-1B6B5B?style=flat-square)](https://react.dev/)
 [![Three.js](https://img.shields.io/badge/Three.js-WebGL-1B6B5B?style=flat-square)](https://threejs.org/)
@@ -13,7 +13,7 @@
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-31554D?style=flat-square)](LICENSE)
 [![Data: CC BY 4.0](https://img.shields.io/badge/Data-CC_BY_4.0-31554D?style=flat-square)](public/ATTRIBUTION.md)
 
-[在线演示](https://human-atlas-seven.vercel.app) · [Windows 下载](https://github.com/isunky/human-atlas/releases) · [快速开始](#快速开始) · [开发文档](client/README.md)
+[在线演示](https://human-atlas-seven.vercel.app) · [全平台下载](https://github.com/isunky/human-atlas/releases) · [快速开始](#快速开始) · [开发文档](client/README.md)
 
 </div>
 
@@ -76,7 +76,7 @@ Human Atlas 将 BodyParts3D 的成年男性参考解剖模型变成可旋转、�
 | **连续分解** | 从完整组装过渡到分离与零件总览，可使用滑条或桌面快捷档位。 |
 | **有层次的详情** | 优先展示说明与观察提示，按需展开源信息与零件；可收起详情或加宽阅读。 |
 | **连续学习** | 首页与空搜索提供最近探索入口；语言偏好和最近结构保存在本机。 |
-| **网页与离线桌面** | 网页可静态部署；Windows 客户端随包提供模型，无需启动本地服务器。 |
+| **网页与离线桌面** | 网页可静态部署；Windows / macOS 客户端随包提供模型，无需启动本地服务器。 |
 
 ## 使用指南
 
@@ -116,13 +116,13 @@ npm run dev
 npm run build
 ```
 
-静态产物位于 `dist/`，可部署到静态托管服务。Vercel 项目选择 Vite，使用 `npm ci`、`npm run build` 和 `dist` 输出目录；仓库中的 [`vercel.json`](vercel.json) 已配置这些选项。
+静态产物位于 `dist/`，可部署到静态托管服务。每次成功发布还会生成 Web ZIP，并部署到 [GitHub Pages](https://isunky.github.io/human-atlas/)。资源路径支持根目录和子目录；下载 ZIP 后请通过 HTTP/HTTPS 服务器访问，不要直接双击 HTML。Vercel 项目选择 Vite，使用 `npm ci`、`npm run build` 和 `dist` 输出目录；仓库中的 [`vercel.json`](vercel.json) 已配置这些选项。
 
 ## Windows 客户端
 
 ### 下载与安装
 
-前往 [Windows 发布页](https://github.com/isunky/human-atlas/releases)，选择所需版本，下载并运行 x64 安装包。自动发布的文件名为 `Human-Atlas_<版本号>_x64-setup.exe`。安装完成后，从开始菜单启动 **Human Atlas**。每个自动发布的版本同时提供 `SHA256SUMS` 和 `BUILD-REPORT.md`。
+前往 [全平台发布页](https://github.com/isunky/human-atlas/releases)，选择所需版本，下载并运行 x64 安装包。自动发布的文件名为 `Human-Atlas_<版本号>_x64-setup.exe`。安装完成后，从开始菜单启动 **Human Atlas**。每个自动发布的版本同时提供 `SHA256SUMS` 和 `BUILD-REPORT.md`。
 
 | 项目 | 说明 |
 | --- | --- |
@@ -131,9 +131,12 @@ npm run build
 | WebView2 | 已安装运行时可离线安装；缺少运行时时，安装程序需要联网下载 |
 | 语言与记录 | 首次默认简体中文，顶部可切换 English；语言与最近探索保存在本机 |
 | 外部链接 | 查看数据来源和参考资料需要联网 |
-| 其他平台 | macOS、Android 尚未提供经构建与验证的安装包 |
+| Windows 便携版 | 下载 `Human-Atlas_<版本号>_Windows-x64-portable.zip`，解压运行 `Human-Atlas.exe`，需要已安装 WebView2；记录保存在本机用户目录 |
+| macOS | 下载 `Human-Atlas_<版本号>_macOS-universal.dmg`，拖入 Applications；支持 macOS 11+ 的 Intel 和 Apple Silicon |
+| Web 发布包 | `Human-Atlas_<版本号>_Web.zip`，包含完整静态页面与模型，可部署到静态服务器 |
+| Android | 暂未提供安装包 |
 
-测试版尚未签名，Windows 可能显示未知发布者提示。发布页提供的是对应版本的安装包；如需包含当前源码的界面更新，可按下方步骤构建。
+Windows 测试版尚未签名，可能显示未知发布者提示。macOS 使用 ad-hoc 签名，尚未经过 Apple 公证；首次打开可能需要在“系统设置 → 隐私与安全性”中允许。发布页提供的是对应版本的安装包；如需包含当前源码的界面更新，可按下方步骤构建。
 
 ### 从源码构建
 
@@ -177,6 +180,7 @@ src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/
 | `npm run build:client` | 构建客户端前端，输出到 `dist-client/` |
 | `npm run client:dev` | 启动 Tauri 桌面开发模式 |
 | `npm run client:build` | 构建 Windows x64 安装包 |
+| `npm run client:build:mac` | 在 macOS 构建 Intel / Apple Silicon 通用 DMG |
 | `npm run ci:check` | 执行类型、语言、模型、交互、前端构建与客户端资源检查 |
 | `npm run validate:release` | 检查自动版本递增、版本一致性、重试和安装包校验 |
 
@@ -188,7 +192,7 @@ npm run ci:check
 
 浏览器交互已检查模型选择、图层预设、搜索、隔离、视角切换、分解、空图层恢复与详情面板，覆盖桌面、390 × 844、320 × 568 和 844 × 390 等视口。真实手机的性能与多指硬件操作仍需设备验证。
 
-[GitHub Actions](.github/workflows/ci.yml) 自动完成版本规划、Linux 检查、Windows 安装包构建和发布。`main` 更新后，成功发布会递增补丁版本；手动运行可选择 `patch / minor / major`。PR 只运行检查和构建，不写回版本或发布。
+[GitHub Actions](.github/workflows/ci.yml) 自动完成版本规划、Linux 检查、Windows 安装版与便携版、macOS 通用 DMG、Web ZIP 构建和发布，并部署 Web 到 GitHub Pages。`main` 更新后，成功发布会递增补丁版本；手动运行可选择 `patch / minor / major`。PR 只运行检查和构建，不写回版本或发布。
 
 发布版本同步到 npm、Tauri 与 Rust 的五个配置/锁文件，再生成 `vX.Y.Z` 标签与 GitHub Release。`0.x` 标为测试版；主版本达到 `1` 后发布为正式版。安装包、源码标签和构建记录使用同一版本号，完整规则与手动操作见 [自动版本与发布指南](docs/RELEASE.md)。
 
@@ -207,7 +211,7 @@ client/
   platform/                # 运行环境与外部链接桥接
 components/ui/             # 可复用界面组件
 public/models/             # 模型清单、二进制与压缩资源
-src-tauri/                 # 原生窗口、权限与 Windows 打包
+src-tauri/                 # 原生窗口、权限与 Windows / macOS 打包
 scripts/                   # 数据转换、压缩与验证
 docs/                      # 架构文档与界面截图
 ```
@@ -262,7 +266,7 @@ docs/                      # 架构文档与界面截图
 
 Human Atlas is an interactive 3D anatomy explorer built with React, Three.js, and Tauri. Explore **2,234 selectable meshes**, **15 anatomical systems**, and **3,432 named concepts** from the BodyParts3D adult male reference anatomy.
 
-Rotate and select structures, toggle systems, search Chinese or English names and source IDs, isolate a structure, and move from assembled anatomy to an exploded inventory. The interface supports Chinese and English, responsive layouts, and a Windows x64 client with bundled offline models.
+Rotate and select structures, toggle systems, search Chinese or English names and source IDs, isolate a structure, and move from assembled anatomy to an exploded inventory. The interface supports Chinese and English, responsive layouts, and Windows x64 / macOS universal clients with bundled offline models. Releases include a Windows installer, portable ZIP, macOS DMG and deployable Web ZIP.
 
 For local development, use Node.js **22.18+**, run `npm ci` followed by `npm run dev`, and open <http://127.0.0.1:3016/>. Run `npm run ci:check` for project validation.
 

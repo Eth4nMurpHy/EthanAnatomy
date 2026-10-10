@@ -7,6 +7,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { createExplosionLayout } from "./core/explosion-layout";
 import { decodeModelResponse } from "./core/model-download";
+import { staticAssetUrl } from "./core/static-asset";
 import { PointerTap } from "./core/pointer-tap";
 import { SYSTEMS, type Atlas, type SceneState } from "./core/anatomy";
 import { displayName, text, type Locale } from "../client/i18n";
@@ -272,7 +273,7 @@ export default function AnatomyScene({
     const loadChunk = async (ci: number) => {
       const chunk = atlas.chunks[ci],
         compressed = !!chunk.gzip;
-      const response = await fetch(compressed ? chunk.gzip! : chunk.url, { signal: abort.signal });
+      const response = await fetch(staticAssetUrl(compressed ? chunk.gzip! : chunk.url), { signal: abort.signal });
       const buffer = await decodeModelResponse(response, chunk.bytes, compressed);
       if (disposed) return;
       const groups = new Map<string, { geometry: T.BufferGeometry; part: number }[]>();

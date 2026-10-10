@@ -18,6 +18,7 @@ import {
 } from "../client/i18n";
 import { openExternal, runtimeInfo } from "../client/platform";
 import { registerAtlasTools } from "./core/agent-tools";
+import { staticAssetUrl } from "./core/static-asset";
 import { anatomySearchIndex, matchedSearchAlias, type SearchEntry } from "./core/anatomy-search";
 import { InputGroupButton } from "@/components/ui/input-group";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -177,7 +178,7 @@ export default function Home() {
     setChosen(null);
     setDetails(false);
     setState({ ...initial, visible: DEFAULT_VISIBLE });
-    fetch("/models/atlas.json", { signal: abort.signal })
+    fetch(staticAssetUrl("/models/atlas.json"), { signal: abort.signal })
       .then((r) => {
         if (!r.ok) throw new Error("The anatomy catalogue could not be loaded.");
         return r.json();

@@ -13,6 +13,7 @@
     "build:client": "vite build --mode client",
     "client:dev": "tauri dev",
     "client:build": "tauri build --target x86_64-pc-windows-msvc --bundles nsis",
+    "client:build:mac": "tauri build --target universal-apple-darwin --bundles dmg",
     "tauri": "tauri",
     "validate:client": "node scripts/validate-client.mjs",
     "validate:locales": "node scripts/validate-locales.mjs",
