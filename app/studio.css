@@ -373,3 +373,12 @@ kbd { font-size:11px; border:1px solid #dce5df; background:#fff; padding:1px 5px
 .rotation-options span { display:flex; align-items:center; justify-content:center; gap:5px; min-height:32px; border-radius:6px; font-size:11px; color:#7b8e82; }
 .rotation-options input:checked+span { background:#fff; color:#176b58; font-weight:600; box-shadow:0 1px 4px #25483412; }
 .rotation-options input:focus-visible+span { outline:2px solid #398f78; outline-offset:1px; }
+.rotation-speed-heading { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+.rotation-speed-heading button { font-size:10px; color:#7d9185; cursor:pointer; padding:3px 0; }
+.rotation-speed-heading button:hover { color:#176b58; }
+.rotation-speed-heading output { font-size:12px; font-weight:600; color:#176b58; font-variant-numeric:tabular-nums; }
+.rotation-speed-slider { padding:10px 0; }
+.rotation-speed-slider [data-slot=slider-track] { background:#e4ece6; height:5px; }
+.rotation-speed-slider [data-slot=slider-range] { background:#438d78; }
+.rotation-speed-slider [data-slot=slider-thumb] { width:14px; height:14px; border-color:#438d78; }
+.rotation-speed-endpoints { display:flex; justify-content:space-between; font-size:10px; color:#8b9c91; }

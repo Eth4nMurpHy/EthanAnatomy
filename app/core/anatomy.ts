@@ -174,7 +174,8 @@ export interface SceneState {
   isolate: boolean;
   view: View;
   rotate: boolean;
-  rotationSpeed?: "slow" | "standard" | "fast";
+  // Multiplier of the standard orbit speed (1x).
+  rotationSpeed?: number;
   rotationDirection?: "clockwise" | "counterclockwise";
   reset: number;
 }

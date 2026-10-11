@@ -830,14 +830,12 @@ export default function Home() {
             <PopoverTitle>{t("Rotation settings")}</PopoverTitle>
             <fieldset>
               <legend>{t("Rotation speed")}</legend>
-              <div className="rotation-options">
-                {(["slow", "standard", "fast"] as const).map((speed, i) => (
-                  <label key={speed}>
-                    <input type="radio" name="rotation-speed" value={speed} checked={(state.rotationSpeed ?? "standard") === speed} onChange={() => setState((s) => ({ ...s, rotationSpeed: speed }))} />
-                    <span>{t(["Slow", "Standard", "Fast"][i])}</span>
-                  </label>
-                ))}
+              <div className="rotation-speed-heading">
+                <button type="button" onClick={() => setState((s) => ({ ...s, rotationSpeed: 1 }))} title={t("Reset rotation speed")} >{t("Standard")} 10%</button>
+                <output>{Math.round((state.rotationSpeed ?? 1) * 10)}%</output>
               </div>
+              <Slider className="rotation-speed-slider" aria-label={t("Rotation speed")} aria-valuetext={`${Math.round((state.rotationSpeed ?? 1) * 10)}%`} min={1} max={100} step={1} largeStep={10} value={[(state.rotationSpeed ?? 1) * 10]} onValueChange={(value) => setState((s) => ({ ...s, rotationSpeed: (Array.isArray(value) ? value[0] : value) / 10 }))} />
+              <div className="rotation-speed-endpoints"><span>1%</span><span>100%</span></div>
             </fieldset>
             <fieldset>
               <legend>{t("Rotation direction")}</legend>

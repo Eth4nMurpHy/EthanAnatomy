@@ -201,6 +201,7 @@ export const UI_ZH: Record<string, string> = {
   "Auto rotate": "自动旋转",
   "Rotation settings": "旋转设置",
   "Rotation speed": "旋转速度",
+  "Reset rotation speed": "恢复标准旋转速度",
   "Rotation direction": "旋转方向",
   "Slow": "慢速",
   "Standard": "标准",

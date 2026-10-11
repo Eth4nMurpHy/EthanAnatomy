@@ -766,7 +766,7 @@ export default function AnatomyScene({
         mesh.position.set(data[i * 4], data[i * 4 + 1], data[i * 4 + 2]);
       });
       controls.autoRotate = s.rotate && amount < 0.4;
-      controls.autoRotateSpeed = ({ slow: 0.3, standard: 0.65, fast: 1.3 }[s.rotationSpeed ?? "standard"]) *
+      controls.autoRotateSpeed = 0.65 * T.MathUtils.clamp(s.rotationSpeed ?? 1, 0.1, 10) *
         (s.rotationDirection === "counterclockwise" ? -1 : 1);
       if (cameraTransition) {
         const journey = cameraTransition;
@@ -800,7 +800,9 @@ export default function AnatomyScene({
           cameraTransition = null;
         }
       }
-      controls.update();
+      // Time-based orbiting keeps the slider's linear speed consistent across
+      // displays and rendering loads rather than depending on frame count.
+      controls.update(dt);
       controls.enableDamping = true;
       if (controls.autoRotate) dirty = true;
       if (dirty) {
