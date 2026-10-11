@@ -26,7 +26,7 @@ button svg,a svg { flex-shrink:0; } a { color:inherit; }
 .brand { position:relative; display:block; width:128px; height:60px; border-radius:8px; padding:0; overflow:hidden; flex-shrink:0; }
 .brand:hover { background:transparent!important; }
 /* Frame the original image's transparent margins while preserving its proportions. */
-.brand-logo { position:absolute; left:50%; top:50%; display:block; width:145%; max-width:none; height:auto; transform:translate(-50%,-50%); }
+.brand-logo { position:absolute; left:50%; top:50%; display:block; width:125%; max-width:none; height:auto; transform:translate(-50%,-50%); }
 .primary-nav { display:flex; height:100%; align-items:center; gap:6px; margin-left:26px; margin-right:auto; }
 .primary-nav button { height:100%; padding:0 16px; font-size:13px; color:#78877f; position:relative; white-space:nowrap; }
 .primary-nav button.active { color:#176b58; font-weight:600; }
