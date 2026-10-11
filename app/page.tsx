@@ -33,7 +33,6 @@ import {
   Bone,
   BookOpen,
   Compass,
-  Check,
   Download,
   Eye,
   EyeOff,
@@ -187,15 +186,6 @@ export default function Home() {
     [about, setAbout] = useState(false),
     [query, setQuery] = useState(""),
     [chosen, setChosen] = useState<Concept | null>(null);
-  const [locatedFocus, setLocatedFocus] = useState<number | null>(null);
-  useEffect(() => {
-    setLocatedFocus(null);
-  }, [model, state.selected, state.isolate, state.reset]);
-  useEffect(() => {
-    if (locatedFocus === null) return;
-    const timer = window.setTimeout(() => setLocatedFocus(null), 1600);
-    return () => window.clearTimeout(timer);
-  }, [locatedFocus]);
   useEffect(() => {
     const compact = matchMedia("(max-width: 767px)");
     const resizePanels = () => {
@@ -468,7 +458,6 @@ export default function Home() {
             if (n === 100) setError("");
           }}
           onError={setError}
-          onFocusComplete={setLocatedFocus}
         />
       )}
       <div className="vignette" />
@@ -1105,12 +1094,11 @@ export default function Home() {
               disabled={progress < 100 || !!error}
               title={t(state.isolate ? "Return to the surrounding view and highlight this structure" : "Center the camera on the selection; keep surrounding layers")}
               onClick={() => {
-                setLocatedFocus(null);
                 setState((s) => ({ ...s, isolate: false, focusContext: s.isolate || !!(s.focusContext && s.focus), focus: (s.focus ?? 0) + 1, rotate: false }));
               }}
             >
-              {locatedFocus === state.focus ? <Check size={18} /> : <Focus size={18} />}
-              <span aria-live="polite">{t(locatedFocus === state.focus ? "Structure centered" : "Locate structure")}</span>
+              <Focus size={18} />
+              {t("Locate structure")}
             </Button>
             <Button
               variant="outline"

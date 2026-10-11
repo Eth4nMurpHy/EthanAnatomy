@@ -19,7 +19,6 @@ interface Props {
   onSelect: (id: string) => void;
   onProgress: (n: number) => void;
   onError: (s: string) => void;
-  onFocusComplete?: (focus: number) => void;
 }
 export default function AnatomyScene({
   atlas,
@@ -28,15 +27,12 @@ export default function AnatomyScene({
   onSelect,
   onProgress,
   onError,
-  onFocusComplete,
 }: Props) {
   const host = useRef<HTMLDivElement>(null),
     latest = useRef(state),
     select = useRef(onSelect),
     language = useRef(locale),
     wake = useRef<() => void>(() => {});
-  const focusComplete = useRef(onFocusComplete);
-  focusComplete.current = onFocusComplete;
   useEffect(() => {
     wake.current();
   }, [state]);
@@ -113,7 +109,6 @@ export default function AnatomyScene({
       center: T.Vector3;
       offset: T.Vector2;
       destinationOffset: T.Vector2;
-      focus: number;
     } | null = null;
     let surroundingView: { position: T.Vector3; target: T.Vector3; aspect: number } | null = null;
     camera.position.set(1.4, 1.05, 3.6);
@@ -698,7 +693,6 @@ export default function AnatomyScene({
                 center,
                 offset,
                 destinationOffset,
-                focus: s.focus,
               };
             } else {
               cameraTransition = null;
@@ -706,7 +700,6 @@ export default function AnatomyScene({
               controls.target.copy(center);
               camera.position.copy(destination);
               controls.update();
-              if (s.focus && !moving) focusComplete.current?.(s.focus);
             }
             dirty = true;
           }
@@ -761,7 +754,6 @@ export default function AnatomyScene({
         dirty = true;
         if (progress === 1) {
           cameraTransition = null;
-          focusComplete.current?.(journey.focus);
         }
       }
       controls.update();
