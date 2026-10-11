@@ -40,32 +40,38 @@
 
 搜索结构、调整图层、观察模型和阅读说明，在同一个探索界面完成。选中心脏等内部结构后，可单独查看，也可恢复周围结构，理解它们的位置关系。
 
-[![层知图谱界面：心脏搜索、三维人体模型与结构详情](docs/screenshots/explorer.jpg)](docs/screenshots/explorer.jpg)
+[![层知图谱界面：系统列表、三维人体模型与结构显隐](docs/screenshots/explorer.jpg)](docs/screenshots/explorer.jpg)
 
 <details>
-<summary><strong>查看更多界面</strong> · 主页、结构详情与手机视图</summary>
+<summary><strong>查看更多界面</strong> · 主页、女性模型、结构详情、分离模式与手机视图</summary>
 
 ### 主页
 
-从全身、骨骼、器官三个入口开始，或继续查看最近探索的结构。
+从全身、骨骼、器官三个入口开始，也可通过右上角“随机探索”发现一个完整器官。
 
-[![层知主页：实时人体模型、探索入口与最近浏览](docs/screenshots/home.jpg)](docs/screenshots/home.jpg)
+[![层知主页：实时人体模型、探索入口与随机探索](docs/screenshots/home.jpg)](docs/screenshots/home.jpg)
 
 ### 女性模型
 
 页眉可切换女性实验性学习模型，探索子宫、卵巢、输卵管与乳腺等结构。
 
-[![女性模型主页：模型切换、来源标识与模型统计](docs/screenshots/female.png)](docs/screenshots/female.png)
+[![女性模型主页：模型切换、来源标识与模型统计](docs/screenshots/female.jpg)](docs/screenshots/female.jpg)
+
+### 分离模式
+
+按系统实际宽度紧凑排开，保留各系统内部的结构关系；继续拖动分解滑动条，可进入零件总览。
+
+[![分离模式：骨骼、肌肉与主要系统分开观察](docs/screenshots/separated.jpg)](docs/screenshots/separated.jpg)
 
 ### 结构详情与手机视图
 
 <p align="center">
-  <a href="docs/screenshots/structure-detail.jpg"><img src="docs/screenshots/structure-detail.jpg" width="320" alt="结构详情：说明、定位与周围结构切换"></a>
+  <a href="docs/screenshots/structure-detail.jpg"><img src="docs/screenshots/structure-detail.jpg" width="640" alt="结构详情：说明、平滑定位与周围结构切换"></a>
   &nbsp;
-  <a href="docs/screenshots/home-mobile.jpg"><img src="docs/screenshots/home-mobile.jpg" width="320" alt="手机主页：人体模型、开始探索按钮和模型统计"></a>
+  <a href="docs/screenshots/home-mobile.jpg"><img src="docs/screenshots/home-mobile.jpg" width="260" alt="手机主页：人体模型、开始探索按钮和模型统计"></a>
 </p>
 
-原有界面截图以两倍尺寸采集，桌面截图为 2560 × 1800，手机主页对应 390 × 844 视口；新增女性模型截图为 1280 × 900。点击图片可查看原图。
+截图于 2026-10-12 从本地运行的真实应用重新采集，保留浏览器原始 JPEG 输出，避免二次压缩。桌面以两倍显示密度采集，原图为 2560 × 1800，手机主页为 390 × 844。点击图片可查看原图。
 
 </details>
 
@@ -76,11 +82,13 @@
 | 功能 | 可以做什么 |
 | --- | --- |
 | **切换男性与女性模型** | 在页眉选择模型，分别保存最近探索的结构；女性模型提供乳腺与女性生殖器官。 |
-| **逐层看清身体** | 在全身、骨骼与器官视图间切换，显示、隐藏或仅看某个人体系统。 |
-| **从任意角度观察** | 旋转、缩放并点击模型；快速切换正面、侧面、背面与斜视。 |
+| **逐层看清身体** | 在全身、骨骼与器官视图间切换；展开系统列表、筛选下级结构，单独控制每项显隐，或仅看某个系统。 |
+| **从任意角度观察** | 旋转、缩放并点击模型；平滑切换正面、侧面、背面与斜视，自动旋转支持方向与连续速度调节。 |
 | **中英双语查找** | 搜索中文、英文、俗称或源 ID，例如“心脏”“大腿骨”“FMA7088”。 |
-| **聚焦一个结构** | 单独观察目标，再恢复周围组织，对照位置与关系。 |
-| **拆开理解层次** | 从完整人体平滑过渡到分离视图与零件总览。 |
+| **聚焦一个结构** | 单独观察目标；点击“定位到结构”平滑回到周围视图并高亮目标，对照位置与关系。 |
+| **随机器官探索** | 在右上角点击“随机探索”，自动选取完整器官、单独显示并聚焦；详情中的“再换一个”可继续探索。 |
+| **统一隐私模式** | 在“关于与致谢”中开启，默认视图和随机探索隐藏敏感结构；主动搜索或从列表打开系统、部件仍可查看。底部图标可查看状态并进入设置。 |
+| **拆开理解层次** | 从完整人体平滑过渡到紧凑的系统分离视图，再进入零件总览。 |
 | **随时继续探索** | 本机保存语言偏好和最近查看的结构，支持网页与离线桌面使用。 |
 
 ## 开始使用
@@ -127,6 +135,10 @@
 | 选择搜索结果 | `↑` / `↓` 移动高亮，`Enter` 选择。 |
 | 退出搜索 | 按 `Esc`，或点击“关闭搜索”。 |
 | 对照周围组织 | 选中结构后点击“显示周围结构”。 |
+| 定位当前结构 | 点击“定位到结构”，平滑移动镜头；单独查看时恢复周围视图并高亮目标。 |
+| 随机探索 | 点击右上角“随机探索”，或在详情中点击“再换一个”。 |
+| 调整自动旋转 | 点击自动旋转旁的下拉箭头，选择方向并拖动速度滑动条；100% 为最高速度。 |
+| 隐私设置 | 点击底部隐私图标，或打开“关于与致谢”。鼠标悬浮在图标上可查看当前设置说明。 |
 | 回到默认视图 | 点击底部“恢复全部”。 |
 
 左右均以**人体自身**为准。更多操作说明见 [客户端文档](client/README.md)。
@@ -261,6 +273,8 @@ GitHub Actions 将 CI 与发布分开：提交和 PR 自动运行测试及 Web�
 <summary><strong>English overview</strong></summary>
 
 **Anatolume (层知)** is an interactive 3D anatomy explorer. Rotate the body, reveal its layers, search structures in Chinese or English, and isolate a part to understand its shape and surroundings.
+
+Expand a system to filter its structures and control each item's visibility. Random exploration opens a complete organ, while smooth camera transitions help you locate it in context. Auto-rotation supports direction and continuous speed settings. Privacy mode hides sensitive structures in default views and random exploration; explicitly opening a system or structure from the list, or selecting a search result, still allows viewing.
 
 Switch between the **BodyParts3D male reference** (2,234 meshes, 15 systems, 3,432 concepts) and the **experimental female study model** (2,245 meshes, 16 layers, 4,248 concepts), adapted from BodyParts3D and HRA female anatomy through Human Atlas Enhanced. Female proportions and placement are estimated and have not been independently reviewed. Both models work in the web app and offline desktop client. Model preferences and model-specific browsing histories are saved locally.
 
