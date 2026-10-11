@@ -100,6 +100,16 @@ export default function AnatomyScene({
     const scene = new T.Scene(),
       camera = new T.PerspectiveCamera(34, 1, 0.005, 100),
       controls = new OrbitControls(camera, renderer.domElement);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let cameraTransition: {
+      start: number;
+      position: T.Vector3;
+      target: T.Vector3;
+      destination: T.Vector3;
+      center: T.Vector3;
+      offset: T.Vector2;
+      destinationOffset: T.Vector2;
+    } | null = null;
     camera.position.set(1.4, 1.05, 3.6);
     controls.target.set(0, 0.85, 0);
     controls.enableDamping = true;
@@ -112,6 +122,8 @@ export default function AnatomyScene({
       requestFrame();
     });
     controls.addEventListener("start", () => {
+      // A drag, pinch or wheel gesture takes over from the guided movement.
+      cameraTransition = null;
       requestFrame();
     });
     controls.addEventListener("end", () => {
@@ -361,6 +373,7 @@ export default function AnatomyScene({
       }
     })();
     const fit = (view: string, extent = 0) => {
+      cameraTransition = null;
       camera.clearViewOffset();
       controls.maxDistance = 40;
       // The scene now occupies the space between the tool panels. Fit its own
@@ -484,6 +497,7 @@ export default function AnatomyScene({
         lastState?.selected !== s.selected ||
         lastState?.isolate !== s.isolate ||
         lastState?.hiddenParts !== s.hiddenParts;
+      if (changed) cameraTransition = null;
       const moving = Math.abs(amount - s.explode) > 0.0001;
       if (moving) {
         amount = T.MathUtils.damp(amount, s.explode, 8, dt);
@@ -618,13 +632,9 @@ export default function AnatomyScene({
             }
             const availableWidth = Math.max(150, right - left),
               availableHeight = Math.max(40, bottom - top);
-            camera.setViewOffset(
-              w,
-              h,
+            const destinationOffset = new T.Vector2(
               w / 2 - (left + right) / 2,
               h / 2 - (top + bottom) / 2,
-              w,
-              h,
             );
             const distance = Math.max(
               0.07,
@@ -640,9 +650,29 @@ export default function AnatomyScene({
             const direction = s.isolate
               ? new T.Vector3(0.2, 0.1, 1).normalize()
               : camera.position.clone().sub(controls.target).normalize();
-            controls.target.copy(center);
-            camera.position.copy(center).add(direction.multiplyScalar(distance));
-            controls.update();
+            const destination = center.clone().addScaledVector(direction, distance);
+            if (s.focus && !moving && !reducedMotion.matches) {
+              // Clear orbit inertia before capturing a new journey. Repeated
+              // locate clicks start from the current pose, not the previous origin.
+              controls.enableDamping = false;
+              controls.update();
+              controls.enableDamping = true;
+              cameraTransition = {
+                start: time,
+                position: camera.position.clone(),
+                target: controls.target.clone(),
+                destination,
+                center,
+                offset: new T.Vector2(camera.view?.enabled ? camera.view.offsetX : 0, camera.view?.enabled ? camera.view.offsetY : 0),
+                destinationOffset,
+              };
+            } else {
+              cameraTransition = null;
+              camera.setViewOffset(w, h, destinationOffset.x, destinationOffset.y, w, h);
+              controls.target.copy(center);
+              camera.position.copy(destination);
+              controls.update();
+            }
             dirty = true;
           }
         } else if (lastSelectionFrame) {
@@ -661,14 +691,31 @@ export default function AnatomyScene({
       markers.visible = amount > 0.75;
       controls.autoRotate = s.rotate && !s.isolate && amount < 0.4;
       controls.autoRotateSpeed = 0.65;
+      if (cameraTransition) {
+        const journey = cameraTransition;
+        const progress = reducedMotion.matches ? 1 : T.MathUtils.clamp((time - journey.start) / 650, 0, 1);
+        // Smoothstep eases both ends, including the inspector's framing offset.
+        const eased = progress * progress * (3 - 2 * progress);
+        camera.position.lerpVectors(journey.position, journey.destination, eased);
+        controls.target.lerpVectors(journey.target, journey.center, eased);
+        camera.setViewOffset(el.clientWidth, el.clientHeight,
+          T.MathUtils.lerp(journey.offset.x, journey.destinationOffset.x, eased),
+          T.MathUtils.lerp(journey.offset.y, journey.destinationOffset.y, eased),
+          el.clientWidth, el.clientHeight);
+        controls.enableDamping = false;
+        controls.autoRotate = false;
+        dirty = true;
+        if (progress === 1) cameraTransition = null;
+      }
       controls.update();
+      controls.enableDamping = true;
       if (controls.autoRotate) dirty = true;
       if (dirty) {
         renderer.render(scene, camera);
         targetsDirty = true;
         dirty = false;
       }
-      if (moving || controls.autoRotate) requestFrame();
+      if (moving || controls.autoRotate || cameraTransition) requestFrame();
       if (!frame) lastTime = 0;
     };
     refreshTargets = () => {
