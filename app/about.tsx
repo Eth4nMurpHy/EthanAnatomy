@@ -1,4 +1,4 @@
-import { ArrowUpRight, Code2, Download, EyeOff, Globe, Heart } from "lucide-react";
+import { ArrowUpRight, Code2, Download, EyeOff, Heart } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useRef } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
@@ -59,7 +59,7 @@ export default function About({ locale, open, onOpenChange, updater, privacyMode
             <div><span className="credits-kicker">{t("Developed & maintained by")}</span><h2 id="author-heading">{"Sunky"}</h2></div>
           </div>
           <p>{t("Continuing Anatolume with bilingual exploration, a refined interface and offline desktop access.")}</p>
-          <a className="author-website" href="https://www.sunky.net" target="_blank" rel="noreferrer"><Globe size={16} /><span>{"www.sunky.net"}</span><ArrowUpRight size={15} /></a>
+          <a className="author-website" href="https://github.com/isunky/Anatolume" target="_blank" rel="noreferrer"><Code2 size={16} /><span>{"isunky/Anatolume"}</span><ArrowUpRight size={15} /></a>
         </section>
 
         <section className="credits-section" aria-labelledby="credits-heading">
