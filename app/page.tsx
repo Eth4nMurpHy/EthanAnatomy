@@ -34,6 +34,8 @@ import {
   BookOpen,
   Compass,
   Download,
+  Eye,
+  EyeOff,
   Heart,
   MousePointer2,
   PanelLeftClose,
@@ -52,6 +54,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Toaster, toast } from "@/components/ui/toast";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
@@ -117,6 +120,7 @@ export default function Home() {
   });
   const [linkError, setLinkError] = useState(false);
   const [creditsOpen, setCreditsOpen] = useState(false);
+  const [focusPrivacy, setFocusPrivacy] = useState(false);
   const t = (english: string, values: Record<string, string | number> = {}) =>
     text(english, locale, values);
   const dn = (english?: string) => (english ? displayName(english, locale) : "");
@@ -306,8 +310,17 @@ export default function Home() {
     const visible = new Set(state.visible), selection = new Set(state.selected);
     return atlas?.parts.filter((part) => isPartVisible(part, visible, selection, state.isolate, hiddenPartIds)).length ?? 0;
   }, [atlas, state.visible, state.selected, state.isolate, hiddenPartIds]);
+  const explainPrivacyMode = (enabled: boolean) => {
+    toast.add({
+      id: "privacy-mode",
+      title: t(enabled ? "Privacy mode: on" : "Privacy mode: off"),
+      description: t(enabled ? "Sensitive structures are hidden in default views and random exploration. Search still allows explicit viewing." : "Default views and random exploration include all available anatomy."),
+      type: "info", timeout: 4500,
+    });
+  };
   const changePrivacyMode = (enabled: boolean) => {
     setPrivacyMode(enabled);
+    explainPrivacyMode(enabled);
     setChosen(null);
     setDetails(false);
     setState((s) => ({ ...initial, visible: defaultLayers(model, atlas, enabled), reset: s.reset + 1 }));
@@ -939,7 +952,9 @@ export default function Home() {
       </>}
       <footer className="studio-footer">
         <span className={`footer-status ${updater.native ? "" : "is-web"}`}><span className="status-dot" />{updater.native && t("Offline client")}<span className="footer-data">{MODELS[model].source}{" · "}{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span></span>
-        <span className={`footer-privacy ${privacyMode ? "is-active" : ""}`} role="status">{t(privacyMode ? "Privacy mode: on" : "Privacy mode: off")}</span>
+        <Button variant="ghost" className={`footer-privacy ${privacyMode ? "is-active" : ""}`} aria-label={t(privacyMode ? "Privacy mode: on" : "Privacy mode: off")} title={t("Open privacy settings")} onClick={() => { setFocusPrivacy(true); setCreditsOpen(true); explainPrivacyMode(privacyMode); }}>
+          {privacyMode ? <EyeOff size={16} /> : <Eye size={16} />}
+        </Button>
       </footer>
       {progress < 100 && !error && (
         <div className="loading glass" role="status">
@@ -1115,7 +1130,8 @@ export default function Home() {
           </div>
         </SheetContent>
       </Sheet>
-      <About locale={locale} open={creditsOpen} onOpenChange={setCreditsOpen} updater={updater} privacyMode={privacyMode} onPrivacyModeChange={changePrivacyMode} />
+      <About locale={locale} open={creditsOpen} onOpenChange={(open) => { setCreditsOpen(open); if (!open) setFocusPrivacy(false); }} updater={updater} privacyMode={privacyMode} onPrivacyModeChange={changePrivacyMode} focusPrivacy={focusPrivacy} />
+      <Toaster limit={1} closeLabel={t("Close notification")} viewportClassName="privacy-toast-viewport" />
       <Sheet open={about} onOpenChange={setAbout}>
         <SheetContent closeLabel={t("Close")} className="about-sheet glass">
           <div className="eyebrow"><BookOpen size={15} />{t("Learning guide")}</div>
