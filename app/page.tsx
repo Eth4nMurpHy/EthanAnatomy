@@ -69,7 +69,7 @@ import {
 } from "@/components/ui/combobox";
 import AnatomyScene from "./scene";
 import SystemLayers from "./system-layers";
-import { systemStructures, clearStructureOverrides, explicitSystemOverrides } from "./core/structure-layers";
+import { systemStructures, clearStructureOverrides, explicitSystemOverrides, hideSelectedStructure } from "./core/structure-layers";
 import About from "./about";
 import { useClientUpdate } from "../hooks/use-client-update";
 import {
@@ -1136,15 +1136,30 @@ export default function Home() {
               <Layers3 size={18} />
               {state.isolate ? t("Show surrounding anatomy") : t("Isolate structure")}
             </Button>
-            <Button
-              variant="ghost"
-              className="secondary-action"
-              title={t("Clear selection and restore the overview; keep layers and separation")}
-              onClick={returnToOverview}
-            >
-              <ArrowLeft size={15} />
-              {t("Back to overview")}
-            </Button>
+            <div className="detail-utility-actions">
+              <Button
+                variant="ghost"
+                className="secondary-action"
+                title={t("Hide the selected structure; preserve visibility settings for other structures")}
+                onClick={() => {
+                  setState(hideSelectedStructure);
+                  setChosen(null);
+                  setDetails(false);
+                }}
+              >
+                <EyeOff size={15} />
+                {t("Hide current structure")}
+              </Button>
+              <Button
+                variant="ghost"
+                className="secondary-action"
+                title={t("Clear selection and restore the overview; keep layers and separation")}
+                onClick={returnToOverview}
+              >
+                <ArrowLeft size={15} />
+                {t("Back to overview")}
+              </Button>
+            </div>
           </div>
         </SheetContent>
       </Sheet>

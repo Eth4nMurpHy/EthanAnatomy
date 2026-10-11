@@ -5,7 +5,7 @@ import {PointerTap} from '../app/core/pointer-tap.ts';
 import {atlasTools} from '../app/core/agent-tools.ts';
 import {randomOrganCandidates,pickRandomOrgan} from '../app/core/random-organ.ts';
 import {privacyHiddenParts,isPartVisible,readPrivacyMode,PRIVACY_MODE_STORAGE_KEY} from '../app/core/privacy-mode.ts';
-import {systemStructures,clearStructureOverrides,explicitSystemOverrides} from '../app/core/structure-layers.ts';
+import {systemStructures,clearStructureOverrides,explicitSystemOverrides,hideSelectedStructure} from '../app/core/structure-layers.ts';
 
 for (const file of ['atlas.json', 'atlas-female.json']) {
   const atlas=JSON.parse(await readFile(new URL(`../public/models/${file}`,import.meta.url)));
@@ -30,6 +30,24 @@ for (const file of ['atlas.json', 'atlas-female.json']) {
   assert.deepEqual(privacyHiddenParts(atlas,false),[]);
   const hidden=new Set(privacyHiddenParts(atlas,true));
   const allSystems=new Set(atlas.parts.map(p=>p.system));
+  const heart=organs.find(c=>c.id==='FMA7088');
+  assert.ok(heart?.elements.length>1, 'Use a complete multi-part organ for visibility regression');
+  const otherPart=atlas.parts.find(p=>!heart.elements.includes(p.id));
+  for (const isolate of [false,true]) {
+    const before={visible:[...allSystems],selected:heart.elements,isolate,focus:2,focusContext:true,rotate:true,explode:0,view:'front',reset:0,partVisibility:{[otherPart.id]:false,[heart.elements[0]]:true}};
+    const after=hideSelectedStructure(before);
+    assert.ok(heart.elements.every(id=>!isPartVisible(atlas.parts.find(p=>p.id===id),allSystems,new Set(after.selected),after.isolate,hidden,after.partVisibility)), 'Details hide every component of the selected organ');
+    assert.equal(after.partVisibility[otherPart.id],false, 'Unrelated visibility overrides remain intact');
+    assert.deepEqual(after.visible,before.visible, 'Existing system layers are preserved');
+    assert.equal(after.isolate,false, 'Hiding an isolated target restores surrounding layers');
+    assert.equal(after.focus,0);
+    assert.equal(after.focusContext,false);
+    assert.equal(after.rotate,false);
+    assert.equal(before.partVisibility[heart.elements[0]],true, 'Hiding does not mutate the previous state');
+    const reopened=clearStructureOverrides(after.partVisibility,heart.elements);
+    assert.ok(heart.elements.every(id=>isPartVisible(atlas.parts.find(p=>p.id===id),allSystems,new Set(heart.elements),true,hidden,reopened)), 'Explicitly reopening the organ restores all selected components');
+    assert.equal(hideSelectedStructure({...before,selected:[]}).partVisibility,before.partVisibility, 'An empty selection leaves overrides untouched');
+  }
   for (const system of allSystems) {
     const enabled=explicitSystemOverrides(atlas,system,true,hidden);
     const systemParts=atlas.parts.filter(p=>p.system===system);

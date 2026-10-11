@@ -1,4 +1,21 @@
-import type { Atlas, Concept, SystemId } from "./anatomy.ts";
+import type { Atlas, Concept, SceneState, SystemId } from "./anatomy.ts";
+
+// Explicit visibility overrides take precedence over selection and privacy rules.
+export function hideSelectedStructure(state: SceneState): SceneState {
+  if (!state.selected.length) return state;
+  return {
+    ...state,
+    selected: [],
+    isolate: false,
+    focus: 0,
+    focusContext: false,
+    rotate: false,
+    partVisibility: {
+      ...state.partVisibility,
+      ...Object.fromEntries(state.selected.map((id) => [id, false])),
+    },
+  };
+}
 
 // The source data has system membership and concept IDs, but no reliable
 // parent/child organ tree. List its actual structures without inventing one.

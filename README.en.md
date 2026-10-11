@@ -79,7 +79,7 @@ Systems are arranged compactly using their actual widths while preserving intern
 | **Male and female models** | Switch between the male reference and female study model, with separate recent browsing histories. |
 | **Layers and structures** | Full-body, bones and organs views; expand systems, filter structures, toggle individual items or show one system only. |
 | **Bilingual search** | Search Chinese or English names, common aliases or source IDs such as “heart”, “心脏” or “FMA7088”. |
-| **Structure focus** | Isolate a structure and read its introduction; smoothly return to the surrounding view and highlight its location. |
+| **Structure focus** | Isolate a structure and read its introduction; smoothly locate it in context, or hide the current structure from its details panel. |
 | **Camera and rotation** | Smooth transitions between oblique, front, side and back views; auto-rotation with direction and continuous speed controls. |
 | **Random exploration** | Discover and focus on a complete organ; use “Another organ” in the details panel to continue. |
 | **Privacy mode** | Hide sensitive structures in default views and random exploration; explicit searches and system or structure selections still allow viewing. |
@@ -123,6 +123,7 @@ Phones can use the web app; no Android package is currently provided. Older rele
 | Search | Open search, or press `/` when not typing in an input. |
 | Select a search result | Use `↑` / `↓`, press `Enter` to select and `Esc` to close. |
 | Inspect location | Show surrounding structures, or locate the target with a smooth camera transition and highlight. |
+| Hide the current structure | Use “Hide current structure” in the details panel. The panel closes and other visibility settings are preserved; show the structure again from the list. |
 | Continue random exploration | Use the upper-right entry or “Another organ” in the details panel. |
 | Auto-rotation settings | Open the adjacent dropdown; choose direction and drag the speed slider. 100% is the maximum. |
 | Privacy settings | Click the privacy icon in the bottom status bar; hover to read its current state. |
