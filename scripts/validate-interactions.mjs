@@ -27,8 +27,26 @@ for (const file of ['atlas.json', 'atlas-female.json']) {
     assert.ok(visibleDefault.some(p=>p.conceptId==='FMA7148'),'Unrelated organs remain visible');
     assert.equal(organs.filter(c=>!c.elements.some(id=>hidden.has(id))).length,17,'Private organs are excluded from random exploration');
   } else {
-    assert.equal(hidden.size,0,'Female geometry is unchanged');
-    assert.equal(visibleDefault.length,atlas.parts.length);
+    assert.equal(hidden.size,16,'All breast meshes, nipples, areolae and areolar tubercles are hidden');
+    for(const part of atlas.parts.filter(p=>p.system==='mammary' || /^VH_F_(nipple|areola|areolar_tubercles)_/.test(p.id))) {
+      assert.ok(hidden.has(part.id),`Breast structure not hidden: ${part.name}`);
+      assert.equal(isPartVisible(part,allSystems,new Set(),false,hidden),false);
+      assert.equal(isPartVisible(part,new Set(),new Set([part.id]),true,hidden),true,'Explicit female selection remains available');
+      assert.equal(isPartVisible(part,allSystems,new Set(),false,new Set()),true,'Turning privacy off restores female structures');
+    }
+    for(const part of atlas.parts.filter(p=>p.system==='reproductive')) {
+      assert.ok(!hidden.has(part.id),`Internal female organ incorrectly hidden: ${part.name}`);
+      assert.equal(isPartVisible(part,allSystems,new Set(),false,hidden),true);
+    }
+    assert.equal(visibleDefault.length,atlas.parts.length-hidden.size);
+    assert.equal(organs.filter(c=>!c.elements.some(id=>hidden.has(id))).length,20,'Female internal organs remain in random exploration');
+    // The current model has no separate external genital meshes. Check the rule
+    // with anatomy fixtures so future additions cannot reveal those by default.
+    const sample=atlas.parts[0];
+    const external=['clitoris','Left labium majus','Right labium minus','vulva'];
+    const keep=['uterus','ovary','vagina','Superior labial artery'];
+    const fixture={...atlas,parts:[...external,...keep].map((name,i)=>({...sample,id:`privacy-${i}`,name,system:'reproductive'}))};
+    assert.deepEqual(privacyHiddenParts(fixture,true),external.map((_,i)=>`privacy-${i}`));
   }
   assert.equal(organs.length,20,`${model}: all common and model-specific organs are available`);
   assert.equal(new Set(organs.map(c=>c.id)).size,organs.length);

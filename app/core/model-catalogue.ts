@@ -25,7 +25,7 @@ export function readRecent(storage: Pick<Storage, "getItem"> | undefined, model:
 
 export function defaultLayers(model: ModelId, atlas?: Atlas | null, privacyMode = false): SystemId[] {
   const available = atlas ? new Set(atlas.parts.map((part) => part.system)) : null;
-  return DEFAULT_VISIBLE.filter((id) => !(privacyMode && model === "male" && id === "reproductive") &&
+  return DEFAULT_VISIBLE.filter((id) => !(privacyMode && (model === "male" ? id === "reproductive" : id === "mammary")) &&
     (available ? available.has(id) : id !== "mammary" || model === "female"));
 }
 

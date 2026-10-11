@@ -240,7 +240,7 @@ export default function Home() {
   const defaultVisible = useMemo(() => defaultLayers(model, atlas, privacyMode), [model, atlas, privacyMode]);
   const randomOrgans = useMemo(() => randomOrganCandidates(atlas, model).filter((concept) => !concept.elements.some((id) => hiddenPartIds.has(id))), [atlas, model, hiddenPartIds]);
   const randomReady = progress >= 100 && !error && randomOrgans.length > 0;
-  const organVisible = useMemo(() => ORGAN_SYSTEMS.filter((id) => !(privacyMode && model === "male" && id === "reproductive") && (!atlas || atlas.parts.some((p) => p.system === id))), [atlas, privacyMode, model]);
+  const organVisible = useMemo(() => ORGAN_SYSTEMS.filter((id) => !(privacyMode && (model === "male" ? id === "reproductive" : id === "mammary")) && (!atlas || atlas.parts.some((p) => p.system === id))), [atlas, privacyMode, model]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (
@@ -309,7 +309,6 @@ export default function Home() {
   }, [atlas, state.visible, state.selected, state.isolate, hiddenPartIds]);
   const changePrivacyMode = (enabled: boolean) => {
     setPrivacyMode(enabled);
-    if (model !== "male") return;
     setChosen(null);
     setDetails(false);
     setState((s) => ({ ...initial, visible: defaultLayers(model, atlas, enabled), reset: s.reset + 1 }));

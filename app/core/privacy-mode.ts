@@ -8,10 +8,12 @@ export function readPrivacyMode(storage?: Pick<Storage, "getItem">): boolean {
 }
 
 export function privacyHiddenParts(atlas: Atlas | null, enabled: boolean): string[] {
-  if (!enabled || atlas?.sex !== "male") return [];
+  if (!enabled || !atlas || !atlas.sex) return [];
   // Genital vessels and nerves can belong to circulatory or nervous systems.
-  return atlas.parts.filter((part) => part.system === "reproductive" ||
-    /\b(penis|penile|scrotum|scrotal|testis|testicular|epididymis|epididymal|prostate|prostatic|spermatic|deferent|seminal|bulbourethral)\b/i.test(part.name),
+  return atlas.parts.filter((part) => atlas.sex === "male"
+    ? part.system === "reproductive" || /\b(penis|penile|scrotum|scrotal|testis|testicular|epididymis|epididymal|prostate|prostatic|spermatic|deferent|seminal|bulbourethral)\b/i.test(part.name)
+    // Preserve internal female organs, including the uterus, ovaries and vagina.
+    : part.system === "mammary" || /\b(breast|mammary|nipples?|areolae?|lactiferous|vulva|vulvar|clitoris|clitoral|labia|labium)\b|\bareolar tubercle\b/i.test(part.name),
   ).map((part) => part.id);
 }
 
