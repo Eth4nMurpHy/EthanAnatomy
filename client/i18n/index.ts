@@ -9,6 +9,7 @@ export type Locale = "zh-CN" | "en";
 // Stable keys preserve preferences when upgrading to Anatolume.
 export const LANGUAGE_STORAGE_KEY = "human-atlas.language";
 export const UI_ZH: Record<string, string> = {
+  "Structure centered": "已定位",
   "Privacy mode": "隐私模式",
   "Privacy mode: on": "隐私模式：开启",
   "Privacy mode: off": "隐私模式：关闭",

@@ -19,6 +19,7 @@ interface Props {
   onSelect: (id: string) => void;
   onProgress: (n: number) => void;
   onError: (s: string) => void;
+  onFocusComplete?: (focus: number) => void;
 }
 export default function AnatomyScene({
   atlas,
@@ -27,12 +28,15 @@ export default function AnatomyScene({
   onSelect,
   onProgress,
   onError,
+  onFocusComplete,
 }: Props) {
   const host = useRef<HTMLDivElement>(null),
     latest = useRef(state),
     select = useRef(onSelect),
     language = useRef(locale),
     wake = useRef<() => void>(() => {});
+  const focusComplete = useRef(onFocusComplete);
+  focusComplete.current = onFocusComplete;
   useEffect(() => {
     wake.current();
   }, [state]);
@@ -109,6 +113,7 @@ export default function AnatomyScene({
       center: T.Vector3;
       offset: T.Vector2;
       destinationOffset: T.Vector2;
+      focus: number;
     } | null = null;
     camera.position.set(1.4, 1.05, 3.6);
     controls.target.set(0, 0.85, 0);
@@ -651,7 +656,11 @@ export default function AnatomyScene({
               ? new T.Vector3(0.2, 0.1, 1).normalize()
               : camera.position.clone().sub(controls.target).normalize();
             const destination = center.clone().addScaledVector(direction, distance);
-            if (s.focus && !moving && !reducedMotion.matches) {
+            const offset = new T.Vector2(camera.view?.enabled ? camera.view.offsetX : 0, camera.view?.enabled ? camera.view.offsetY : 0);
+            const alreadyCentered = camera.position.distanceTo(destination) <= distance * 0.001 &&
+              controls.target.distanceTo(center) <= distance * 0.001 &&
+              offset.distanceTo(destinationOffset) <= 0.5;
+            if (s.focus && !moving && !reducedMotion.matches && !alreadyCentered) {
               // Clear orbit inertia before capturing a new journey. Repeated
               // locate clicks start from the current pose, not the previous origin.
               controls.enableDamping = false;
@@ -663,8 +672,9 @@ export default function AnatomyScene({
                 target: controls.target.clone(),
                 destination,
                 center,
-                offset: new T.Vector2(camera.view?.enabled ? camera.view.offsetX : 0, camera.view?.enabled ? camera.view.offsetY : 0),
+                offset,
                 destinationOffset,
+                focus: s.focus,
               };
             } else {
               cameraTransition = null;
@@ -672,6 +682,7 @@ export default function AnatomyScene({
               controls.target.copy(center);
               camera.position.copy(destination);
               controls.update();
+              if (s.focus && !moving) focusComplete.current?.(s.focus);
             }
             dirty = true;
           }
@@ -705,7 +716,10 @@ export default function AnatomyScene({
         controls.enableDamping = false;
         controls.autoRotate = false;
         dirty = true;
-        if (progress === 1) cameraTransition = null;
+        if (progress === 1) {
+          cameraTransition = null;
+          focusComplete.current?.(journey.focus);
+        }
       }
       controls.update();
       controls.enableDamping = true;
