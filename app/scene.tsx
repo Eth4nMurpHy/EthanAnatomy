@@ -109,6 +109,7 @@ export default function AnatomyScene({
       center: T.Vector3;
       offset: T.Vector2;
       destinationOffset: T.Vector2;
+      orbit?: boolean;
     } | null = null;
     let surroundingView: { position: T.Vector3; target: T.Vector3; aspect: number } | null = null;
     camera.position.set(1.4, 1.05, 3.6);
@@ -387,9 +388,7 @@ export default function AnatomyScene({
           : view === "side" ? new T.Vector3(1, 0.02, 0)
             : new T.Vector3(0.35, 0.06, 1)
     ).normalize();
-    const fit = (view: string, extent = 0) => {
-      cameraTransition = null;
-      camera.clearViewOffset();
+    const fit = (view: string, extent = 0, transitionTime?: number) => {
       controls.maxDistance = 40;
       // The scene now occupies the space between the tool panels. Fit its own
       // viewport rather than reserving space for controls inside a full-screen canvas.
@@ -402,8 +401,26 @@ export default function AnatomyScene({
       const distance = T.MathUtils.lerp(normalDistance, Math.max(0.2, atlasDistance), extent);
       if (extent > 0.8) view = "front";
       const direction = viewDirection(view);
-      controls.target.set(0, 0.85, 0);
-      camera.position.copy(controls.target).addScaledVector(direction, distance);
+      const center = new T.Vector3(0, 0.85, 0);
+      const destination = center.clone().addScaledVector(direction, distance);
+      controls.autoRotate = false;
+      controls.enableDamping = false;
+      controls.update();
+      if (transitionTime !== undefined && !reducedMotion.matches) {
+        cameraTransition = {
+          start: transitionTime,
+          position: camera.position.clone(), target: controls.target.clone(),
+          destination, center,
+          offset: new T.Vector2(camera.view?.enabled ? camera.view.offsetX : 0, camera.view?.enabled ? camera.view.offsetY : 0),
+          destinationOffset: new T.Vector2(), orbit: true,
+        };
+        dirty = true;
+        return;
+      }
+      cameraTransition = null;
+      camera.clearViewOffset();
+      controls.target.copy(center);
+      camera.position.copy(destination);
       controls.update();
       dirty = true;
     };
@@ -599,8 +616,9 @@ export default function AnatomyScene({
         lastExtent = amount;
         dirty = true;
       }
+      const viewRequested = lastView !== "" && (s.view !== lastView || s.reset !== lastReset);
       if (s.view !== lastView || s.reset !== lastReset) {
-        if (!s.isolate || !s.selected.length) fit(s.view, amount);
+        if (!s.isolate || !s.selected.length) fit(s.view, amount, viewRequested && !moving ? time : undefined);
         lastView = s.view;
         lastReset = s.reset;
       }
@@ -685,10 +703,11 @@ export default function AnatomyScene({
             const alreadyCentered = camera.position.distanceTo(destination) <= distance * 0.001 &&
               controls.target.distanceTo(center) <= distance * 0.001 &&
               offset.distanceTo(destinationOffset) <= 0.5;
-            if (s.focus && !moving && !reducedMotion.matches && !alreadyCentered) {
+            if ((s.focus || viewRequested) && !moving && !reducedMotion.matches && !alreadyCentered) {
               // Clear orbit inertia before capturing a new journey. Repeated
               // locate clicks start from the current pose, not the previous origin.
               controls.enableDamping = false;
+              controls.autoRotate = false;
               controls.update();
               controls.enableDamping = true;
               cameraTransition = {
@@ -699,6 +718,7 @@ export default function AnatomyScene({
                 center,
                 offset,
                 destinationOffset,
+                orbit: viewRequested,
               };
             } else {
               cameraTransition = null;
@@ -713,7 +733,7 @@ export default function AnatomyScene({
             dirty = true;
           }
         } else if (lastSelectionFrame) {
-          fit(s.view, amount);
+          fit(s.view, amount, viewRequested && !moving ? time : undefined);
         }
         lastSelectionFrame = selectionFrameKey;
       }
@@ -752,8 +772,22 @@ export default function AnatomyScene({
         const progress = reducedMotion.matches ? 1 : T.MathUtils.clamp((time - journey.start) / 650, 0, 1);
         // Smoothstep eases both ends, including the inspector's framing offset.
         const eased = progress * progress * (3 - 2 * progress);
-        camera.position.lerpVectors(journey.position, journey.destination, eased);
         controls.target.lerpVectors(journey.target, journey.center, eased);
+        if (journey.orbit) {
+          // Follow the shortest arc around the structure; a straight line from
+          // front to back would pass through its center.
+          const from = new T.Spherical().setFromVector3(journey.position.clone().sub(journey.target));
+          const to = new T.Spherical().setFromVector3(journey.destination.clone().sub(journey.center));
+          const angle = Math.atan2(Math.sin(to.theta - from.theta), Math.cos(to.theta - from.theta));
+          const pose = new T.Spherical(
+            T.MathUtils.lerp(from.radius, to.radius, eased),
+            T.MathUtils.lerp(from.phi, to.phi, eased),
+            from.theta + angle * eased,
+          );
+          camera.position.setFromSpherical(pose).add(controls.target);
+        } else {
+          camera.position.lerpVectors(journey.position, journey.destination, eased);
+        }
         camera.setViewOffset(el.clientWidth, el.clientHeight,
           T.MathUtils.lerp(journey.offset.x, journey.destinationOffset.x, eased),
           T.MathUtils.lerp(journey.offset.y, journey.destinationOffset.y, eased),
