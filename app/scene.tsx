@@ -381,6 +381,12 @@ export default function AnatomyScene({
         if (!disposed) onError(e instanceof Error ? e.message : "Could not load the anatomy.");
       }
     })();
+    const viewDirection = (view: string) => (
+      view === "front" ? new T.Vector3(0, 0.02, 1)
+        : view === "back" ? new T.Vector3(0, 0.02, -1)
+          : view === "side" ? new T.Vector3(1, 0.02, 0)
+            : new T.Vector3(0.35, 0.06, 1)
+    ).normalize();
     const fit = (view: string, extent = 0) => {
       cameraTransition = null;
       camera.clearViewOffset();
@@ -395,14 +401,7 @@ export default function AnatomyScene({
           (2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2))) * 1.12;
       const distance = T.MathUtils.lerp(normalDistance, Math.max(0.2, atlasDistance), extent);
       if (extent > 0.8) view = "front";
-      const direction =
-        view === "front"
-          ? new T.Vector3(0, 0.02, 1)
-          : view === "back"
-            ? new T.Vector3(0, 0.02, -1)
-            : view === "side"
-              ? new T.Vector3(1, 0.02, 0)
-              : new T.Vector3(0.35, 0.06, 1).normalize();
+      const direction = viewDirection(view);
       controls.target.set(0, 0.85, 0);
       camera.position.copy(controls.target).addScaledVector(direction, distance);
       controls.update();
@@ -601,7 +600,7 @@ export default function AnatomyScene({
         dirty = true;
       }
       if (s.view !== lastView || s.reset !== lastReset) {
-        fit(s.view, amount);
+        if (!s.isolate || !s.selected.length) fit(s.view, amount);
         lastView = s.view;
         lastReset = s.reset;
       }
@@ -612,6 +611,7 @@ export default function AnatomyScene({
           ? [
               selectedKey,
               s.isolate,
+              s.view,
               s.focus,
               s.focusContext,
               s.reset,
@@ -652,19 +652,24 @@ export default function AnatomyScene({
               w / 2 - (left + right) / 2,
               h / 2 - (top + bottom) / 2,
             );
+            let direction = s.isolate
+              ? viewDirection(s.view)
+              : camera.position.clone().sub(controls.target).normalize();
+            // Fit the bounds in the chosen camera orientation, including their
+            // depth, so a long structure also fits when viewed from the side.
+            const horizontal = new T.Vector3().crossVectors(camera.up, direction).normalize();
+            const vertical = new T.Vector3().crossVectors(direction, horizontal).normalize();
+            const projectedSize = (axis: T.Vector3) =>
+              Math.abs(axis.x) * size.x + Math.abs(axis.y) * size.y + Math.abs(axis.z) * size.z;
             let distance = Math.max(
               0.07,
               (Math.max(
-                (size.y * h) / availableHeight,
-                (size.x * w) / availableWidth / camera.aspect,
-                size.z,
+                (projectedSize(vertical) * h) / availableHeight,
+                (projectedSize(horizontal) * w) / availableWidth / camera.aspect,
               ) /
                 (2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2)))) *
-                (s.isolate ? 1.35 : 1.7),
+                (s.isolate ? 1.35 : 1.7) + projectedSize(direction) / 2,
             );
-            let direction = s.isolate
-              ? new T.Vector3(0.2, 0.1, 1).normalize()
-              : camera.position.clone().sub(controls.target).normalize();
             if (s.focusContext && s.focus && !s.isolate) {
               // Restore context instead of zooming back into the isolated organ.
               center = surroundingView?.target.clone() ?? new T.Vector3(0, 0.85, 0);
@@ -697,6 +702,9 @@ export default function AnatomyScene({
               };
             } else {
               cameraTransition = null;
+              controls.autoRotate = false;
+              controls.enableDamping = false;
+              controls.update();
               camera.setViewOffset(w, h, destinationOffset.x, destinationOffset.y, w, h);
               controls.target.copy(center);
               camera.position.copy(destination);
@@ -737,7 +745,7 @@ export default function AnatomyScene({
         const i = mesh.userData.part as number;
         mesh.position.set(data[i * 4], data[i * 4 + 1], data[i * 4 + 2]);
       });
-      controls.autoRotate = s.rotate && !s.isolate && amount < 0.4;
+      controls.autoRotate = s.rotate && amount < 0.4;
       controls.autoRotateSpeed = 0.65;
       if (cameraTransition) {
         const journey = cameraTransition;
