@@ -471,6 +471,7 @@ export default function Home() {
         </select>
       </div>
       <nav className="top-actions" aria-label={t("Explorer panels")}>
+        <Button variant="ghost" className="header-random" disabled={!randomReady} onClick={chooseRandomOrgan} aria-label={t("Random exploration")} title={t("Random organ")}><Shuffle size={17} /><span>{t("Random exploration")}</span></Button>
         <Button
           variant="ghost"
           className={`header-search ${panel === "search" && screen === "explore" ? "active" : ""}`}
@@ -483,8 +484,9 @@ export default function Home() {
         </Button>
         <Button
           variant="ghost"
-          className="icon-button"
+          className={`icon-button header-about ${updater.native && updater.state.update ? "has-update" : ""}`}
           aria-label={t("About this atlas")}
+          title={updater.native && updater.state.update ? t(updater.state.status === "ready" ? "Restart to update" : "New version available") : t("About this atlas")}
           onClick={() => {
             setCreditsOpen(true);
           }}
@@ -926,21 +928,6 @@ export default function Home() {
           {state.explode > 0.8 ? t("Drag to pan") : t("Drag to orbit")} <b>·</b>{" "}
           {t("Pinch to zoom")} <b>·</b> {t("Tap to inspect")}
         </span>
-        <div className="footer-actions">
-        <Button variant="ghost" className="footer-random-button" disabled={!randomReady} onClick={chooseRandomOrgan} title={t("Random organ")}><Shuffle size={13} /><span>{t("Random exploration")}</span></Button>
-        <Button
-          variant="ghost"
-          className="footer-about-button"
-          aria-label={t("About & acknowledgements")}
-          onClick={() => {
-            setCreditsOpen(true);
-          }}
-        >
-          {updater.native && updater.state.update && <span className="update-badge">{t(updater.state.status === "ready" ? "Restart to update" : "New version available")}</span>}
-          <span className="footer-about-label">{!updater.state.update && <>{"Sunky"}<span aria-hidden="true">{" · "}</span></>}{t("About & acknowledgements")}</span>
-          <ArrowUpRight className="desktop-only" size={12} /><Info className="mobile-only" size={14} />
-        </Button>
-        </div>
       </footer>
       {progress < 100 && !error && (
         <div className="loading glass" role="status">
