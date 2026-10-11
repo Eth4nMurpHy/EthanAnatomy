@@ -939,7 +939,7 @@ export default function Home() {
       </div>
       </>}
       <footer className="studio-footer">
-        <span className="footer-status"><span className="status-dot" />{t(runtimeInfo().native ? "Offline client" : "Web viewer")}<span className="footer-data">{MODELS[model].source}{" · "}{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span></span>
+        <span className={`footer-status ${updater.native ? "" : "is-web"}`}><span className="status-dot" />{updater.native && t("Offline client")}<span className="footer-data">{MODELS[model].source}{" · "}{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span></span>
         <span>
           {state.explode > 0.8 ? t("Drag to pan") : t("Drag to orbit")} <b>·</b>{" "}
           {t("Pinch to zoom")} <b>·</b> {t("Tap to inspect")}
