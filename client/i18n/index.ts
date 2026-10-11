@@ -9,6 +9,10 @@ export type Locale = "zh-CN" | "en";
 // Stable keys preserve preferences when upgrading to Anatolume.
 export const LANGUAGE_STORAGE_KEY = "human-atlas.language";
 export const UI_ZH: Record<string, string> = {
+  "Random exploration": "随机探索",
+  "Discover a different organ with each click": "每次点击，认识一个不同的器官",
+  "Random organ": "随机器官",
+  "Try another organ": "再换一个",
   "Download offline client": "下载离线客户端",
   "Application updates": "应用更新",
   "Keep Anatolume up to date": "获取最新功能与改进",

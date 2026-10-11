@@ -3,9 +3,36 @@ import {readFile} from 'node:fs/promises';
 import {createExplosionLayout} from '../app/core/explosion-layout.ts';
 import {PointerTap} from '../app/core/pointer-tap.ts';
 import {atlasTools} from '../app/core/agent-tools.ts';
+import {randomOrganCandidates,pickRandomOrgan} from '../app/core/random-organ.ts';
 
 for (const file of ['atlas.json', 'atlas-female.json']) {
   const atlas=JSON.parse(await readFile(new URL(`../public/models/${file}`,import.meta.url)));
+  const model=atlas.sex;
+  const organs=randomOrganCandidates(atlas,model);
+  assert.equal(organs.length,20,`${model}: all common and model-specific organs are available`);
+  assert.equal(new Set(organs.map(c=>c.id)).size,organs.length);
+  const partIds=new Set(atlas.parts.map(p=>p.id));
+  for(const organ of organs) assert.ok(organ.elements.length && organ.elements.every(id=>partIds.has(id)));
+  assert.ok(organs.find(c=>c.id==='FMA7088').elements.length>1,'The whole heart includes its component meshes');
+  assert.ok(!organs.some(c=>['FMA7203','FMA7210','HRA:VH_F_ovary','PART_FJ1895'].includes(c.id)),'Avoid bilateral groups and duplicate organ fragments');
+  assert.equal(organs.filter(c=>c.id.startsWith('HRA:')).length,model==='female'?3:0);
+  assert.equal(organs.filter(c=>['FMA7211','FMA7212','FMA9600'].includes(c.id)).length,model==='male'?3:0);
+  assert.deepEqual(randomOrganCandidates(atlas,model==='male'?'female':'male'),[]);
+  const broken={...atlas,parts:atlas.parts.filter(p=>p.id!==organs[0].elements[0])};
+  assert.ok(!randomOrganCandidates(broken,model).some(c=>c.id===organs[0].id),'Incomplete organs are excluded');
+  const duplicated={...atlas,concepts:[...atlas.concepts,organs[0]]};
+  assert.equal(randomOrganCandidates(duplicated,model).length,organs.length);
+  let previousOrgan;
+  for(let i=0;i<100;i++) {
+    const current=organs[(i+3)%organs.length].id;
+    const next=pickRandomOrgan(organs,current,previousOrgan,()=>((i*17)%100)/100);
+    assert.ok(next && next.id!==current && next.id!==previousOrgan);
+    previousOrgan=next.id;
+  }
+  // Midpoints of equal probability intervals must select each eligible organ once.
+  const eligible=organs.slice(2);
+  assert.deepEqual(eligible.map((_,i)=>pickRandomOrgan(organs,organs[0].id,organs[1].id,()=>(i+.5)/eligible.length).id),eligible.map(c=>c.id));
+  console.log(`${model}: whole-organ candidates, complete geometry, sex-specific filtering and nonrepeating random selection passed.`);
   const groups=[atlas.parts,...[...new Set(atlas.parts.map(p=>p.system))].map(system=>atlas.parts.filter(p=>p.system===system))];
   for(const group of groups) for(const aspect of [.46,1,1.7]) {
     const layout=createExplosionLayout(group,aspect),cells=[...layout.cells.values()];
@@ -31,6 +58,12 @@ for (const file of ['atlas.json', 'atlas-female.json']) {
   assert.throws(()=>find.execute({query:' '}));
   console.log(`${file}: packing at desktop/mobile aspect ratios and search/inspection contracts passed.`);
 }
+assert.deepEqual(randomOrganCandidates(null,'male'),[]);
+assert.equal(pickRandomOrgan([]),undefined);
+const one={id:'one',name:'one',elements:['mesh']},two={id:'two',name:'two',elements:['mesh2']};
+assert.equal(pickRandomOrgan([one],'one','one',()=>0),one);
+assert.equal(pickRandomOrgan([one,two],'two','one',()=>0),two);
+assert.equal(pickRandomOrgan([one,two],'one','one',()=>0),two);
 const tap=new PointerTap();
 tap.down(1,10,10,5);assert.equal(tap.up(1,12,11),true);
 tap.down(1,10,10,5);tap.move(1,40,10);assert.equal(tap.up(1,10,10),false);

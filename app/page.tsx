@@ -21,6 +21,7 @@ import { registerAtlasTools } from "./core/agent-tools";
 import { staticAssetUrl } from "./core/static-asset";
 import { MODELS, MODEL_STORAGE_KEY, defaultLayers, isModelAtlas, readModel, readRecent, recentKey, type ModelId } from "./core/model-catalogue";
 import { anatomySearchIndex, matchedSearchAlias, type SearchEntry } from "./core/anatomy-search";
+import { pickRandomOrgan, randomOrganCandidates } from "./core/random-organ";
 import { InputGroupButton } from "@/components/ui/input-group";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -46,6 +47,7 @@ import {
   RotateCcw,
   RotateCw,
   Search,
+  Shuffle,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -146,6 +148,7 @@ export default function Home() {
   }, [detailElement]);
   const searchInput = useRef<HTMLInputElement>(null);
   const highlightedConcept = useRef<Concept | undefined>(undefined);
+  const previousRandomOrgan = useRef<string | undefined>(undefined);
   const [recentIds, setRecentIds] = useState<string[]>(() => {
     try { return readRecent(localStorage, model); } catch { return []; }
   });
@@ -187,6 +190,7 @@ export default function Home() {
   }, []);
   useEffect(() => {
     const abort = new AbortController();
+    previousRandomOrgan.current = undefined;
     setProgress(0);
     setError("");
     setAtlas(null);
@@ -223,6 +227,8 @@ export default function Home() {
     setModel(next);
   };
   const defaultVisible = useMemo(() => defaultLayers(model, atlas), [model, atlas]);
+  const randomOrgans = useMemo(() => randomOrganCandidates(atlas, model), [atlas, model]);
+  const randomReady = progress >= 100 && !error && randomOrgans.length > 0;
   const organVisible = useMemo(() => ORGAN_SYSTEMS.filter((id) => !atlas || atlas.parts.some((p) => p.system === id)), [atlas]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
@@ -328,6 +334,13 @@ export default function Home() {
     setState((s) => ({ ...s, selected: c.elements, isolate: true, explode: 0, rotate: false, focus: 0 }));
     setDetails(true);
     if (innerWidth < 768) setPanel(null);
+  };
+  const chooseRandomOrgan = () => {
+    if (!randomReady) return;
+    const concept = pickRandomOrgan(randomOrgans, chosen?.id, previousRandomOrgan.current);
+    if (!concept) return;
+    previousRandomOrgan.current = concept.id;
+    choose(concept);
   };
   useEffect(() => {
     if (!atlas) return;
@@ -509,6 +522,10 @@ export default function Home() {
                   <span><strong>{t(title)}</strong><small>{t(description)}</small></span><ArrowUpRight size={18} />
                 </button>
               ))}
+              <button className="home-path random-path" disabled={!randomReady} onClick={chooseRandomOrgan}>
+                <span className="path-icon"><Shuffle size={22} strokeWidth={1.6} /></span>
+                <span><strong>{t("Random exploration")}</strong><small>{t("Discover a different organ with each click")}</small></span><ArrowUpRight size={18} />
+              </button>
             </div>
             {recentIds.length > 0 && atlas && <div className="home-recent"><span>{t("Recently explored")}</span><div>{recentIds.flatMap((id) => searchIndex.get(id)?.concept ?? []).slice(0, 3).map((c) => <button key={c.id} onClick={() => choose(c)}>{dn(c.name)}<ArrowUpRight size={12} /></button>)}</div></div>}
           </div>
@@ -526,6 +543,7 @@ export default function Home() {
       </div>
       <aside className={`workspace-sidebar glass ${panel ? "mobile-open" : ""}`} aria-label={t("Exploration tools")}>
         <div className="sidebar-head"><span><Compass size={17} />{t("Exploration tools")}</span><button className="mobile-only icon-button" onClick={() => setPanel(null)} aria-label={t("Close exploration tools")}><X size={18} /></button><span className="desktop-only sidebar-subtitle">{t("Explore at your own pace")}</span></div>
+        <Button variant="ghost" className="random-organ-button" disabled={!randomReady} onClick={chooseRandomOrgan}><Shuffle size={16} />{t("Random organ")}<ArrowRight size={15} /></Button>
         <div className="sidebar-tabs">
           <button className={panel !== "search" ? "active" : ""} aria-pressed={panel !== "search"} onClick={() => setPanel("layers")}><Layers3 size={16} />{t("Systems")}</button>
           <button className={panel === "search" ? "active" : ""} aria-pressed={panel === "search"} onClick={() => setPanel("search")}><Search size={16} />{t("Find a structure")}<kbd>/</kbd></button>
@@ -1055,6 +1073,7 @@ export default function Home() {
             </details>
           </div>
           <div className="detail-actions">
+            <Button variant="outline" className="random-next-action" disabled={!randomReady} onClick={chooseRandomOrgan}><Shuffle size={17} />{t("Try another organ")}</Button>
             <Button
               className="primary-action locate-action"
               disabled={progress < 100 || !!error}
