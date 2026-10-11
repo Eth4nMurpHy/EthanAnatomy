@@ -522,10 +522,6 @@ export default function Home() {
                   <span><strong>{t(title)}</strong><small>{t(description)}</small></span><ArrowUpRight size={18} />
                 </button>
               ))}
-              <button className="home-path random-path" disabled={!randomReady} onClick={chooseRandomOrgan}>
-                <span className="path-icon"><Shuffle size={22} strokeWidth={1.6} /></span>
-                <span><strong>{t("Random exploration")}</strong><small>{t("Discover a different organ with each click")}</small></span><ArrowUpRight size={18} />
-              </button>
             </div>
             {recentIds.length > 0 && atlas && <div className="home-recent"><span>{t("Recently explored")}</span><div>{recentIds.flatMap((id) => searchIndex.get(id)?.concept ?? []).slice(0, 3).map((c) => <button key={c.id} onClick={() => choose(c)}>{dn(c.name)}<ArrowUpRight size={12} /></button>)}</div></div>}
           </div>
@@ -543,7 +539,6 @@ export default function Home() {
       </div>
       <aside className={`workspace-sidebar glass ${panel ? "mobile-open" : ""}`} aria-label={t("Exploration tools")}>
         <div className="sidebar-head"><span><Compass size={17} />{t("Exploration tools")}</span><button className="mobile-only icon-button" onClick={() => setPanel(null)} aria-label={t("Close exploration tools")}><X size={18} /></button><span className="desktop-only sidebar-subtitle">{t("Explore at your own pace")}</span></div>
-        <Button variant="ghost" className="random-organ-button" disabled={!randomReady} onClick={chooseRandomOrgan}><Shuffle size={16} />{t("Random organ")}<ArrowRight size={15} /></Button>
         <div className="sidebar-tabs">
           <button className={panel !== "search" ? "active" : ""} aria-pressed={panel !== "search"} onClick={() => setPanel("layers")}><Layers3 size={16} />{t("Systems")}</button>
           <button className={panel === "search" ? "active" : ""} aria-pressed={panel === "search"} onClick={() => setPanel("search")}><Search size={16} />{t("Find a structure")}<kbd>/</kbd></button>
@@ -931,14 +926,21 @@ export default function Home() {
           {state.explode > 0.8 ? t("Drag to pan") : t("Drag to orbit")} <b>·</b>{" "}
           {t("Pinch to zoom")} <b>·</b> {t("Tap to inspect")}
         </span>
+        <div className="footer-actions">
+        <Button variant="ghost" className="footer-random-button" disabled={!randomReady} onClick={chooseRandomOrgan} title={t("Random organ")}><Shuffle size={13} /><span>{t("Random exploration")}</span></Button>
         <Button
           variant="ghost"
+          className="footer-about-button"
+          aria-label={t("About & acknowledgements")}
           onClick={() => {
             setCreditsOpen(true);
           }}
         >
-          {updater.native && updater.state.update ? <span className="update-badge">{t(updater.state.status === "ready" ? "Restart to update" : "New version available")}</span> : <><span>{"Sunky"}</span><span aria-hidden="true">·</span></>}{t("About & acknowledgements")} <ArrowUpRight size={12} />
+          {updater.native && updater.state.update && <span className="update-badge">{t(updater.state.status === "ready" ? "Restart to update" : "New version available")}</span>}
+          <span className="footer-about-label">{!updater.state.update && <>{"Sunky"}<span aria-hidden="true">{" · "}</span></>}{t("About & acknowledgements")}</span>
+          <ArrowUpRight className="desktop-only" size={12} /><Info className="mobile-only" size={14} />
         </Button>
+        </div>
       </footer>
       {progress < 100 && !error && (
         <div className="loading glass" role="status">
@@ -1073,7 +1075,6 @@ export default function Home() {
             </details>
           </div>
           <div className="detail-actions">
-            <Button variant="outline" className="random-next-action" disabled={!randomReady} onClick={chooseRandomOrgan}><Shuffle size={17} />{t("Try another organ")}</Button>
             <Button
               className="primary-action locate-action"
               disabled={progress < 100 || !!error}
