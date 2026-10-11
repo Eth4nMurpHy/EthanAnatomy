@@ -174,6 +174,8 @@ export interface SceneState {
   isolate: boolean;
   view: View;
   rotate: boolean;
+  rotationSpeed?: "slow" | "standard" | "fast";
+  rotationDirection?: "clockwise" | "counterclockwise";
   reset: number;
 }
 export const DEFAULT_VISIBLE: SystemId[] = [

@@ -54,6 +54,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
@@ -809,6 +810,7 @@ export default function Home() {
           </Button>
         ))}
         <i />
+        <div className={`rotation-control${state.rotate ? " is-rotating" : ""}`}>
         <Button
           variant="ghost"
           disabled={state.explode >= 0.4}
@@ -817,9 +819,40 @@ export default function Home() {
           className={state.rotate ? "active" : ""}
           onClick={() => setState((s) => ({ ...s, rotate: !s.rotate }))}
         >
-          {state.rotate ? <Pause size={17} /> : <RotateCw size={18} />}
+          {state.rotate ? <Pause size={17} /> : state.rotationDirection === "counterclockwise" ? <RotateCcw size={18} /> : <RotateCw size={18} />}
           <span className="rotate-label">{t("Auto rotate")}</span>
         </Button>
+        <Popover>
+          <PopoverTrigger render={<Button variant="ghost" className="rotation-settings-trigger" disabled={state.explode >= 0.4} aria-label={t("Rotation settings")} title={t("Rotation settings")} />}>
+            <ChevronDown size={13} />
+          </PopoverTrigger>
+          <PopoverContent className="rotation-settings" side="top" align="end" sideOffset={10}>
+            <PopoverTitle>{t("Rotation settings")}</PopoverTitle>
+            <fieldset>
+              <legend>{t("Rotation speed")}</legend>
+              <div className="rotation-options">
+                {(["slow", "standard", "fast"] as const).map((speed, i) => (
+                  <label key={speed}>
+                    <input type="radio" name="rotation-speed" value={speed} checked={(state.rotationSpeed ?? "standard") === speed} onChange={() => setState((s) => ({ ...s, rotationSpeed: speed }))} />
+                    <span>{t(["Slow", "Standard", "Fast"][i])}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>{t("Rotation direction")}</legend>
+              <div className="rotation-options">
+                {(["clockwise", "counterclockwise"] as const).map((direction, i) => (
+                  <label key={direction}>
+                    <input type="radio" name="rotation-direction" value={direction} checked={(state.rotationDirection ?? "clockwise") === direction} onChange={() => setState((s) => ({ ...s, rotationDirection: direction }))} />
+                    <span>{i === 0 ? <RotateCw size={14} /> : <RotateCcw size={14} />}{t(i === 0 ? "Clockwise" : "Counterclockwise")}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          </PopoverContent>
+        </Popover>
+        </div>
         <Button
           variant="ghost"
           className="view-reset"

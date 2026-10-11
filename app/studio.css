@@ -358,3 +358,18 @@ kbd { font-size:11px; border:1px solid #dce5df; background:#fff; padding:1px 5px
 @media(prefers-reduced-motion:reduce) {
   *,*:before,*:after { transition-duration:0s!important; animation-duration:0s!important; scroll-behavior:auto!important; }.home-path:hover { transform:none; }
 }
+.rotation-control { display:flex; align-items:center; border-radius:6px; }
+.rotation-control.is-rotating { background:#e9f3ed; }
+.view-controls .rotation-control>button { border-radius:6px 0 0 6px; }
+.view-controls .rotation-settings-trigger { min-width:23px; width:23px; padding:0 4px; border-radius:0 6px 6px 0; color:#71877b; }
+.rotation-control.is-rotating .rotation-settings-trigger { color:#176b58; }
+.rotation-settings { width:244px; padding:16px; gap:14px; border-radius:14px; background:#fcfefd; color:#29483d; border:1px solid #dfe9e3; box-shadow:0 12px 36px #244b3920; }
+.rotation-settings [data-slot=popover-title] { font-size:13px; font-weight:600; }
+.rotation-settings fieldset { border:0; padding:0; margin:0; min-width:0; }
+.rotation-settings legend { font-size:11px; color:#7d9185; margin-bottom:7px; }
+.rotation-options { display:flex; gap:3px; background:#f0f5f2; padding:3px; border-radius:8px; }
+.rotation-options label { position:relative; flex:1; cursor:pointer; }
+.rotation-options input { position:absolute; opacity:0; width:1px; height:1px; }
+.rotation-options span { display:flex; align-items:center; justify-content:center; gap:5px; min-height:32px; border-radius:6px; font-size:11px; color:#7b8e82; }
+.rotation-options input:checked+span { background:#fff; color:#176b58; font-weight:600; box-shadow:0 1px 4px #25483412; }
+.rotation-options input:focus-visible+span { outline:2px solid #398f78; outline-offset:1px; }

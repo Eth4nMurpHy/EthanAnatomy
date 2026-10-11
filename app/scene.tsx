@@ -766,7 +766,8 @@ export default function AnatomyScene({
         mesh.position.set(data[i * 4], data[i * 4 + 1], data[i * 4 + 2]);
       });
       controls.autoRotate = s.rotate && amount < 0.4;
-      controls.autoRotateSpeed = 0.65;
+      controls.autoRotateSpeed = ({ slow: 0.3, standard: 0.65, fast: 1.3 }[s.rotationSpeed ?? "standard"]) *
+        (s.rotationDirection === "counterclockwise" ? -1 : 1);
       if (cameraTransition) {
         const journey = cameraTransition;
         const progress = reducedMotion.matches ? 1 : T.MathUtils.clamp((time - journey.start) / 650, 0, 1);
