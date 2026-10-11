@@ -481,7 +481,7 @@ export default function Home() {
       <div className="vignette" />
       <header className="app-header">
         <button className="brand" onClick={goHome} aria-label={t("Go to homepage")}>
-          <img className="brand-logo" src={staticAssetUrl("/branding/anatolume-logo.png")} width={1774} height={887} alt="层知 · Anatolume" />
+          <img className="brand-logo" src={staticAssetUrl("/branding/anatolume-logo.webp")} width={640} height={320} alt="层知 · Anatolume" />
         </button>
         <nav className="primary-nav" aria-label={t("Main navigation")}>
           <button className={screen === "home" ? "active" : ""} onClick={goHome} aria-current={screen === "home" ? "page" : undefined}>{t("Home")}</button>

@@ -1,7 +1,8 @@
 # 层知 · Anatolume 品牌资源
 
 - `anatolume-logo-v1.png`：命名讨论中选定的完整中英文 Logo，保留原稿，用于 README 与应用页眉。
-- `../../public/branding/anatolume-logo.png`：完整中英文 Logo 的原样副本，页眉直接以图片展示，不再用图标与 HTML 文字拼接；CSS 仅收起原稿的透明留白。
+- `../../public/branding/anatolume-logo.png`：完整中英文 Logo 的高分辨率原稿副本。
+- `../../public/branding/anatolume-logo.webp`：网页与客户端页眉、关于页使用的 640 × 320 轻量版本，保留透明背景，以无损 WebP 编码。显示尺寸不变；CSS 仅收起原稿的透明留白。
 - `anatolume-app-icon.png`：由原稿提取的独立人体标志，浅色底用于网页图标和桌面图标。移除字标以保证小尺寸可读性。
 - `../../public/branding/`：完整品牌图片与 32、48、180、256 像素应用图标。
 - `../../src-tauri/icons/`：Windows ICO、macOS ICNS 及各平台 PNG，由 Tauri CLI 从同一应用图标生成。

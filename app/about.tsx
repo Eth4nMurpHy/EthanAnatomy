@@ -41,7 +41,7 @@ export default function About({ locale, open, onOpenChange, updater, privacyMode
             <SheetDescription>{t("See the body. Understand every layer.")}</SheetDescription>
             <div className="credits-version">{t(runtime.native ? "Offline client" : "Web viewer")}<span>·</span>{runtime.version}</div>
           </div>
-          <div className="credits-logo"><img src={staticAssetUrl("/branding/anatolume-logo.png")} width={1774} height={887} alt="层知 · Anatolume" /></div>
+          <div className="credits-logo"><img src={staticAssetUrl("/branding/anatolume-logo.webp")} width={640} height={320} alt="层知 · Anatolume" /></div>
         </div>
         <section className="privacy-preference" data-targeted={focusPrivacy || undefined} aria-labelledby="privacy-heading">
           <div><h2 id="privacy-heading"><EyeOff size={17} />{t("Privacy mode")}</h2><Switch ref={privacySwitchRef} checked={privacyMode} onCheckedChange={onPrivacyModeChange} aria-labelledby="privacy-heading" aria-describedby="privacy-description" /></div>
