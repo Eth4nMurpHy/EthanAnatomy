@@ -161,7 +161,7 @@
 
 前端使用 React、TypeScript 与 Three.js，桌面端使用 Tauri。网页与客户端共享界面和三维渲染逻辑，仓库已包含可用模型。
 
-[客户端开发文档](client/README.md) · [代码结构与 CI](docs/PROJECT_STRUCTURE.md) · [版本与发布指南](docs/RELEASE.md) · [CI 状态](https://github.com/isunky/Anatolume/actions/workflows/ci.yml)
+[产品需求文档](docs/PRD.md) · [客户端开发文档](client/README.md) · [代码结构与 CI](docs/PROJECT_STRUCTURE.md) · [版本与发布指南](docs/RELEASE.md) · [CI 状态](https://github.com/isunky/Anatolume/actions/workflows/ci.yml)
 
 <details>
 <summary><strong>快速开始</strong> · 本地运行与网页构建</summary>
