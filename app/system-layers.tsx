@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, Search } from "lucide-react";
+import { Activity, Bone, Brain, ChevronRight, CircleDot, Droplets, Eye, GitBranch, Hand, Heart, Layers3, Network, PersonStanding, Search, Sparkles, Utensils, Wind, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { displayName, systemName, text, type Locale } from "../client/i18n";
@@ -16,6 +16,15 @@ interface Props {
   onStructure: (structure: Concept, enabled: boolean) => void;
   onInspect: (structure: Concept) => void;
 }
+
+// Reuse the application's line icon family with one neutral palette.
+const systemIcons: Record<SystemId, LucideIcon> = {
+  skeletal: Bone, muscular: Activity, cardiac: Heart, sensory: Eye,
+  arterial: GitBranch, venous: Network, nervous: Brain, respiratory: Wind,
+  digestive: Utensils, urinary: Droplets, lymphatic: CircleDot,
+  endocrine: Sparkles, reproductive: PersonStanding, mammary: Heart,
+  integumentary: Hand, connective: Layers3,
+};
 
 export default function SystemLayers({ locale, structures, visibleIds, ready, isOnly, onSystem, onOnly, onStructure, onInspect }: Props) {
   const [expanded, setExpanded] = useState<SystemId | null>(null);
@@ -41,14 +50,16 @@ export default function SystemLayers({ locale, structures, visibleIds, ready, is
       const shown = ids.filter((id) => visibleIds.has(id)).length;
       const name = systemName(system.id, system.name, locale);
       const open = expanded === system.id;
+      const Icon = systemIcons[system.id];
       return <div ref={(node) => { if (node) groupRefs.current.set(system.id, node); else groupRefs.current.delete(system.id); }} className={`system-group ${open ? "is-expanded" : ""}`} key={system.id}>
         <div className={`system-row ${shown ? "enabled" : ""}`}>
           <button className="system-name" aria-expanded={open} aria-controls={`system-children-${system.id}`} aria-label={t(open ? "Collapse {name} structures" : "Browse {name} structures", { name })}
             onClick={() => { setExpanded(open ? null : system.id); setQuery(""); setLimit(24); }}>
             <ChevronRight size={12} className="system-chevron" aria-hidden="true" />
-            <span className="system-dot" style={{ background: system.color }} />
-            <span className="system-label">{name}</span>
-            <span className="system-count" title={t("{shown} of {total} pieces visible", { shown, total: ids.length })}>{shown && shown < ids.length ? `${shown}/${ids.length}` : ids.length}</span>
+            <span className="system-icon" aria-hidden="true"><Icon size={17} strokeWidth={1.6} /></span>
+            <span className="system-text"><span className="system-label" title={name}>{name}</span>
+              <span className="system-count" title={t("{shown} of {total} pieces visible", { shown, total: ids.length })}>{shown && shown < ids.length ? `${shown}/${ids.length}` : ids.length}</span>
+            </span>
           </button>
           <Button variant="ghost" className="system-only" aria-label={t("Show only {name}", { name })} aria-pressed={isOnly(system.id)} onClick={() => onOnly(system.id)} disabled={!ready}>{t("Only")}</Button>
           <Switch checked={shown > 0} onCheckedChange={(enabled) => onSystem(system.id, enabled)} aria-label={t("Show {name}", { name })} disabled={!ready} />
