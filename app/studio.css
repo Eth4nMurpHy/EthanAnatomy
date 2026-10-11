@@ -138,10 +138,11 @@ kbd { font-size:11px; border:1px solid #dce5df; background:#fff; padding:1px 5px
 .footer-status.is-web .footer-data { display:inline; margin-left:0; padding-left:0; border-left:0; }
 .studio-footer .footer-privacy { flex-shrink:0; width:30px; min-width:30px; height:30px; min-height:30px; padding:0; border-radius:7px; color:#8a9b90; }
 .studio-footer .footer-privacy.is-active { color:#5f806c; background:#eaf1ed; }
-.privacy-toast-viewport { bottom:52px; z-index:80; }
-.privacy-toast-viewport [data-slot=toast] { border-color:#dce6df; background:#fcfdfc; color:#506d5b; border-radius:12px; }
-.privacy-toast-viewport [data-slot=toast-title] { font-size:12px; }
-.privacy-toast-viewport [data-slot=toast-description] { font-size:11px; line-height:1.7; color:#7a8c80; }
+.privacy-status-tooltip { flex-direction:column; align-items:flex-start; gap:6px; max-width:min(290px, calc(100vw - 32px)); padding:12px 14px; border:1px solid #dce6df; background:#fcfdfc; color:#506d5b; border-radius:10px; box-shadow:0 6px 24px #254c3312; }
+.privacy-status-tooltip strong { font-size:12px; font-weight:600; }
+.privacy-status-tooltip span { font-size:11px; line-height:1.7; color:#7a8c80; }
+.privacy-status-tooltip small { font-size:10px; color:#8a9b90; }
+.privacy-status-tooltip > :last-child { background:#fcfdfc; fill:#fcfdfc; }
 .loading,.empty-scene { position:absolute; top:44%; left:calc(var(--sidebar) + (100% - var(--sidebar) - var(--inspector))/2); transform:translate(-50%,-50%); z-index:15; border-radius:12px; padding:24px; display:flex; align-items:center; gap:16px; min-width:260px; }.mode-home .loading { left:74%; }.loading>svg { color:#438b63; }.loading strong { display:block; font-size:13px; font-weight:550; }.loading span { display:block; margin-top:8px; font-size:11px; color:#8b9f91; }
 .loading-track { height:3px; background:#e8f0e9; margin-top:15px; min-width:200px; border-radius:4px; overflow:hidden; }.loading-track i { display:block; height:100%; background:#458c62; transition:width .4s; }.error { flex-direction:column; max-width:90vw; font-size:13px; }
 .empty-scene { text-align:center; flex-direction:column; width:310px; gap:10px; }.empty-scene>svg { color:#95b49f; }.empty-scene h2 { font-size:16px; font-weight:600; margin:0; }.empty-scene p { font-size:12px; color:#7a9381; line-height:1.8; margin:0 0 8px; }

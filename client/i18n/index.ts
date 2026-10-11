@@ -13,7 +13,7 @@ export const UI_ZH: Record<string, string> = {
   "Privacy mode: on": "隐私模式：开启",
   "Privacy mode: off": "隐私模式：关闭",
   "Open privacy settings": "打开隐私设置",
-  "Close notification": "关闭提示",
+  "Click to open privacy settings": "点击打开隐私设置",
   "Sensitive structures are hidden in default views and random exploration. Search still allows explicit viewing.": "默认视图和随机探索已隐藏敏感结构，主动搜索仍可查看。",
   "Default views and random exploration include all available anatomy.": "默认视图和随机探索正常展示全部可用结构。",
   "Hide male reproductive structures, female breasts and external genitalia in default views and random exploration. Internal female organs remain visible; select a search result to view hidden structures explicitly.": "默认视图和随机探索隐藏男性生殖结构、女性乳房与外生殖器，保留子宫、卵巢等内部器官。主动搜索并选择结果后仍可查看隐藏结构。",
