@@ -13,7 +13,7 @@ export function createSystemSeparationLayout(parts: Part[]) {
     maxY = Math.max(maxY, part.bounds[1][1]);
     depth = Math.max(depth, Math.abs(part.bounds[0][2]), Math.abs(part.bounds[1][2]));
   }
-  const gap = 0.06;
+  const gap = 0.025;
   const width = [...groups.values()].reduce((sum, group) => sum + group.max - group.min, 0) + Math.max(0, groups.size - 1) * gap;
   const offsets = new Map<SystemId, number>();
   let x = -width / 2;

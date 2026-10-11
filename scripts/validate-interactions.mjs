@@ -107,7 +107,7 @@ for (const file of ['atlas.json', 'atlas-female.json']) {
     });
     for(let i=0;i<boxes.length;i++) {
       assert.ok(boxes[i].min>=-layout.width/2-1e-8 && boxes[i].max<=layout.width/2+1e-8,'Separated systems fit their layout bounds');
-      if(i) assert.ok(boxes[i].min-boxes[i-1].max>=.06-1e-8,'Complete systems have a clear gap in the front view');
+      if(i) assert.ok(boxes[i].min-boxes[i-1].max>=.025-1e-8,'Complete systems have a clear gap in the front view');
     }
   }
   for(const group of groups) for(const aspect of [.46,1,1.7]) {
