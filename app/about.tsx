@@ -36,13 +36,13 @@ export default function About({ locale, open, onOpenChange, updater, privacyMode
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent closeLabel={t("Close")} initialFocus={focusPrivacy ? privacySwitchRef : headingRef} className="about-sheet credits-sheet glass">
         <div className="credits-brand">
-          <img src={staticAssetUrl("/branding/256x256.png")} width={56} height={56} alt="" />
-          <div><div className="eyebrow">{t("About & acknowledgements")}</div>
-            <SheetTitle ref={headingRef} tabIndex={-1} className="credits-title">{t("Anatolume")}</SheetTitle>
+          <div className="credits-heading">
+            <SheetTitle ref={headingRef} tabIndex={-1} className="credits-title">{t("About & acknowledgements")}</SheetTitle>
+            <SheetDescription>{t("See the body. Understand every layer.")}</SheetDescription>
+            <div className="credits-version">{t(runtime.native ? "Offline client" : "Web viewer")}<span>·</span>{runtime.version}</div>
           </div>
+          <div className="credits-logo"><img src={staticAssetUrl("/branding/anatolume-logo.png")} width={1774} height={887} alt="层知 · Anatolume" /></div>
         </div>
-        <SheetDescription>{t("See the body. Understand every layer.")}</SheetDescription>
-        <div className="credits-version">{t(runtime.native ? "Offline client" : "Web viewer")}<span>·</span>{runtime.version}</div>
         <section className="privacy-preference" data-targeted={focusPrivacy || undefined} aria-labelledby="privacy-heading">
           <div><h2 id="privacy-heading"><EyeOff size={17} />{t("Privacy mode")}</h2><Switch ref={privacySwitchRef} checked={privacyMode} onCheckedChange={onPrivacyModeChange} aria-labelledby="privacy-heading" aria-describedby="privacy-description" /></div>
           <p id="privacy-description">{t("Hide male reproductive structures, female breasts and external genitalia in default views and random exploration. Internal female organs remain visible; explicitly open a system or structure from the list, or select a search result, to view hidden structures.")}</p>

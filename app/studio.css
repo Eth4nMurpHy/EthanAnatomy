@@ -192,12 +192,13 @@ kbd { font-size:11px; border:1px solid #dce5df; background:#fff; padding:1px 5px
 .guide-step strong { font-size:13px; font-weight:600; }.guide-step p { margin:7px 0 0; font-size:12px; color:#7b9482; line-height:1.85; }
 .guide-steps>button { width:100%; min-height:42px; gap:12px; margin-top:3px; font-size:12px; }
 .credits-sheet { width:min(520px,100vw)!important; max-width:520px!important; gap:16px!important; background:#fcfdfc; }
-.credits-brand { display:flex; gap:14px; align-items:center; padding-right:16px; }
-.credits-brand>img { border-radius:16px; background:#f1f6f2; flex-shrink:0; }
-.credits-brand .eyebrow { font-size:10px; color:#697e73; margin-bottom:6px; }
-.credits-title { font-size:27px!important; line-height:1.2; font-weight:600!important; letter-spacing:-.5px; }
+.credits-brand { display:flex; gap:16px; align-items:center; justify-content:space-between; padding:8px 0; }
+.credits-heading { display:flex; flex-direction:column; gap:9px; min-width:0; flex:1; }
+.credits-logo { position:relative; width:156px; max-width:42%; aspect-ratio:200/84; flex-shrink:0; overflow:hidden; }
+.credits-logo>img { position:absolute; left:50%; top:50%; display:block; width:125%; max-width:none; height:auto; transform:translate(-50%,-50%); }
+.credits-title { font-size:18px!important; line-height:1.4; font-weight:550!important; letter-spacing:.03em; color:#405e4d; }
 .credits-sheet [data-slot=sheet-description] { color:#64776c; }
-.credits-version { display:flex; gap:9px; align-items:center; font-size:11px; color:#66796e; margin-top:-8px; }
+.credits-version { display:flex; gap:9px; align-items:center; font-size:11px; color:#66796e; }
 .update-card { padding:18px; border:1px solid #dce6e0; border-radius:18px; background:#f4f8f5; }
 .update-heading { display:flex; align-items:center; gap:11px; color:#587363; }
 .update-icon { width:36px; height:36px; display:grid; place-items:center; border-radius:11px; background:#e6eee8; flex-shrink:0; }
