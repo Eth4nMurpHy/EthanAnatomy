@@ -1,8 +1,8 @@
-import { ArrowUpRight, Code2, Globe, Heart } from "lucide-react";
+import { ArrowUpRight, Code2, Download, Globe, Heart } from "lucide-react";
 import { useRef } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { text, type Locale } from "../client/i18n";
-import { runtimeInfo } from "../client/platform";
+import { CLIENT_DOWNLOAD_URL, runtimeInfo } from "../client/platform";
 import { staticAssetUrl } from "./core/static-asset";
 import UpdatePanel from "./update-panel";
 import type { ClientUpdate } from "../hooks/use-client-update";
@@ -39,6 +39,11 @@ export default function About({ locale, open, onOpenChange, updater }: {
         <SheetDescription>{t("See the body. Understand every layer.")}</SheetDescription>
         <div className="credits-version">{t(runtime.native ? "Offline client" : "Web viewer")}<span>·</span>{runtime.version}</div>
         {updater.native && <UpdatePanel locale={locale} updater={updater} />}
+        {!runtime.native && <a className="credits-download" href={CLIENT_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer">
+          <span className="credits-download-icon"><Download size={20} /></span>
+          <span><strong>{t("Download offline client")}</strong><small>{t("Explore offline on Windows and macOS")}</small></span>
+          <ArrowUpRight size={17} />
+        </a>}
 
         <section className="author-card" aria-labelledby="author-heading">
           <div className="author-card-heading"><span className="author-monogram" aria-hidden="true">{"S"}</span>

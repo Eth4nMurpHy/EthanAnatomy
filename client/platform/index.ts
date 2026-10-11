@@ -1,6 +1,8 @@
 import { isTauri } from "@tauri-apps/api/core";
 import { version } from "../../package.json";
 
+export const CLIENT_DOWNLOAD_URL = "https://github.com/isunky/Anatolume/releases";
+
 export function runtimeInfo() {
   return { native: isTauri(), version };
 }

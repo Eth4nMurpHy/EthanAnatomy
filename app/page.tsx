@@ -16,7 +16,7 @@ import {
   LANGUAGE_STORAGE_KEY,
   type Locale,
 } from "../client/i18n";
-import { openExternal, runtimeInfo, setAppTitle } from "../client/platform";
+import { CLIENT_DOWNLOAD_URL, openExternal, runtimeInfo, setAppTitle } from "../client/platform";
 import { registerAtlasTools } from "./core/agent-tools";
 import { staticAssetUrl } from "./core/static-asset";
 import { MODELS, MODEL_STORAGE_KEY, defaultLayers, isModelAtlas, readModel, readRecent, recentKey, type ModelId } from "./core/model-catalogue";
@@ -31,6 +31,7 @@ import {
   Bone,
   BookOpen,
   Compass,
+  Download,
   Heart,
   MousePointer2,
   PanelLeftClose,
@@ -490,6 +491,10 @@ export default function Home() {
               <Button className="start-button" onClick={() => startExploring(defaultVisible)}>{t("Start exploring")}<ArrowRight size={19} /></Button>
               <button className="guide-button" onClick={() => setAbout(true)}><BookOpen size={18} />{t("How to explore")}</button>
             </div>
+            {!updater.native && <div className="home-download">
+              <a href={CLIENT_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer"><Download size={15} /><span>{t("Download offline client")}</span><ArrowUpRight size={13} /></a>
+              <span>{"Windows · macOS"}</span>
+            </div>}
             <div className="home-stats">
               <div><strong>{atlas?.parts.length.toLocaleString() ?? "—"}</strong><span>{t("Individual structures")}</span></div>
               <div><strong>{atlas ? activeSystems.length : "—"}</strong><span>{t("Anatomical systems")}</span></div>
