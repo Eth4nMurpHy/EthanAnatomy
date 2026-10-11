@@ -9,6 +9,9 @@ export type Locale = "zh-CN" | "en";
 // Stable keys preserve preferences when upgrading to Anatolume.
 export const LANGUAGE_STORAGE_KEY = "human-atlas.language";
 export const UI_ZH: Record<string, string> = {
+  "Privacy mode": "隐私模式",
+  "Privacy mode is on": "隐私模式已开启",
+  "Hide male reproductive structures in default views and random exploration. Select a search result to view them explicitly.": "默认视图和随机探索隐藏男性生殖结构；主动搜索并选择结果后仍可查看。",
   "Random exploration": "随机探索",
   "Random organ": "随机器官",
   "Download offline client": "下载离线客户端",

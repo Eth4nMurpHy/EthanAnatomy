@@ -160,6 +160,7 @@ export interface Atlas {
 }
 export type View = "three-quarter" | "front" | "back" | "side";
 export interface SceneState {
+  hiddenParts?: readonly string[];
   inspectorOpen?: boolean;
   inspectorLayout?: string;
   // Nonzero keeps the selection framed; increment to locate it again, zero to leave.

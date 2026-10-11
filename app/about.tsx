@@ -1,4 +1,5 @@
-import { ArrowUpRight, Code2, Download, Globe, Heart } from "lucide-react";
+import { ArrowUpRight, Code2, Download, EyeOff, Globe, Heart } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useRef } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { text, type Locale } from "../client/i18n";
@@ -18,11 +19,13 @@ const tools = [
   ["meshoptimizer", "https://github.com/zeux/meshoptimizer"],
 ];
 
-export default function About({ locale, open, onOpenChange, updater }: {
+export default function About({ locale, open, onOpenChange, updater, privacyMode, onPrivacyModeChange }: {
   locale: Locale;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   updater: ClientUpdate;
+  privacyMode: boolean;
+  onPrivacyModeChange: (enabled: boolean) => void;
 }) {
   const t = (english: string) => text(english, locale);
   const runtime = runtimeInfo();
@@ -38,6 +41,10 @@ export default function About({ locale, open, onOpenChange, updater }: {
         </div>
         <SheetDescription>{t("See the body. Understand every layer.")}</SheetDescription>
         <div className="credits-version">{t(runtime.native ? "Offline client" : "Web viewer")}<span>·</span>{runtime.version}</div>
+        <section className="privacy-preference" aria-labelledby="privacy-heading">
+          <div><h2 id="privacy-heading"><EyeOff size={17} />{t("Privacy mode")}</h2><Switch checked={privacyMode} onCheckedChange={onPrivacyModeChange} aria-labelledby="privacy-heading" aria-describedby="privacy-description" /></div>
+          <p id="privacy-description">{t("Hide male reproductive structures in default views and random exploration. Select a search result to view them explicitly.")}</p>
+        </section>
         {updater.native && <UpdatePanel locale={locale} updater={updater} />}
         {!runtime.native && <a className="credits-download" href={CLIENT_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer">
           <span className="credits-download-icon"><Download size={20} /></span>

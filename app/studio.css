@@ -203,6 +203,10 @@ kbd { font-size:11px; border:1px solid #dce5df; background:#fff; padding:1px 5px
 .author-website { display:flex; align-items:center; gap:9px; min-height:44px; width:fit-content; padding:0 12px; border:1px solid #dce7df; border-radius:9px; background:#ffffffb3; color:#446d56; font-size:12px; text-decoration:none; }
 .author-website:hover { background:#eaf3ed; }
 .credits-section { padding-top:8px; }
+.privacy-preference { border:1px solid #dce6df; border-radius:12px; padding:16px; background:#f1f5f2; }
+.privacy-preference>div { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.privacy-preference h2 { display:flex; align-items:center; gap:8px; margin:0; color:#506d5b; font-size:13px; font-weight:550; }
+.privacy-preference p { margin:10px 0 0; font-size:11px; line-height:1.8; color:#7a8c80; }
 .credits-section h2 { display:flex; gap:8px; align-items:center; font-size:14px; font-weight:600; margin:0; color:#3d5d49; }
 .credits-section h2 svg { color:#799482; }
 .credit-card { margin-top:12px; padding:16px 18px; border:1px solid #e3e9e4; border-radius:13px; background:#fff; }

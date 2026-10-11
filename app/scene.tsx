@@ -9,6 +9,7 @@ import { createExplosionLayout } from "./core/explosion-layout";
 import { decodeModelResponse } from "./core/model-download";
 import { staticAssetUrl } from "./core/static-asset";
 import { PointerTap } from "./core/pointer-tap";
+import { isPartVisible } from "./core/privacy-mode";
 import { SYSTEMS, type Atlas, type SceneState } from "./core/anatomy";
 import { displayName, text, type Locale } from "../client/i18n";
 interface Props {
@@ -481,7 +482,8 @@ export default function AnatomyScene({
       const changed =
         lastState?.visible !== s.visible ||
         lastState?.selected !== s.selected ||
-        lastState?.isolate !== s.isolate;
+        lastState?.isolate !== s.isolate ||
+        lastState?.hiddenParts !== s.hiddenParts;
       const moving = Math.abs(amount - s.explode) > 0.0001;
       if (moving) {
         amount = T.MathUtils.damp(amount, s.explode, 8, dt);
@@ -491,14 +493,15 @@ export default function AnatomyScene({
       if (changed) {
         selectedKey = s.selected.join(",");
         const visible = new Set(s.visible),
-          selection = new Set(s.selected);
+          selection = new Set(s.selected),
+          hidden = new Set(s.hiddenParts);
         activeParts = [];
         selectedIndices = [];
         hasSolidParts = false;
         atlas.parts.forEach((p, i) => {
           const selected = selection.has(p.id);
           if (selected) selectedIndices.push(i);
-          const shown = s.isolate ? selected : visible.has(p.system) || selected;
+          const shown = isPartVisible(p, visible, selection, s.isolate, hidden);
           partVisibility[i] = shown ? 1 : 0;
           data[i * 4 + 3] = shown ? 1 : 0;
           selectedData[i * 4] = selected ? 255 : 0;
@@ -508,7 +511,7 @@ export default function AnatomyScene({
           }
         });
         const visibleParts = atlas.parts.filter((p) =>
-          s.isolate ? selection.has(p.id) : visible.has(p.system) || selection.has(p.id),
+          isPartVisible(p, visible, selection, s.isolate, hidden),
         );
         const nextLayoutKey =
           visibleParts.map((p) => p.id).join(",") + ":" + camera.aspect.toFixed(3);

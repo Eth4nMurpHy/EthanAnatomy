@@ -4,11 +4,32 @@ import {createExplosionLayout} from '../app/core/explosion-layout.ts';
 import {PointerTap} from '../app/core/pointer-tap.ts';
 import {atlasTools} from '../app/core/agent-tools.ts';
 import {randomOrganCandidates,pickRandomOrgan} from '../app/core/random-organ.ts';
+import {privacyHiddenParts,isPartVisible,readPrivacyMode,PRIVACY_MODE_STORAGE_KEY} from '../app/core/privacy-mode.ts';
 
 for (const file of ['atlas.json', 'atlas-female.json']) {
   const atlas=JSON.parse(await readFile(new URL(`../public/models/${file}`,import.meta.url)));
   const model=atlas.sex;
   const organs=randomOrganCandidates(atlas,model);
+  assert.deepEqual(privacyHiddenParts(atlas,false),[]);
+  const hidden=new Set(privacyHiddenParts(atlas,true));
+  const allSystems=new Set(atlas.parts.map(p=>p.system));
+  const visibleDefault=atlas.parts.filter(p=>isPartVisible(p,allSystems,new Set(),false,hidden));
+  if(model==='male') {
+    assert.ok(hidden.size>12,'Privacy also hides genital vessels outside the reproductive system');
+    for(const part of atlas.parts.filter(p=>p.system==='reproductive' || /penis|testicular/i.test(p.name))) {
+      assert.ok(hidden.has(part.id),`Sensitive structure not hidden: ${part.name}`);
+      assert.equal(isPartVisible(part,allSystems,new Set(),false,hidden),false);
+      assert.equal(isPartVisible(part,allSystems,new Set(),true,hidden),false);
+      assert.equal(isPartVisible(part,new Set(),new Set([part.id]),true,hidden),true,'Explicit search selection remains available');
+      assert.equal(isPartVisible(part,allSystems,new Set([part.id]),false,hidden),true,'Explicit selection can be shown with surroundings');
+      assert.equal(isPartVisible(part,allSystems,new Set(),false,new Set()),true,'Turning privacy off restores the structure');
+    }
+    assert.ok(visibleDefault.some(p=>p.conceptId==='FMA7148'),'Unrelated organs remain visible');
+    assert.equal(organs.filter(c=>!c.elements.some(id=>hidden.has(id))).length,17,'Private organs are excluded from random exploration');
+  } else {
+    assert.equal(hidden.size,0,'Female geometry is unchanged');
+    assert.equal(visibleDefault.length,atlas.parts.length);
+  }
   assert.equal(organs.length,20,`${model}: all common and model-specific organs are available`);
   assert.equal(new Set(organs.map(c=>c.id)).size,organs.length);
   const partIds=new Set(atlas.parts.map(p=>p.id));
@@ -59,6 +80,13 @@ for (const file of ['atlas.json', 'atlas-female.json']) {
   console.log(`${file}: packing at desktop/mobile aspect ratios and search/inspection contracts passed.`);
 }
 assert.deepEqual(randomOrganCandidates(null,'male'),[]);
+assert.deepEqual(privacyHiddenParts(null,true),[]);
+assert.equal(readPrivacyMode(),false);
+assert.equal(readPrivacyMode({getItem:()=>null}),false);
+assert.equal(readPrivacyMode({getItem:()=> 'invalid'}),false);
+assert.equal(readPrivacyMode({getItem:()=>{throw new Error('Storage blocked');}}),false);
+assert.equal(readPrivacyMode({getItem:key=>key===PRIVACY_MODE_STORAGE_KEY?'true':null}),true);
+assert.equal(readPrivacyMode({getItem:()=> 'false'}),false);
 assert.equal(pickRandomOrgan([]),undefined);
 const one={id:'one',name:'one',elements:['mesh']},two={id:'two',name:'two',elements:['mesh2']};
 assert.equal(pickRandomOrgan([one],'one','one',()=>0),one);

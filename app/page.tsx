@@ -22,6 +22,7 @@ import { staticAssetUrl } from "./core/static-asset";
 import { MODELS, MODEL_STORAGE_KEY, defaultLayers, isModelAtlas, readModel, readRecent, recentKey, type ModelId } from "./core/model-catalogue";
 import { anatomySearchIndex, matchedSearchAlias, type SearchEntry } from "./core/anatomy-search";
 import { pickRandomOrgan, randomOrganCandidates } from "./core/random-organ";
+import { isPartVisible, privacyHiddenParts, readPrivacyMode, PRIVACY_MODE_STORAGE_KEY } from "./core/privacy-mode";
 import { InputGroupButton } from "@/components/ui/input-group";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -33,6 +34,7 @@ import {
   BookOpen,
   Compass,
   Download,
+  EyeOff,
   Heart,
   MousePointer2,
   PanelLeftClose,
@@ -96,6 +98,13 @@ const ORGAN_SYSTEMS: SystemId[] = [
 ];
 export default function Home() {
   const updater = useClientUpdate();
+  const [privacyMode, setPrivacyMode] = useState(() => {
+    try { return readPrivacyMode(localStorage); } catch { return false; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(PRIVACY_MODE_STORAGE_KEY, String(privacyMode)); }
+    catch { /* Viewing remains available without persistent storage. */ }
+  }, [privacyMode]);
   const [model, setModel] = useState<ModelId>(() => {
     try { return readModel(localStorage, location.search); }
     catch { return readModel(undefined, location.search); }
@@ -196,7 +205,7 @@ export default function Home() {
     setAtlas(null);
     setChosen(null);
     setDetails(false);
-    setState({ ...initial, visible: defaultLayers(model) });
+    setState({ ...initial, visible: defaultLayers(model, null, privacyMode) });
     fetch(staticAssetUrl(MODELS[model].manifest), { signal: abort.signal })
       .then((r) => {
         if (!r.ok) throw new Error("The anatomy catalogue could not be loaded.");
@@ -205,7 +214,7 @@ export default function Home() {
       .then((data: unknown) => {
         if (abort.signal.aborted) return;
         if (!isModelAtlas(data, model)) throw new Error("The anatomy catalogue could not be loaded.");
-        setState({ ...initial, visible: defaultLayers(model, data) });
+        setState({ ...initial, visible: defaultLayers(model, data, privacyMode) });
         setAtlas(data);
       })
       .catch((e) => {
@@ -222,14 +231,16 @@ export default function Home() {
     setDetails(false);
     setQuery("");
     highlightedConcept.current = undefined;
-    setState({ ...initial, visible: defaultLayers(next) });
+    setState({ ...initial, visible: defaultLayers(next, null, privacyMode) });
     try { setRecentIds(readRecent(localStorage, next)); } catch { setRecentIds([]); }
     setModel(next);
   };
-  const defaultVisible = useMemo(() => defaultLayers(model, atlas), [model, atlas]);
-  const randomOrgans = useMemo(() => randomOrganCandidates(atlas, model), [atlas, model]);
+  const hiddenParts = useMemo(() => privacyHiddenParts(atlas, privacyMode), [atlas, privacyMode]);
+  const hiddenPartIds = useMemo(() => new Set(hiddenParts), [hiddenParts]);
+  const defaultVisible = useMemo(() => defaultLayers(model, atlas, privacyMode), [model, atlas, privacyMode]);
+  const randomOrgans = useMemo(() => randomOrganCandidates(atlas, model).filter((concept) => !concept.elements.some((id) => hiddenPartIds.has(id))), [atlas, model, hiddenPartIds]);
   const randomReady = progress >= 100 && !error && randomOrgans.length > 0;
-  const organVisible = useMemo(() => ORGAN_SYSTEMS.filter((id) => !atlas || atlas.parts.some((p) => p.system === id)), [atlas]);
+  const organVisible = useMemo(() => ORGAN_SYSTEMS.filter((id) => !(privacyMode && model === "male" && id === "reproductive") && (!atlas || atlas.parts.some((p) => p.system === id))), [atlas, privacyMode, model]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (
@@ -292,12 +303,17 @@ export default function Home() {
   const selectedParts = state.selected.map((id) => parts.get(id)).filter((p) => !!p),
     selected = selectedParts[0],
     system = SYSTEMS.find((s) => s.id === selected?.system);
-  const visibleCount =
-    atlas?.parts.filter((p) =>
-      state.isolate
-        ? state.selected.includes(p.id)
-        : state.visible.includes(p.system) || state.selected.includes(p.id),
-    ).length ?? 0;
+  const visibleCount = useMemo(() => {
+    const visible = new Set(state.visible), selection = new Set(state.selected);
+    return atlas?.parts.filter((part) => isPartVisible(part, visible, selection, state.isolate, hiddenPartIds)).length ?? 0;
+  }, [atlas, state.visible, state.selected, state.isolate, hiddenPartIds]);
+  const changePrivacyMode = (enabled: boolean) => {
+    setPrivacyMode(enabled);
+    if (model !== "male") return;
+    setChosen(null);
+    setDetails(false);
+    setState((s) => ({ ...initial, visible: defaultLayers(model, atlas, enabled), reset: s.reset + 1 }));
+  };
   const searchResults = useMemo(() => {
     if (!atlas) return { items: [] as Concept[], total: 0 };
     const term = query.toLowerCase().trim();
@@ -430,6 +446,7 @@ export default function Home() {
           locale={locale}
           state={{
             ...state,
+            hiddenParts,
             inspectorOpen: details && selectedParts.length > 0,
             inspectorLayout: detailLayout,
           }}
@@ -486,12 +503,12 @@ export default function Home() {
           variant="ghost"
           className={`icon-button header-about ${updater.native && updater.state.update ? "has-update" : ""}`}
           aria-label={t("About this atlas")}
-          title={updater.native && updater.state.update ? t(updater.state.status === "ready" ? "Restart to update" : "New version available") : t("About this atlas")}
+          title={updater.native && updater.state.update ? t(updater.state.status === "ready" ? "Restart to update" : "New version available") : t(privacyMode ? "Privacy mode is on" : "About this atlas")}
           onClick={() => {
             setCreditsOpen(true);
           }}
         >
-          <Info size={18} />
+          {privacyMode ? <EyeOff size={18} /> : <Info size={18} />}
         </Button>
       </nav>
       </header>
@@ -1103,7 +1120,7 @@ export default function Home() {
           </div>
         </SheetContent>
       </Sheet>
-      <About locale={locale} open={creditsOpen} onOpenChange={setCreditsOpen} updater={updater} />
+      <About locale={locale} open={creditsOpen} onOpenChange={setCreditsOpen} updater={updater} privacyMode={privacyMode} onPrivacyModeChange={changePrivacyMode} />
       <Sheet open={about} onOpenChange={setAbout}>
         <SheetContent closeLabel={t("Close")} className="about-sheet glass">
           <div className="eyebrow"><BookOpen size={15} />{t("Learning guide")}</div>
