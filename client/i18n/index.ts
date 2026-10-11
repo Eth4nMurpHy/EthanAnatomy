@@ -10,6 +10,7 @@ export type Locale = "zh-CN" | "en";
 export const LANGUAGE_STORAGE_KEY = "human-atlas.language";
 export const UI_ZH: Record<string, string> = {
   "Structure centered": "已定位",
+  "Return to the surrounding view and highlight this structure": "返回周围视图并高亮当前结构",
   "Privacy mode": "隐私模式",
   "Privacy mode: on": "隐私模式：开启",
   "Privacy mode: off": "隐私模式：关闭",

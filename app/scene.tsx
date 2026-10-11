@@ -115,6 +115,7 @@ export default function AnatomyScene({
       destinationOffset: T.Vector2;
       focus: number;
     } | null = null;
+    let surroundingView: { position: T.Vector3; target: T.Vector3; aspect: number } | null = null;
     camera.position.set(1.4, 1.05, 3.6);
     controls.target.set(0, 0.85, 0);
     controls.enableDamping = true;
@@ -208,6 +209,14 @@ export default function AnatomyScene({
             new T.Vector3().fromArray(p.bounds[1]),
           ),
       );
+    const contextHighlight = new T.Group();
+    const contextHighlightMaterial = new T.MeshBasicMaterial({
+      color: "#6bd5bf", transparent: true, opacity: 0.65,
+      depthWrite: false, depthFunc: T.GreaterDepth,
+    });
+    materials.push(contextHighlightMaterial);
+    scene.add(contextHighlight);
+    let contextHighlightKey = "";
     const availableSystems = SYSTEMS.filter((system) => atlas.parts.some((part) => part.system === system.id));
     const directions = new Map(
       availableSystems.map((system, group) => {
@@ -502,7 +511,12 @@ export default function AnatomyScene({
         lastState?.selected !== s.selected ||
         lastState?.isolate !== s.isolate ||
         lastState?.hiddenParts !== s.hiddenParts;
-      if (changed) cameraTransition = null;
+      if (changed) {
+        if (s.isolate && !lastState?.isolate) {
+          surroundingView = { position: camera.position.clone(), target: controls.target.clone(), aspect: camera.aspect };
+        }
+        cameraTransition = null;
+      }
       const moving = Math.abs(amount - s.explode) > 0.0001;
       if (moving) {
         amount = T.MathUtils.damp(amount, s.explode, 8, dt);
@@ -603,6 +617,7 @@ export default function AnatomyScene({
               selectedKey,
               s.isolate,
               s.focus,
+              s.focusContext,
               s.reset,
               s.inspectorOpen,
               s.inspectorLayout,
@@ -620,8 +635,8 @@ export default function AnatomyScene({
             );
           });
           if (!box.isEmpty()) {
-            const center = box.getCenter(new T.Vector3()),
-              size = box.getSize(new T.Vector3());
+            let center = box.getCenter(new T.Vector3());
+            const size = box.getSize(new T.Vector3());
             const w = el.clientWidth, h = el.clientHeight;
             const sceneRect = el.getBoundingClientRect();
             let left = 16, right = w - 16, top = 16, bottom = h - 16;
@@ -641,7 +656,7 @@ export default function AnatomyScene({
               w / 2 - (left + right) / 2,
               h / 2 - (top + bottom) / 2,
             );
-            const distance = Math.max(
+            let distance = Math.max(
               0.07,
               (Math.max(
                 (size.y * h) / availableHeight,
@@ -651,10 +666,19 @@ export default function AnatomyScene({
                 (2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2)))) *
                 (s.isolate ? 1.35 : 1.7),
             );
-            controls.maxDistance = Math.max(40, distance * 2);
-            const direction = s.isolate
+            let direction = s.isolate
               ? new T.Vector3(0.2, 0.1, 1).normalize()
               : camera.position.clone().sub(controls.target).normalize();
+            if (s.focusContext && s.focus && !s.isolate) {
+              // Restore context instead of zooming back into the isolated organ.
+              center = surroundingView?.target.clone() ?? new T.Vector3(0, 0.85, 0);
+              direction = surroundingView
+                ? surroundingView.position.clone().sub(surroundingView.target).normalize()
+                : new T.Vector3(0.35, 0.06, 1).normalize();
+              distance = Math.max(distance * 2, 1.6,
+                surroundingView ? surroundingView.position.distanceTo(surroundingView.target) * Math.max(1, surroundingView.aspect / camera.aspect) : 3.6);
+            }
+            controls.maxDistance = Math.max(40, distance * 2);
             const destination = center.clone().addScaledVector(direction, distance);
             const offset = new T.Vector2(camera.view?.enabled ? camera.view.offsetX : 0, camera.view?.enabled ? camera.view.offsetY : 0);
             const alreadyCentered = camera.position.distanceTo(destination) <= distance * 0.001 &&
@@ -700,6 +724,25 @@ export default function AnatomyScene({
         innerRing.visible =
           amount < 0.5 && !s.isolate;
       markers.visible = amount > 0.75;
+      const highlightKey = ready && s.focusContext && s.focus && !s.isolate ? selectedKey : "";
+      if (highlightKey !== contextHighlightKey) {
+        contextHighlight.clear();
+        if (highlightKey) selectedIndices.forEach((i) => {
+          if (!pickers[i]) return;
+          // Only occluded surfaces get this overlay; exposed surfaces retain
+          // their normal selection shading. Shared geometry stays cached.
+          const mesh = new T.Mesh(pickers[i]!.geometry, contextHighlightMaterial);
+          mesh.userData.part = i;
+          mesh.renderOrder = 20;
+          contextHighlight.add(mesh);
+        });
+        contextHighlightKey = highlightKey;
+        dirty = true;
+      }
+      contextHighlight.children.forEach((mesh) => {
+        const i = mesh.userData.part as number;
+        mesh.position.set(data[i * 4], data[i * 4 + 1], data[i * 4 + 2]);
+      });
       controls.autoRotate = s.rotate && !s.isolate && amount < 0.4;
       controls.autoRotateSpeed = 0.65;
       if (cameraTransition) {

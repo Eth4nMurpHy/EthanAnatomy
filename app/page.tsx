@@ -1103,10 +1103,10 @@ export default function Home() {
             <Button
               className="primary-action locate-action"
               disabled={progress < 100 || !!error}
-              title={t("Center the camera on the selection; keep surrounding layers")}
+              title={t(state.isolate ? "Return to the surrounding view and highlight this structure" : "Center the camera on the selection; keep surrounding layers")}
               onClick={() => {
                 setLocatedFocus(null);
-                setState((s) => ({ ...s, focus: (s.focus ?? 0) + 1, rotate: false }));
+                setState((s) => ({ ...s, isolate: false, focusContext: s.isolate || !!(s.focusContext && s.focus), focus: (s.focus ?? 0) + 1, rotate: false }));
               }}
             >
               {locatedFocus === state.focus ? <Check size={18} /> : <Focus size={18} />}

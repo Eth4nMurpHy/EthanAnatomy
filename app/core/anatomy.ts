@@ -165,6 +165,8 @@ export interface SceneState {
   inspectorLayout?: string;
   // Nonzero keeps the selection framed; increment to locate it again, zero to leave.
   focus?: number;
+  // Locate an isolated selection in its previous surrounding view.
+  focusContext?: boolean;
   explode: number;
   visible: SystemId[];
   selected: string[];
