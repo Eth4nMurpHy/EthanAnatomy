@@ -5,9 +5,26 @@ import {PointerTap} from '../app/core/pointer-tap.ts';
 import {atlasTools} from '../app/core/agent-tools.ts';
 import {randomOrganCandidates,pickRandomOrgan} from '../app/core/random-organ.ts';
 import {privacyHiddenParts,isPartVisible,readPrivacyMode,PRIVACY_MODE_STORAGE_KEY} from '../app/core/privacy-mode.ts';
+import {systemStructures,clearStructureOverrides} from '../app/core/structure-layers.ts';
 
 for (const file of ['atlas.json', 'atlas-female.json']) {
   const atlas=JSON.parse(await readFile(new URL(`../public/models/${file}`,import.meta.url)));
+  const structures=systemStructures(atlas);
+  const groupedIds=[...structures.values()].flatMap(items=>items.flatMap(c=>c.elements));
+  assert.equal(groupedIds.length,atlas.parts.length,'Every part belongs to one child structure');
+  assert.equal(new Set(groupedIds).size,atlas.parts.length,'No duplicated geometry in child lists');
+  for(const [system,items] of structures) {
+    assert.equal(new Set(items.map(c=>c.id)).size,items.length,'Concept IDs are unique within a system');
+    for(const c of items) assert.ok(c.name && c.elements.every(id=>atlas.parts.some(p=>p.id===id && p.system===system)),'Child groups never include another system');
+  }
+  const samplePart=atlas.parts[0];
+  assert.equal(isPartVisible(samplePart,new Set(),new Set(),false,new Set(),{[samplePart.id]:true}),true,'An item can be shown independently of its system');
+  assert.equal(isPartVisible(samplePart,new Set([samplePart.system]),new Set([samplePart.id]),false,new Set(),{[samplePart.id]:false}),false,'An item switch can hide a selected structure');
+  assert.equal(isPartVisible(samplePart,new Set(),new Set(),true,new Set(),{[samplePart.id]:true}),false,'Individual overrides do not leak into isolation');
+  assert.equal(isPartVisible(samplePart,new Set([samplePart.system]),new Set(),false,new Set([samplePart.id]),{[samplePart.id]:true}),true,'Explicit item viewing respects the privacy exception');
+  const overrides={[samplePart.id]:false,other:true};
+  assert.deepEqual(clearStructureOverrides(overrides,[samplePart.id]),{other:true});
+  assert.equal(overrides[samplePart.id],false,'Clearing overrides does not mutate previous state');
   const model=atlas.sex;
   const organs=randomOrganCandidates(atlas,model);
   assert.deepEqual(privacyHiddenParts(atlas,false),[]);
@@ -98,6 +115,7 @@ for (const file of ['atlas.json', 'atlas-female.json']) {
   console.log(`${file}: packing at desktop/mobile aspect ratios and search/inspection contracts passed.`);
 }
 assert.deepEqual(randomOrganCandidates(null,'male'),[]);
+assert.equal(systemStructures(null).size,0);
 assert.deepEqual(privacyHiddenParts(null,true),[]);
 assert.equal(readPrivacyMode(),false);
 assert.equal(readPrivacyMode({getItem:()=>null}),false);

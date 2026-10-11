@@ -67,6 +67,8 @@ import {
   ComboboxEmpty,
 } from "@/components/ui/combobox";
 import AnatomyScene from "./scene";
+import SystemLayers from "./system-layers";
+import { systemStructures, clearStructureOverrides } from "./core/structure-layers";
 import About from "./about";
 import { useClientUpdate } from "../hooks/use-client-update";
 import {
@@ -275,8 +277,10 @@ export default function Home() {
     [atlas],
   );
   const activeSystems = SYSTEMS.filter((s) => counts[s.id] > 0);
+  const structuresBySystem = useMemo(() => systemStructures(atlas), [atlas]);
   const matchesLayers = (ids: SystemId[]) =>
     !state.isolate &&
+    !Object.keys(state.partVisibility ?? {}).length &&
     state.visible.length === ids.length &&
     ids.every((id) => state.visible.includes(id));
   const allLayers = matchesLayers(activeSystems.map((s) => s.id));
@@ -285,6 +289,8 @@ export default function Home() {
   const singleSystem = activeSystems.find((s) => matchesLayers([s.id]));
   const layerStatus = state.isolate
     ? t("Isolated selection")
+    : Object.keys(state.partVisibility ?? {}).length
+      ? t("Custom layers")
     : !state.visible.length
       ? t("All hidden")
       : allLayers
@@ -301,15 +307,16 @@ export default function Home() {
   const applyLayers = (visible: SystemId[]) => {
     setDetails(false);
     setChosen(null);
-    setState((s) => ({ ...s, visible, selected: [], isolate: false, focus: 0 }));
+    setState((s) => ({ ...s, visible, selected: [], isolate: false, focus: 0, partVisibility: {} }));
   };
   const selectedParts = state.selected.map((id) => parts.get(id)).filter((p) => !!p),
     selected = selectedParts[0],
     system = SYSTEMS.find((s) => s.id === selected?.system);
-  const visibleCount = useMemo(() => {
+  const visiblePartIds = useMemo(() => {
     const visible = new Set(state.visible), selection = new Set(state.selected);
-    return atlas?.parts.filter((part) => isPartVisible(part, visible, selection, state.isolate, hiddenPartIds)).length ?? 0;
-  }, [atlas, state.visible, state.selected, state.isolate, hiddenPartIds]);
+    return new Set(atlas?.parts.filter((part) => isPartVisible(part, visible, selection, state.isolate, hiddenPartIds, state.partVisibility)).map((p) => p.id));
+  }, [atlas, state.visible, state.selected, state.isolate, hiddenPartIds, state.partVisibility]);
+  const visibleCount = visiblePartIds.size;
   const changePrivacyMode = (enabled: boolean) => {
     setPrivacyMode(enabled);
     setChosen(null);
@@ -349,7 +356,7 @@ export default function Home() {
     setDetailCompact(innerWidth < 768);
     remember(c.id);
     setChosen(c);
-    setState((s) => ({ ...s, selected: c.elements, isolate: true, explode: 0, rotate: false, focus: 0 }));
+    setState((s) => ({ ...s, selected: c.elements, isolate: true, explode: 0, rotate: false, focus: 0, partVisibility: clearStructureOverrides(s.partVisibility, c.elements) }));
     setDetails(true);
     if (innerWidth < 768) setPanel(null);
   };
@@ -372,18 +379,26 @@ export default function Home() {
     setDetailCompact(innerWidth < 768);
     remember(p.conceptId);
     setChosen({ id: p.conceptId, name: p.name, elements: [id] });
-    setState((s) => ({ ...s, selected: [id], rotate: false, focus: 0 }));
+    setState((s) => ({ ...s, selected: [id], rotate: false, focus: 0, partVisibility: clearStructureOverrides(s.partVisibility, [id]) }));
     setDetails(true);
     if (innerWidth < 768) setPanel(null);
   };
-  const toggle = (id: SystemId) => {
+  const toggle = (id: SystemId, enabled: boolean) => {
     setDetails(false);
     setState((s) => ({
       ...s,
       selected: [],
       isolate: false,
       focus: 0,
-      visible: s.visible.includes(id) ? s.visible.filter((x) => x !== id) : [...s.visible, id],
+      visible: enabled ? [...new Set([...s.visible, id])] : s.visible.filter((x) => x !== id),
+      partVisibility: clearStructureOverrides(s.partVisibility, atlas?.parts.filter((p) => p.system === id).map((p) => p.id) ?? []),
+    }));
+  };
+  const toggleStructure = (structure: Concept, enabled: boolean) => {
+    setDetails(false);
+    setChosen(null);
+    setState((s) => ({ ...s, selected: [], isolate: false, focus: 0,
+      partVisibility: { ...s.partVisibility, ...Object.fromEntries(structure.elements.map((id) => [id, enabled])) },
     }));
   };
   const reset = () => {
@@ -608,48 +623,15 @@ export default function Home() {
             <strong>{layerStatus}</strong>
           </p>
           <p id="layer-help" className="layer-help">
-            {t("Switches show or hide; Only shows one system.")}
+            {t("Expand a system to browse structures; switches control visibility.")}
           </p>
           {selectedParts.some((p) => !state.visible.includes(p.system)) && !state.isolate && (
             <p className="layer-help">{t("Selected structures remain visible.")}</p>
           )}
         </div>
-        <div className="system-list" aria-describedby="layer-help">
-          {activeSystems.map((s) => (
-            <div
-              className={`system-row ${state.visible.includes(s.id) ? "enabled" : ""}`}
-              key={s.id}
-            >
-              <button className="system-name" title={sn(s)} onClick={() => toggle(s.id)} aria-label={t(state.visible.includes(s.id) ? "Hide {name}" : "Show {name}", { name: sn(s) })}>
-                <span className="system-dot" style={{ background: s.color }} />
-                <span className="system-label">{sn(s)}</span>
-                <span className="system-count" title={t("{count} pieces", { count: counts[s.id] })}>
-                  {counts[s.id]}
-                </span>
-              </button>
-              <Button
-                variant="ghost"
-                className="system-only"
-                title={t("Show only {name}", { name: sn(s) })}
-                aria-label={t("Show only {name}", { name: sn(s) })}
-                aria-pressed={matchesLayers([s.id])}
-                onClick={() => applyLayers([s.id])}
-              >
-                {t("Only")}
-              </Button>
-              <Switch
-                checked={state.visible.includes(s.id)}
-                onCheckedChange={() => toggle(s.id)}
-                aria-label={t("Show {name}", { name: sn(s) })}
-                title={
-                  state.visible.includes(s.id)
-                    ? t("Hide {name}", { name: sn(s) })
-                    : t("Show {name}", { name: sn(s) })
-                }
-              />
-            </div>
-          ))}
-        </div>
+        <SystemLayers key={model} locale={locale} structures={structuresBySystem} visibleIds={visiblePartIds}
+          ready={progress >= 100 && !error} isOnly={(id) => matchesLayers([id])}
+          onSystem={toggle} onOnly={(id) => applyLayers([id])} onStructure={toggleStructure} onInspect={choose} />
         <div className="panel-foot">
           <span>{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span>
           <Button variant="ghost" onClick={() => applyLayers([])}>

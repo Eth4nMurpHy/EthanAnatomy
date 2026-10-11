@@ -20,8 +20,11 @@ export function privacyHiddenParts(atlas: Atlas | null, enabled: boolean): strin
 export function isPartVisible(
   part: Part, visible: ReadonlySet<string>, selected: ReadonlySet<string>,
   isolate: boolean, hidden: ReadonlySet<string>,
+  overrides?: Readonly<Record<string, boolean>>,
 ): boolean {
+  if (overrides?.[part.id] === false) return false;
   // Explicit selection is allowed; default layers never reveal protected parts.
   if (selected.has(part.id)) return true;
+  if (!isolate && overrides?.[part.id] === true) return true;
   return !isolate && visible.has(part.system) && !hidden.has(part.id);
 }

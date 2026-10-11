@@ -167,6 +167,7 @@ export interface SceneState {
   focus?: number;
   // Locate an isolated selection in its previous surrounding view.
   focusContext?: boolean;
+  partVisibility?: Readonly<Record<string, boolean>>;
   explode: number;
   visible: SystemId[];
   selected: string[];

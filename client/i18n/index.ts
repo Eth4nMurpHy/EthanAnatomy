@@ -9,6 +9,18 @@ export type Locale = "zh-CN" | "en";
 // Stable keys preserve preferences when upgrading to Anatolume.
 export const LANGUAGE_STORAGE_KEY = "human-atlas.language";
 export const UI_ZH: Record<string, string> = {
+  "Expand a system to browse structures; switches control visibility.": "展开系统查看下级结构，开关控制各项显隐。",
+  "Collapse {name} structures": "收起{name}结构",
+  "Browse {name} structures": "展开{name}结构",
+  "{name} structures": "{name}结构列表",
+  "{shown} of {total} pieces visible": "已显示 {shown} / {total} 个零件",
+  "Filter structures": "筛选结构…",
+  "Filter {name} structures": "筛选{name}结构",
+  "{count} structures": "{count} 项结构",
+  "Click a name to inspect": "点名称查看详情",
+  "Show structure: {name}": "显示结构：{name}",
+  "No matching structures": "没有匹配的结构",
+  "Show more ({count} remaining)": "显示更多（剩余 {count} 项）",
   "Return to the surrounding view and highlight this structure": "返回周围视图并高亮当前结构",
   "Privacy mode": "隐私模式",
   "Privacy mode: on": "隐私模式：开启",

@@ -505,6 +505,7 @@ export default function AnatomyScene({
         lastState?.visible !== s.visible ||
         lastState?.selected !== s.selected ||
         lastState?.isolate !== s.isolate ||
+        lastState?.partVisibility !== s.partVisibility ||
         lastState?.hiddenParts !== s.hiddenParts;
       if (changed) {
         if (s.isolate && !lastState?.isolate) {
@@ -529,7 +530,7 @@ export default function AnatomyScene({
         atlas.parts.forEach((p, i) => {
           const selected = selection.has(p.id);
           if (selected) selectedIndices.push(i);
-          const shown = isPartVisible(p, visible, selection, s.isolate, hidden);
+          const shown = isPartVisible(p, visible, selection, s.isolate, hidden, s.partVisibility);
           partVisibility[i] = shown ? 1 : 0;
           data[i * 4 + 3] = shown ? 1 : 0;
           selectedData[i * 4] = selected ? 255 : 0;
@@ -539,7 +540,7 @@ export default function AnatomyScene({
           }
         });
         const visibleParts = atlas.parts.filter((p) =>
-          isPartVisible(p, visible, selection, s.isolate, hidden),
+          isPartVisible(p, visible, selection, s.isolate, hidden, s.partVisibility),
         );
         const nextLayoutKey =
           visibleParts.map((p) => p.id).join(",") + ":" + camera.aspect.toFixed(3);
