@@ -10,7 +10,6 @@ export type Locale = "zh-CN" | "en";
 export const LANGUAGE_STORAGE_KEY = "human-atlas.language";
 export const UI_ZH: Record<string, string> = {
   "Download offline client": "下载离线客户端",
-  "Explore offline on Windows and macOS": "支持 Windows 与 macOS，离线探索人体",
   "Application updates": "应用更新",
   "Keep Anatolume up to date": "获取最新功能与改进",
   "Checking for updates…": "正在检查更新…",

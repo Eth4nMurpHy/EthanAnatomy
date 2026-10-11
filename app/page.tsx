@@ -490,11 +490,8 @@ export default function Home() {
             <div className="home-cta">
               <Button className="start-button" onClick={() => startExploring(defaultVisible)}>{t("Start exploring")}<ArrowRight size={19} /></Button>
               <button className="guide-button" onClick={() => setAbout(true)}><BookOpen size={18} />{t("How to explore")}</button>
+              {!updater.native && <a className="guide-button download-button" href={CLIENT_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer"><Download size={18} /><span>{t("Download offline client")}</span></a>}
             </div>
-            {!updater.native && <div className="home-download">
-              <a href={CLIENT_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer"><Download size={15} /><span>{t("Download offline client")}</span><ArrowUpRight size={13} /></a>
-              <span>{"Windows · macOS"}</span>
-            </div>}
             <div className="home-stats">
               <div><strong>{atlas?.parts.length.toLocaleString() ?? "—"}</strong><span>{t("Individual structures")}</span></div>
               <div><strong>{atlas ? activeSystems.length : "—"}</strong><span>{t("Anatomical systems")}</span></div>
