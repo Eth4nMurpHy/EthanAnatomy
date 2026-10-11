@@ -1,68 +1,80 @@
+<a name="readme-top"></a>
+
 <div align="center">
 
-<img src="docs/branding/anatolume-logo-v1.png" width="360" alt="层知 · Anatolume 中英文主品牌标志">
+<img src="docs/branding/anatolume-logo-v1.png" width="360" alt="层知 · Anatolume 中英文主品牌标志 / Bilingual brand logo">
 
 # 层知 · Anatolume
 
-**看见身体，理解每一层。**
+**看见身体，理解每一层。**<br>
+*See the body. Understand every layer.*
 
-三维人体图谱 · 中英双语 · 网页探索与离线客户端
+三维人体图谱 · 网页探索与离线客户端<br>
+Interactive 3D anatomy · Web and offline desktop
 
-**简体中文** · [English](README.en.md)
+[**简体中文**](#简体中文) · [**English**](#english) · [界面预览 / Preview](#preview)
 
-[![平台](https://img.shields.io/badge/平台-Web%20%7C%20Windows%20%7C%20macOS-66786e?style=flat-square)](#开始使用)
+[![Platforms](https://img.shields.io/badge/Platforms-Web%20%7C%20Windows%20%7C%20macOS-66786e?style=flat-square)](#开始使用)
 [![CI](https://github.com/isunky/Anatolume/actions/workflows/ci.yml/badge.svg)](https://github.com/isunky/Anatolume/actions/workflows/ci.yml)
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-66786e?style=flat-square)](LICENSE)
 [![Data: CC BY 4.0](https://img.shields.io/badge/Data-CC_BY_4.0-66786e?style=flat-square)](public/ATTRIBUTION.md)
 
 <p align="center">
-  <a href="https://isunky.github.io/Anatolume/" target="_blank" rel="noopener noreferrer"><img src="docs/assets/github-pages-card.svg" width="288" height="80" alt="在线体验 · GitHub Pages"></a>
+  <a href="https://isunky.github.io/Anatolume/" target="_blank" rel="noopener noreferrer"><img src="docs/assets/github-pages-card.svg" width="288" height="80" alt="在线体验 / Try online · GitHub Pages"></a>
   &nbsp;&nbsp;
-  <a href="https://anatolume.sunky.net/" target="_blank" rel="noopener noreferrer"><img src="docs/assets/cloudflare-pages-card.svg" width="288" height="80" alt="在线体验 · Cloudflare Pages"></a>
+  <a href="https://anatolume.sunky.net/" target="_blank" rel="noopener noreferrer"><img src="docs/assets/cloudflare-pages-card.svg" width="288" height="80" alt="在线体验 / Try online · Cloudflare Pages"></a>
 </p>
 
-[**下载离线客户端**](https://github.com/isunky/Anatolume/releases) · [使用指南](#开始使用) · [开发文档](#文档导航)
-
-[界面预览](#界面预览) · [核心功能](#核心功能) · [模型与许可](#模型与许可) · [参与贡献](#参与贡献) · [开源致谢](#开源致谢)
+[**下载离线客户端 / Download offline client**](https://github.com/isunky/Anatolume/releases)
 
 </div>
 
-层知将人体结构变成可以旋转、分层、拆解和搜索的学习空间。从全身关系出发探索骨骼、肌肉与器官，也可以直接找到一个结构，单独观察并阅读介绍。无需账号；网页打开即用，桌面客户端随包提供男女两套模型，支持离线探索。
+<a name="preview"></a>
 
-## 界面预览
+## 界面预览 · Preview
 
 系统列表、三维观察和结构介绍集中在同一个探索界面。展开系统可筛选下级结构并控制显隐，选中器官后可在单独观察与周围视图之间切换。
+
+Browse systems, inspect the model and read structure details in one workspace. Switch between an isolated organ and its surroundings.
 
 [![层知图谱：系统列表、三维模型与结构显隐](docs/screenshots/explorer.jpg)](docs/screenshots/explorer.jpg)
 
 <details>
-<summary><strong>更多真实界面</strong> · 首页、女性模型、结构详情、分离模式与手机端</summary>
+<summary><strong>更多界面 / More screenshots</strong> · 首页、女性模型、结构详情、分离模式与手机端</summary>
 
-### 首页
+### 首页 · Home
 
 从全身、骨骼、器官开始探索，也可通过右上角“随机探索”发现一个完整器官。
 
+Start with the full body, bones or organs, or discover a complete organ with Random exploration.
+
 [![主页：探索入口与随机探索](docs/screenshots/home.jpg)](docs/screenshots/home.jpg)
 
-### 女性学习模型
+### 女性学习模型 · Female study model
 
 页眉切换模型，探索乳腺及女性生殖结构。
 
+Switch models in the header to explore breast tissue and female reproductive structures.
+
 [![女性模型：切换入口、来源标识与模型统计](docs/screenshots/female.jpg)](docs/screenshots/female.jpg)
 
-### 结构详情
+### 结构详情 · Structure details
 
 单独查看目标，或平滑定位回周围视图，理解结构的位置关系。
 
+Isolate a target or smoothly locate it in its surroundings.
+
 [![结构详情：介绍、定位与周围结构](docs/screenshots/structure-detail.jpg)](docs/screenshots/structure-detail.jpg)
 
-### 系统分离
+### 系统分离 · System separation
 
 主要系统按实际宽度紧凑排开，保留内部关系；继续拖动滑条进入零件总览。
 
+Systems are arranged compactly while preserving internal relationships; move the slider further for a parts overview.
+
 [![分离模式：按系统分开观察](docs/screenshots/separated.jpg)](docs/screenshots/separated.jpg)
 
-### 手机端
+### 手机端 · Mobile
 
 <p align="center">
   <a href="docs/screenshots/home-mobile.jpg"><img src="docs/screenshots/home-mobile.jpg" width="260" alt="手机主页：人体模型与探索入口"></a>
@@ -72,7 +84,19 @@
 
 <sub>真实应用截图，采集于 2026-10-12。桌面原图 2560 × 1800，手机 390 × 844；保留浏览器原始 JPEG 输出，点击可查看高清原图。在线站点和安装包以各自版本为准。</sub>
 
-## 核心功能
+<sub>Actual app screenshots captured on 2026-10-12, with the Chinese interface; English is also supported. Desktop: 2560 × 1800. Mobile: 390 × 844. Click images for the original JPEG files. Deployed sites and releases may show different versions.</sub>
+
+---
+
+## 简体中文
+
+[English ↓](#english) · [界面预览 ↑](#preview)
+
+[核心功能](#核心功能) · [开始使用](#开始使用) · [模型与许可](#模型与许可) · [开发与构建](#开发与构建) · [文档导航](#文档导航) · [开源致谢](#开源致谢)
+
+层知将人体结构变成可以旋转、分层、拆解和搜索的学习空间。从全身关系出发探索骨骼、肌肉与器官，也可以直接找到一个结构，单独观察并阅读介绍。无需账号；网页打开即用，桌面客户端随包提供男女两套模型，支持离线探索。
+
+### 核心功能
 
 | 探索方式 | 体验 |
 | --- | --- |
@@ -86,7 +110,7 @@
 | **拆解观察** | 从完整人体过渡到紧凑系统分离，再进入零件总览。 |
 | **离线与更新** | 桌面模型随包提供；本机保存偏好与记录，客户端支持检查并安装新版。 |
 
-## 开始使用
+### 开始使用
 
 **在线：** 打开 [GitHub Pages](https://isunky.github.io/Anatolume/) 或 [Cloudflare Pages](https://anatolume.sunky.net/)，选择模型和探索入口。
 
@@ -145,7 +169,7 @@
 
 </details>
 
-## 模型与许可
+### 模型与许可
 
 | 模型 | 独立网格 | 系统／图层 | 具名概念 |
 | --- | ---: | ---: | ---: |
@@ -173,7 +197,7 @@
 
 </details>
 
-## 开发与构建
+### 开发与构建
 
 React · TypeScript · Three.js · Tauri · Vite。网页和客户端共享交互与渲染逻辑，仓库已包含模型，普通运行无需重新转换数据。
 
@@ -201,14 +225,14 @@ npm run dev
 
 Windows 原生构建需要 Rust MSVC、Visual Studio C++ Build Tools、Windows SDK 与 WebView2。本地不生成签名更新包时，使用 `npm run client:build -- --config src-tauri/tauri.local.conf.json`；macOS 使用同样配置参数。详情见 [发布签名说明](docs/RELEASE.md#发布签名密钥)。
 
-### 部署与发布
+#### 部署与发布
 
 - **静态部署：** `dist/` 支持根目录和子目录；Web ZIP 需通过 HTTP/HTTPS 服务访问。Vercel 配置见 [vercel.json](vercel.json)。
 - **Cloudflare Pages：** 连接仓库的 `main`，构建命令 `npm ci && npm run build:pages`，输出 `dist`，环境变量 `SKIP_DEPENDENCY_INSTALL=1`。详见 [配置指南](docs/CLOUDFLARE_PAGES.md)。
 - **CI：** 提交／PR 自动运行检查以及 Web、Pages、客户端前端构建，不修改版本、不创建 Release。
 - **手动发布：** 选择 `patch / minor / major`，自动同步版本、构建全部平台、签名更新包、发布 Release 并部署 GitHub Pages。更新说明直接摘要本次变更；`0.x` 标为预发布，`1.x` 起为正式版。
 
-## 文档导航
+### 文档导航
 
 | 文档 | 内容 |
 | --- | --- |
@@ -223,7 +247,7 @@ Windows 原生构建需要 Rust MSVC、Visual Studio C++ Build Tools、Windows S
 
 后续方案以 PRD 的状态为准；尚未实施的外观配置和性能优化不属于当前功能。
 
-## 参与贡献
+### 参与贡献
 
 欢迎提交 [Issue](https://github.com/isunky/Anatolume/issues) 或 [Pull request](https://github.com/isunky/Anatolume/pulls)。交互问题请附复现步骤与运行环境；术语修正请附源 ID、建议名称和参考来源。
 
@@ -231,7 +255,7 @@ Windows 原生构建需要 Rust MSVC、Visual Studio C++ Build Tools、Windows S
 
 模型处理流程见 [项目结构](docs/PROJECT_STRUCTURE.md) 与 [`convert-anatomy.py`](scripts/convert-anatomy.py)、[`optimize-anatomy.mjs`](scripts/optimize-anatomy.mjs)、[`compress-models.mjs`](scripts/compress-models.mjs)。
 
-## 开源致谢
+### 开源致谢
 
 层知基于开源代码和开放解剖数据继续开发。感谢原作者、数据贡献者及工具维护者。
 
@@ -243,3 +267,191 @@ Windows 原生构建需要 Rust MSVC、Visual Studio C++ Build Tools、Windows S
 > BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International.
 
 感谢 [React](https://react.dev/)、[Three.js](https://threejs.org/)、[Tauri](https://tauri.app/)、[Vite](https://vite.dev/)、[Tailwind CSS](https://tailwindcss.com/)、[Base UI](https://base-ui.com/)、[Lucide](https://lucide.dev/)、[meshoptimizer](https://github.com/zeux/meshoptimizer)，以及参与反馈和改进的社区贡献者。
+
+[English ↓](#english) · [返回顶部 ↑](#readme-top)
+
+---
+
+## English
+
+[简体中文 ↑](#简体中文) · [Preview ↑](#preview)
+
+[Features](#features) · [Get started](#get-started) · [Models & licensing](#models-and-licensing) · [Development](#development) · [Documentation](#documentation) · [Acknowledgements](#acknowledgements)
+
+Anatolume turns human anatomy into a space for rotating, revealing layers, separating systems and searching structures. Explore bones, muscles and organs in context, or isolate a structure and read its introduction. No account is required. Use the web app directly, or explore offline with both models included in the desktop client.
+
+### Features
+
+| Explore | Experience |
+| --- | --- |
+| **Male and female models** | Switch between the male reference and female study model, with separate recent browsing histories. |
+| **Layers and structures** | Full-body, bones and organs views; expand systems, filter structures, toggle individual items or show one system only. |
+| **Bilingual search** | Search Chinese or English names, common aliases or source IDs such as “heart”, “心脏” or “FMA7088”. |
+| **Structure focus** | Isolate a structure and read its introduction; smoothly locate it in context, or hide the current structure from its details panel. |
+| **Camera and rotation** | Smooth transitions between oblique, front, side and back views; auto-rotation with direction and continuous speed controls. |
+| **Random exploration** | Discover and focus on a complete organ; use “Another organ” in the details panel to continue. |
+| **Privacy mode** | Hide sensitive structures in default views and random exploration; explicit searches and system or structure selections still allow viewing. |
+| **Separation** | Transition from the assembled body to compact system separation and then a parts overview. |
+| **Offline and updates** | Desktop models are bundled; preferences and history stay local, with checks and installation for newer releases. |
+
+### Get started
+
+**Online:** Open [GitHub Pages](https://isunky.github.io/Anatolume/) or [Cloudflare Pages](https://anatolume.sunky.net/), select a model and start exploring.
+
+**Offline:** Choose a release asset from [GitHub Releases](https://github.com/isunky/Anatolume/releases).
+
+| Edition | File | Usage |
+| --- | --- | --- |
+| Windows x64 installer | `Anatolume_<version>_x64-setup.exe` | Install, then launch from the Start menu. |
+| Windows x64 portable | `Anatolume_<version>_Windows-x64-portable.zip` | Extract and run `Anatolume.exe`. |
+| macOS universal | `Anatolume_<version>_macOS-universal.dmg` | macOS 11+, for Intel and Apple Silicon. |
+| Web deployment | `Anatolume_<version>_Web.zip` | Includes pages and models; serve over HTTP/HTTPS. |
+
+Phones can use the web app; no Android package is currently provided. Older releases may use the application's previous name.
+
+<details>
+<summary><strong>Installation, offline use and automatic updates</strong></summary>
+
+- **Windows:** WebView2 is required. The installer downloads the runtime if missing; the portable edition requires it to be installed beforehand. The app currently has no Authenticode signature, so Windows may show an unknown publisher warning.
+- **macOS:** Building from source is recommended. Generated DMGs use ad-hoc signing and are not Apple-notarized; first launch may require permission in system security settings.
+- **Offline scope:** Both models are bundled. External sources, references and update downloads need a connection. Language, model preferences and recent history are stored locally.
+- **Automatic updates:** The client checks for stable releases at startup. In About & acknowledgements → App updates, read changes, check manually, download and install. Offline or failed checks do not block exploration.
+- **Update packages:** Installer, portable and macOS editions use their respective signed packages. Update signatures do not replace operating-system code signing. Older clients first need a manual installation of a version that supports updates.
+- **Verification:** Releases include `SHA256SUMS` and `BUILD-REPORT.md`. See the [release guide](docs/RELEASE.md) for update and build details.
+
+</details>
+
+<details>
+<summary><strong>Controls and shortcuts</strong></summary>
+
+| Action | How |
+| --- | --- |
+| Rotate / zoom | Drag the model / use the wheel or pinch gesture. |
+| Inspect a structure | Select it on the model, in search or in the structure list. |
+| Search | Open search, or press `/` when not typing in an input. |
+| Select a search result | Use `↑` / `↓`, press `Enter` to select and `Esc` to close. |
+| Inspect location | Show surrounding structures, or locate the target with a smooth camera transition and highlight. |
+| Hide the current structure | Use “Hide current structure” in the details panel. The panel closes and other visibility settings are preserved; show the structure again from the list. |
+| Continue random exploration | Use the upper-right entry or “Another organ” in the details panel. |
+| Auto-rotation settings | Open the adjacent dropdown; choose direction and drag the speed slider. 100% is the maximum. |
+| Privacy settings | Click the privacy icon in the bottom status bar; hover to read its current state. |
+| Restore the default view | Use the restore control at the bottom. |
+
+Left and right refer to **the body's own sides**. See the [client guide](client/README.md) for more details.
+
+</details>
+
+<details>
+<summary><strong>Troubleshooting</strong></summary>
+
+| Issue | Check |
+| --- | --- |
+| Blank desktop window | Check WebView2 and graphics drivers, then restart. |
+| Model fails to load | On the web, check network and resources; on desktop, restart or reinstall. |
+| Internal organs are obscured | Search and isolate the target, or hide the outer systems. |
+| Uninstall on Windows | Use Installed apps in Windows Settings. |
+
+</details>
+
+### Models and licensing
+
+| Model | Meshes | Systems / layers | Named concepts |
+| --- | ---: | ---: | ---: |
+| Male reference | 2,234 | 15 | 3,432 |
+| Experimental female study model | 2,245 | 16 | 4,248 |
+
+The female model is adapted from BodyParts3D and HRA through Human Atlas Enhanced. Proportions and placement are estimated and have not been independently reviewed. See the [female model guide](docs/FEMALE_MODEL.md) for scope and provenance.
+
+| Content | License |
+| --- | --- |
+| Application code | [MIT](LICENSE), retaining the original copyright and license notices. |
+| Anatomy models and source data | **CC BY 4.0**, retaining BodyParts3D and HRA credits, sources and adaptation records in [ATTRIBUTION.md](public/ATTRIBUTION.md). |
+| Third-party dependencies | Their respective licenses. |
+
+> For anatomy education and exploration, not diagnosis, surgical planning or clinical decisions. Models do not represent every structure or individual variation. Chinese terminology and added learning content have not been professionally reviewed.
+
+<details>
+<summary><strong>Data scope and processing</strong></summary>
+
+- A concept may include multiple mesh parts; concept counts do not equal independently displayed mesh counts.
+- The female model includes reproductive organs and a separate breast-tissue layer. Female external skin/genital surfaces and validated female urethra/pelvic-floor replacements are absent.
+- The male model has 2,288,268 triangles and approximately 33 MB of compressed geometry; the female model has 2,437,148 triangles and approximately 35 MB. Processing uses a 0.2% per-structure relative error bound, with upstream female geometry, adaptation and verification records retained.
+- Chinese terminology covers 5,172 unique source names across both models. It is a rule-generated draft with common phrases added, pending review; original English names and source IDs are retained for checking.
+- Learning content distinguishes organ-specific explanations from general system descriptions. See [terminology maintenance](client/README.md#中文术语审校).
+
+</details>
+
+### Development
+
+React · TypeScript · Three.js · Tauri · Vite. Web and desktop share interactions and rendering. Models are included in the repository; normal builds do not require reconversion.
+
+Requires **Node.js 22.18+**; the repository's `.node-version` selects Node 24.
+
+```sh
+git clone https://github.com/isunky/Anatolume.git
+cd Anatolume
+npm ci
+npm run dev
+```
+
+Local address: <http://127.0.0.1:3016/>. The development server binds to localhost by default.
+
+| Command | Purpose |
+| --- | --- |
+| `npm run build` | Web build, output in `dist/`. |
+| `npm run build:pages` | Cloudflare Pages build and resource validation. |
+| `npm run build:client` | Desktop frontend, output in `dist-client/`. |
+| `npm run client:dev` | Desktop development mode. |
+| `npm run client:build` | Windows x64 NSIS installer. |
+| `npm run client:build:mac` | Build a universal DMG on macOS. |
+| `npm run ci:check` | Types, bilingual content, models, interactions and builds. |
+| `npm run validate:release` | Version and release workflow validation. |
+
+Native Windows builds require Rust MSVC, Visual Studio C++ Build Tools, Windows SDK and WebView2. For local builds without signed update artifacts, use `npm run client:build -- --config src-tauri/tauri.local.conf.json`; the same configuration argument applies to the macOS command. See [signing configuration](docs/RELEASE.md#发布签名密钥).
+
+#### Deployment and releases
+
+- **Static hosting:** Serve `dist/` at a root or subpath; Web ZIP needs HTTP/HTTPS. Vercel configuration is in [vercel.json](vercel.json).
+- **Cloudflare Pages:** Connect the repository's `main` branch, use `npm ci && npm run build:pages`, output `dist`, and set `SKIP_DEPENDENCY_INSTALL=1`. See the [configuration guide](docs/CLOUDFLARE_PAGES.md).
+- **CI:** Pushes and PRs run checks plus Web, Pages and desktop frontend builds, without changing versions or creating releases.
+- **Manual release:** Choose `patch / minor / major` to synchronize versions, build all platforms, sign update packages, publish a Release and deploy GitHub Pages. Release notes summarize the changes directly. `0.x` is marked as pre-release; versions from `1.x` are stable.
+
+### Documentation
+
+The following supporting guides are currently written in Chinese; the full source-data attribution file is in English.
+
+| Guide | Contents |
+| --- | --- |
+| [Product requirements](docs/PRD.md) | Existing experience, proposed visual settings and deferred performance work. |
+| [Desktop development](client/README.md) | Running the app, platform bridge and terminology. |
+| [Architecture and CI](docs/PROJECT_STRUCTURE.md) | Modules, rendering and validation. |
+| [Releases and updates](docs/RELEASE.md) | Automatic versions, platform builds, signing and retries. |
+| [Cloudflare Pages](docs/CLOUDFLARE_PAGES.md) | GitHub-connected builds and deployment. |
+| [Female model](docs/FEMALE_MODEL.md) | Scope, import and validation. |
+| [Brand assets](docs/branding/README.md) | Full logo, original artwork and compressed assets. |
+| [Data attribution](public/ATTRIBUTION.md) | Rights-holder credits, licenses and adaptations. |
+
+Future work follows the status recorded in the PRD. Proposed visual settings and performance improvements are not current features.
+
+### Contributing
+
+[Issues](https://github.com/isunky/Anatolume/issues) and [pull requests](https://github.com/isunky/Anatolume/pulls) are welcome. For interaction bugs, include reproduction steps and your environment. For terminology corrections, include the source ID, suggested name and reference.
+
+Run `npm run ci:check` before submitting code. Check Rust formatting when applicable and update screenshots for visual changes. Browser checks cover desktop and several mobile viewports; real-device performance and multi-touch still need hardware testing.
+
+Model processing is documented in the [architecture guide](docs/PROJECT_STRUCTURE.md) and [`convert-anatomy.py`](scripts/convert-anatomy.py), [`optimize-anatomy.mjs`](scripts/optimize-anatomy.mjs), [`compress-models.mjs`](scripts/compress-models.mjs).
+
+### Acknowledgements
+
+Anatolume builds on open-source software and open anatomy data. Thank you to the original authors, data contributors and tool maintainers.
+
+- **Code foundation:** [Human Atlas](https://github.com/ashemag/human-atlas) by [ashemag](https://github.com/ashemag). Anatolume extends its bilingual experience, exploration interactions and offline client, retaining the original MIT copyright and license notices.
+- **BodyParts3D:** [The Database Center for Life Science](https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html), providing models, English names and structure relationships under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- **Female derived model:** [PrejudiceNeutrino](https://github.com/PrejudiceNeutrino) for sharing [Human Atlas Enhanced](https://github.com/PrejudiceNeutrino/human-atlas-enhanced) and adaptation records. Source identifiers, geometry and registration records are retained.
+- **HRA / HuBMAP:** Kristen Browne, Heidi Schlehlein and Human Reference Atlas / HuBMAP for *3D Reference Organ Set for Female v1.5* (2023, [DOI](https://doi.org/10.48539/HBM352.BTSQ.586)), licensed under CC BY 4.0. Full credits and adaptations are in [ATTRIBUTION.md](public/ATTRIBUTION.md).
+
+> BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International.
+
+Thank you to [React](https://react.dev/), [Three.js](https://threejs.org/), [Tauri](https://tauri.app/), [Vite](https://vite.dev/), [Tailwind CSS](https://tailwindcss.com/), [Base UI](https://base-ui.com/), [Lucide](https://lucide.dev/), [meshoptimizer](https://github.com/zeux/meshoptimizer), and the community members contributing feedback and improvements.
+
+[简体中文 ↑](#简体中文) · [Back to top ↑](#readme-top)

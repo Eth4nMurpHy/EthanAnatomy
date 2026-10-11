@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="288" height="80" viewBox="0 0 288 80" role="img" aria-labelledby="title desc">
-  <title id="title">在线体验 · GitHub Pages</title>
+  <title id="title">在线体验 / Try online · GitHub Pages</title>
   <desc id="desc">打开层知 Anatolume 的 GitHub Pages 在线图谱</desc>
   <defs>
     <linearGradient id="background" x1="0" y1="0" x2="288" y2="76" gradientUnits="userSpaceOnUse">
@@ -15,7 +15,7 @@
   </g>
   <g font-family="Segoe UI,Microsoft YaHei,PingFang SC,sans-serif">
     <text x="77" y="34" fill="#33473d" font-size="17" font-weight="600">GitHub Pages</text>
-    <text x="77" y="54" fill="#66786e" font-size="12">在线体验 · 即刻探索人体</text>
+    <text x="77" y="54" fill="#66786e" font-size="12">在线体验 · Try online</text>
   </g>
   <circle cx="256" cy="38" r="13" fill="#eaf1ed"/>
   <path d="m251 43 10-10m-9 0h9v9" fill="none" stroke="#6d8577" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
