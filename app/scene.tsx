@@ -5,7 +5,7 @@ import * as T from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import { createExplosionLayout } from "./core/explosion-layout";
+import { createExplosionLayout, createSystemSeparationLayout } from "./core/explosion-layout";
 import { decodeModelResponse } from "./core/model-download";
 import { staticAssetUrl } from "./core/static-asset";
 import { PointerTap } from "./core/pointer-tap";
@@ -213,14 +213,7 @@ export default function AnatomyScene({
     materials.push(contextHighlightMaterial);
     scene.add(contextHighlight);
     let contextHighlightKey = "";
-    const availableSystems = SYSTEMS.filter((system) => atlas.parts.some((part) => part.system === system.id));
-    const directions = new Map(
-      availableSystems.map((system, group) => {
-        const angle = (group / availableSystems.length) * Math.PI * 2;
-        return [system.id, { x: Math.sin(angle) * 0.48, z: Math.cos(angle) * 0.48 }];
-      }),
-    );
-    const spread = atlas.parts.map((part) => directions.get(part.system)!);
+    let systemLayout = createSystemSeparationLayout(atlas.parts);
     let activeParts: number[] = [],
       selectedIndices: number[] = [],
       hasSolidParts = false,
@@ -398,7 +391,11 @@ export default function AnatomyScene({
       const atlasDistance =
         Math.max(packingHeight, packingWidth / aspect) /
           (2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2))) * 1.12;
-      const distance = T.MathUtils.lerp(normalDistance, Math.max(0.2, atlasDistance), extent);
+      const systemDistance = Math.max(systemLayout.height, (systemLayout.width + systemLayout.depth) / aspect) /
+        (2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2))) * 1.12;
+      const distance = extent <= 0.5
+        ? T.MathUtils.lerp(normalDistance, Math.max(normalDistance, systemDistance), extent / 0.5)
+        : T.MathUtils.lerp(Math.max(normalDistance, systemDistance), Math.max(0.2, atlasDistance), (extent - 0.5) / 0.5);
       if (extent > 0.8) view = "front";
       const direction = viewDirection(view);
       const center = new T.Vector3(0, 0.85, 0);
@@ -562,6 +559,7 @@ export default function AnatomyScene({
           visibleParts.map((p) => p.id).join(",") + ":" + camera.aspect.toFixed(3);
         if (nextLayoutKey !== layoutKey) {
           const layout = createExplosionLayout(visibleParts, camera.aspect);
+          systemLayout = createSystemSeparationLayout(visibleParts);
           packingWidth = layout.width;
           packingHeight = layout.height;
           atlas.parts.forEach((p, i) => {
@@ -569,7 +567,7 @@ export default function AnatomyScene({
             offsets[i] = cell ? new T.Vector3(cell.x, cell.y + 0.85, 0) : centers[i].clone();
           });
           layoutKey = nextLayoutKey;
-          if (amount > 0.05 && !s.isolate) fit(s.view, Math.max(0, (amount - 0.3) / 0.7));
+          if (amount > 0.05 && !s.isolate) fit(s.view, amount);
         }
         updateDrawBatches(batches, partVisibility);
         selectionTexture.needsUpdate = true;
@@ -583,16 +581,15 @@ export default function AnatomyScene({
           let dx = 0,
             dy = 0,
             dz = 0;
-          if (amount <= 0.45) {
-            const t = amount / 0.45;
-            dx = spread[i].x * t;
-            dy = (c.y - 0.85) * t * 0.28;
-            dz = spread[i].z * t;
+          const systemOffset = systemLayout.offsets.get(atlas.parts[i].system) ?? 0;
+          if (amount <= 0.5) {
+            const t = amount / 0.5;
+            dx = systemOffset * t;
           } else {
-            const t = (amount - 0.45) / 0.55;
-            dx = T.MathUtils.lerp(spread[i].x, destination.x - c.x, t);
-            dy = T.MathUtils.lerp((c.y - 0.85) * 0.28, destination.y - c.y, t);
-            dz = T.MathUtils.lerp(spread[i].z, -c.z, t);
+            const t = (amount - 0.5) / 0.5;
+            dx = T.MathUtils.lerp(systemOffset, destination.x - c.x, t);
+            dy = (destination.y - c.y) * t;
+            dz = -c.z * t;
           }
           data[i * 4] = dx;
           data[i * 4 + 1] = dy;
@@ -623,7 +620,7 @@ export default function AnatomyScene({
         lastReset = s.reset;
       }
       if (moving && !s.isolate)
-        fit(amount > 0.5 ? "front" : s.view, Math.max(0, (amount - 0.3) / 0.7));
+        fit(amount > 0.5 ? "front" : s.view, amount);
       const selectionFrameKey =
         s.selected.length && (s.isolate || s.focus)
           ? [

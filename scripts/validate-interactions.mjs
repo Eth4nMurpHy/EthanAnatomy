@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {createExplosionLayout} from '../app/core/explosion-layout.ts';
+import {createExplosionLayout,createSystemSeparationLayout} from '../app/core/explosion-layout.ts';
 import {PointerTap} from '../app/core/pointer-tap.ts';
 import {atlasTools} from '../app/core/agent-tools.ts';
 import {randomOrganCandidates,pickRandomOrgan} from '../app/core/random-organ.ts';
@@ -99,6 +99,17 @@ for (const file of ['atlas.json', 'atlas-female.json']) {
   assert.deepEqual(eligible.map((_,i)=>pickRandomOrgan(organs,organs[0].id,organs[1].id,()=>(i+.5)/eligible.length).id),eligible.map(c=>c.id));
   console.log(`${model}: whole-organ candidates, complete geometry, sex-specific filtering and nonrepeating random selection passed.`);
   const groups=[atlas.parts,...[...new Set(atlas.parts.map(p=>p.system))].map(system=>atlas.parts.filter(p=>p.system===system))];
+  for (const parts of [...groups, visibleDefault]) {
+    const layout=createSystemSeparationLayout(parts);
+    const boxes=[...layout.offsets].map(([system,offset])=>{
+      const members=parts.filter(p=>p.system===system);
+      return {min:Math.min(...members.map(p=>p.bounds[0][0]))+offset,max:Math.max(...members.map(p=>p.bounds[1][0]))+offset};
+    });
+    for(let i=0;i<boxes.length;i++) {
+      assert.ok(boxes[i].min>=-layout.width/2-1e-8 && boxes[i].max<=layout.width/2+1e-8,'Separated systems fit their layout bounds');
+      if(i) assert.ok(boxes[i].min-boxes[i-1].max>=.06-1e-8,'Complete systems have a clear gap in the front view');
+    }
+  }
   for(const group of groups) for(const aspect of [.46,1,1.7]) {
     const layout=createExplosionLayout(group,aspect),cells=[...layout.cells.values()];
     assert.equal(cells.length,group.length);
@@ -124,6 +135,8 @@ for (const file of ['atlas.json', 'atlas-female.json']) {
   console.log(`${file}: packing at desktop/mobile aspect ratios and search/inspection contracts passed.`);
 }
 assert.deepEqual(randomOrganCandidates(null,'male'),[]);
+assert.equal(createSystemSeparationLayout([]).width,0);
+assert.equal(createSystemSeparationLayout([]).height,0);
 assert.equal(systemStructures(null).size,0);
 assert.deepEqual(privacyHiddenParts(null,true),[]);
 assert.equal(readPrivacyMode(),false);
