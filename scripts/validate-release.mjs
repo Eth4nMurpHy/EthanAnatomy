@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
+import {createHash, generateKeyPairSync, randomBytes, sign as cryptoSign} from 'node:crypto';
 import path from 'node:path';
 import {unzipSync, strFromU8} from 'fflate';
 import {assetNames, prepareAssets, combineAssets, verifyAssets} from './release-assets.mjs';
+import {verifyUpdaterSignature} from './updater-signature.mjs';
 import {staticAssetUrl} from '../app/core/static-asset.ts';
 import {nextVersion, parseVersion, readVersions, releasePlan, repositoryRoot, syncVersion, versionFiles} from './release-version.mjs';
 
@@ -78,20 +80,66 @@ try {
   const dmg = path.join(root, 'src-tauri/target/universal-apple-darwin/release/bundle/dmg');
   for (const folder of [native + '/bundle/nsis', dmg, root + '/public', root + '/dist/models']) fs.mkdirSync(folder, {recursive: true});
   fs.writeFileSync(native + '/bundle/nsis/Anatolume_' + version + '_x64-setup.exe', 'Fixture installer');
+  const {privateKey, publicKey} = generateKeyPairSync('ed25519');
+  const keyId = randomBytes(8);
+  config.plugins.updater.pubkey = Buffer.from('untrusted comment: fixture public key\n' + Buffer.concat([Buffer.from('Ed'), keyId, publicKey.export({format: 'der', type: 'spki'}).subarray(-32)]).toString('base64') + '\n').toString('base64');
+  fs.writeFileSync(configPath, JSON.stringify(config));
+  const sign = file => {
+    const signature = cryptoSign(null, createHash('blake2b512').update(fs.readFileSync(file)).digest(), privateKey);
+    const comment = `timestamp:1\tfile:fixture\tversion:${version}`;
+    const global = cryptoSign(null, Buffer.concat([signature, Buffer.from(comment)]), privateKey);
+    fs.writeFileSync(file + '.sig', Buffer.from(`untrusted comment: fixture\n${Buffer.concat([Buffer.from('ED'), keyId, signature]).toString('base64')}\ntrusted comment: ${comment}\n${global.toString('base64')}\n`).toString('base64'));
+  };
+  sign(native + '/bundle/nsis/Anatolume_' + version + '_x64-setup.exe');
   fs.writeFileSync(native + '/anatolume.exe', 'Fixture portable executable');
   fs.writeFileSync(dmg + '/Anatolume_' + version + '_universal.dmg', 'Fixture disk image');
+  const macBundle = path.join(root, 'src-tauri/target/universal-apple-darwin/release/bundle/macos');
+  fs.mkdirSync(macBundle, {recursive: true});
+  fs.writeFileSync(macBundle + '/Anatolume.app.tar.gz', 'Fixture universal update');
+  sign(macBundle + '/Anatolume.app.tar.gz');
   fs.writeFileSync(dmg + '/Human Atlas_0.1.0_universal.dmg', 'Stale cached bundle must not enter the release');
   fs.writeFileSync(root + '/public/ATTRIBUTION.md', 'Fixture attribution');
   fs.writeFileSync(root + '/LICENSE', 'Fixture license');
   fs.writeFileSync(root + '/dist/index.html', '<html>Fixture Web build</html>');
   fs.writeFileSync(root + '/dist/models/atlas.json', '{}');
-  const options = {version, directory, root, source, runUrl: 'https://github.com/example/project/actions/runs/100'};
+  const options = {version, directory, root, source, runUrl: 'https://github.com/example/project/actions/runs/100', sign};
   for (const platform of ['windows', 'macos', 'web']) prepareAssets({...options, platform});
-  assert.deepEqual(combineAssets(options), [...Object.values(assetNames(version)).flat(), 'SHA256SUMS', 'BUILD-REPORT.md']);
+  assert.deepEqual(combineAssets(options), [...Object.values(assetNames(version)).flat(), 'latest.json', 'SHA256SUMS', 'BUILD-REPORT.md']);
   const portable = unzipSync(fs.readFileSync(path.join(directory, assetNames(version).windows[1])));
   assert.equal(strFromU8(portable['Anatolume.exe']), 'Fixture portable executable');
   assert.ok(strFromU8(portable['README.txt']).includes('WebView2'));
   assert.ok(portable['ATTRIBUTION.md'] && portable.LICENSE);
+  assert.deepEqual(JSON.parse(strFromU8(portable['anatolume-portable.json'])), {edition: 'portable', version});
+  const latestPath = path.join(directory, 'latest.json');
+  const latest = JSON.parse(fs.readFileSync(latestPath, 'utf8'));
+  assert.equal(latest.version, version);
+  assert.equal(latest.platforms['windows-x86_64-portable'].signature, fs.readFileSync(path.join(directory, assetNames(version).windows[3]), 'utf8'));
+  const portableBytes = fs.readFileSync(path.join(directory, assetNames(version).windows[1]));
+  const portableSignature = latest.platforms['windows-x86_64-portable'].signature;
+  const pubkey = config.plugins.updater.pubkey;
+  verifyUpdaterSignature(portableBytes, portableSignature, pubkey, version);
+  assert.throws(() => verifyUpdaterSignature(Buffer.concat([portableBytes, Buffer.from('tampered')]), portableSignature, pubkey, version), /artifact signature/);
+  const changedComment = Buffer.from(Buffer.from(portableSignature, 'base64').toString().replace(`version:${version}`, 'version:99.0.0')).toString('base64');
+  assert.throws(() => verifyUpdaterSignature(portableBytes, changedComment, pubkey, '99.0.0'), /trusted comment signature/);
+  assert.throws(() => verifyUpdaterSignature(portableBytes, portableSignature, pubkey, '99.0.0'), /bound to the release version/);
+  const changedKeyLines = Buffer.from(pubkey, 'base64').toString().trimEnd().split('\n');
+  const changedKey = Buffer.from(changedKeyLines[1], 'base64');
+  changedKey[41] ^= 1;
+  changedKeyLines[1] = changedKey.toString('base64');
+  assert.throws(() => verifyUpdaterSignature(portableBytes, portableSignature, Buffer.from(changedKeyLines.join('\n')).toString('base64'), version), /artifact signature/);
+  assert.equal(latest.platforms['darwin-aarch64'].url, latest.platforms['darwin-x86_64'].url);
+  assert.ok(latest.platforms['windows-x86_64-portable'].url.endsWith('.zip'));
+  assert.ok(latest.platforms['windows-x86_64'].url.endsWith('setup.exe'));
+  for (const invalid of [
+    {...latest, version: '99.0.0'},
+    {...latest, platforms: {...latest.platforms, 'windows-x86_64-portable': latest.platforms['windows-x86_64']}},
+    {...latest, platforms: {...latest.platforms, 'darwin-aarch64': {...latest.platforms['darwin-aarch64'], url: 'http://untrusted.invalid/update'}}},
+    {...latest, notes: ''},
+  ]) {
+    fs.writeFileSync(latestPath, JSON.stringify(invalid));
+    assert.throws(() => verifyAssets(version, directory, source, root));
+  }
+  combineAssets(options);
   const web = unzipSync(fs.readFileSync(path.join(directory, assetNames(version).web[0])));
   assert.ok(web['index.html'] && web['models/atlas.json']);
   assert.equal(JSON.parse(strFromU8(web['version.json'])).version, version);
@@ -99,7 +147,7 @@ try {
   assert.ok(strFromU8(web['README-WEB.txt']).includes('HTTP/HTTPS'));
   for (const platform of ['windows', 'macos', 'web']) prepareAssets({...options, platform});
   combineAssets(options);
-  assert.equal(verifyAssets(version, directory, source).length, 6, 'Repeated preparation preserves valid assets');
+  assert.equal(verifyAssets(version, directory, source, root).length, 11, 'Repeated preparation preserves valid assets');
   const receiptPath = path.join(directory, 'macos.json');
   const originalReceipt = fs.readFileSync(receiptPath, 'utf8');
   const receipt = JSON.parse(originalReceipt);
@@ -119,7 +167,7 @@ try {
   assert.throws(() => combineAssets(options), /ENOENT/, 'A missing platform blocks publishing');
   fs.renameSync(receiptPath + '.backup', receiptPath);
   fs.appendFileSync(path.join(directory, assetNames(version).windows[1]), 'changed');
-  assert.throws(() => verifyAssets(version, directory, source), /checksum does not match/);
+  assert.throws(() => verifyAssets(version, directory, source, root), /checksum does not match/);
 } finally {
   // Remove only this test's freshly-created directory inside the resolved temp parent.
   const resolved = fs.realpathSync(root);

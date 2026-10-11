@@ -33,7 +33,7 @@ for (const [english, chinese] of Object.entries(UI_ZH)) {
 assert.equal(text('Show only {name}', 'zh-CN', {name:'心脏'}), '仅显示心脏');
 assert.equal(text('Anatolume', 'zh-CN'), '层知');
 assert.equal(text('Anatolume', 'en'), 'Anatolume');
-for (const name of ['app/page.tsx','app/scene.tsx','app/about.tsx']) {
+for (const name of ['app/page.tsx','app/scene.tsx','app/about.tsx','app/update-panel.tsx']) {
   const source = ts.createSourceFile(name, fs.readFileSync(new URL(`../${name}`, import.meta.url), 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   const visit = node => {
     if (ts.isCallExpression(node) && ['t','text'].includes(node.expression.getText(source)) && ts.isStringLiteral(node.arguments[0])) {

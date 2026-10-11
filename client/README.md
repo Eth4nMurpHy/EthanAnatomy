@@ -7,7 +7,8 @@
 - `app/page.tsx`：查看器界面与状态；`app/scene.tsx`：场景生命周期和交互调度。
 - `app/core/`：解剖数据类型、分解布局、指针状态、模型解压和搜索工具。
 - `app/rendering/`：材质着色器与可见索引批次。
-- `client/platform/`：运行环境判断与外部链接桥接。
+- `client/platform/`：运行环境判断、外部链接与原生更新桥接。
+- `client/updates/`：更新状态、下载进度与失败重试；`hooks/use-client-update.ts`：启动检查和偏好存储。
 - `client/i18n/`：界面文案、术语草稿和生成来源。
 - `client/content/`：中文阅读指南、方位词、常用骨骼说明、观察提示及搜索别名。
 - `src-tauri/`：原生窗口、权限和安装配置。
@@ -16,18 +17,20 @@
 
 ## Windows 构建
 
-需要 Node.js 22.18+、Rust MSVC 工具链、Visual Studio C++ Build Tools 和 Windows SDK。依赖版本由 npm 与 Cargo 锁文件固定；检查脚本使用 Node 原生 TypeScript 支持。
+需要 Node.js 22.18+、Rust 1.90+ MSVC 工具链、Visual Studio C++ Build Tools 和 Windows SDK。依赖版本由 npm 与 Cargo 锁文件固定；检查脚本使用 Node 原生 TypeScript 支持。
 
 ```powershell
 npm ci
 npm run client:dev
 # 生成当前用户安装的 NSIS 安装包
-npm run client:build
+npm run client:build -- --config src-tauri/tauri.local.conf.json
 ```
 
 产物位于 `src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/`。需要 WebView2；安装程序在缺少运行时时使用联网引导程序。第一次 Rust 构建可能需要数分钟。仅在本机缓存完整且网络不可用时，可以在当前 PowerShell 进程设置 `$env:CARGO_NET_OFFLINE='true'`。
 
 网页命令 `npm run dev` / `npm run build` 继续可用。原生窗口根据屏幕工作区限制初始大小；仅批准来源页面的 HTTPS 外链通过系统浏览器打开。
+
+上述本地构建命令关闭签名更新包产出。官方发布使用同一套固定密钥，默认构建命令需要设置签名环境变量；客户端启动自动检查新版，也可在“关于与致谢 → 应用更新”手动检查。安装版、便携版和 macOS 的更新方式与密钥备份见 [发布与更新指南](../docs/RELEASE.md#客户端自动更新)。
 
 ## 主页与浏览布局
 

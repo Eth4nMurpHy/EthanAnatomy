@@ -6,6 +6,9 @@
   "permissions": [
     "core:default",
     "core:window:allow-set-title",
+    "allow-check-update",
+    "allow-install-update",
+    "allow-restart-updated-app",
     {
       "identifier": "opener:allow-open-url",
       "allow": [

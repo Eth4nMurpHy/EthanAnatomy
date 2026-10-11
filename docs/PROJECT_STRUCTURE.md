@@ -17,10 +17,13 @@
 | `app/rendering/materials.ts` | 系统材质、位置/选择纹理和着色器 |
 | `app/rendering/draw-batches.ts` | 可见索引压紧和绘制范围 |
 | `client/` | 中英文与平台桥接 |
+| `client/updates/controller.ts` / `hooks/use-client-update.ts` | 更新状态、启动检查、进度和失败重试 |
+| `src-tauri/src/updater.rs` | 签名与版本校验、安装版更新、便携替换和重启 |
 | `client/content/zh-CN.ts` | 中文阅读引导、基础知识、搜索别名与参考来源 |
 | `src-tauri/` | 原生窗口、权限与打包 |
 | `scripts/release-version.mjs` | SemVer 规划、重试复用与五个版本文件同步 |
 | `scripts/release-assets.mjs` | Windows 安装/便携、macOS、Web 打包和平台来源/校验合并 |
+| `scripts/updater-signature.mjs` | 发布包与签名版本的 Minisign 校验 |
 | `scripts/release-notes.mjs` | 按上一个发布标签生成简明更新摘要与完整变更链接 |
 | `scripts/publish-release.mjs` | 原子版本提交/标签与全平台 Release 发布 |
 | `scripts/prepare-pages.mjs` | Cloudflare Pages 模型/文件限制检查与版本来源记录 |
@@ -41,14 +44,15 @@ npm run ci:check
 
 1. `check`：TypeScript。
 2. `validate:release`：版本递增、版本文件同步、标签排序、重试和安装包校验。
-3. `validate:locales`：术语覆盖、文案、双语搜索和语言存储。
-4. `validate:atlas`：男性/女性模型映射、边界与压缩二进制数据。
-5. `validate:models`：女性来源校验、性别特定几何、模型独立性、中文检索与浏览历史。
-6. `validate:interactions`：双模型布局与交互契约。
-7. `build`：网页构建。
-8. `build:pages`：Cloudflare Pages 构建、两套压缩模型与文件限制检查。
-9. `build:client`：客户端前端构建。
-10. `validate:client`：解压异常、两套模型打包资产、版本一致性和 Windows 配置。
+3. `validate:updater`：更新检查、并发操作、下载/安装/重启失败重试及签名配置。
+4. `validate:locales`：术语覆盖、文案、双语搜索和语言存储。
+5. `validate:atlas`：男性/女性模型映射、边界与压缩二进制数据。
+6. `validate:models`：女性来源校验、性别特定几何、模型独立性、中文检索与浏览历史。
+7. `validate:interactions`：双模型布局与交互契约。
+8. `build`：网页构建。
+9. `build:pages`：Cloudflare Pages 构建、两套压缩模型与文件限制检查。
+10. `build:client`：客户端前端构建。
+11. `validate:client`：解压异常、两套模型打包资产、版本一致性和 Windows 配置。
 
 ## GitHub Actions
 

@@ -112,6 +112,7 @@
 - **macOS：** 当前使用 ad-hoc 签名，尚未经过 Apple 公证；首次打开可能需要在“系统设置 → 隐私与安全性”中允许。
 - **安装提示：** Windows 测试版尚未签名，可能显示未知发布者提示。每个自动发布的版本提供 `SHA256SUMS` 和 `BUILD-REPORT.md`。
 - **离线范围：** 桌面模型随包提供；查看外部数据来源和参考资料需要联网。语言偏好与最近探索记录保存在本机。
+- **客户端更新：** 启动时自动检查正式版；在“关于与致谢 → 应用更新”查看更新内容、手动检查并下载安装。安装版、便携版和 macOS 使用各自的签名更新包。旧客户端需先手动安装首个支持自动更新的版本，详见 [发布与更新指南](docs/RELEASE.md#客户端自动更新)。
 
 </details>
 
@@ -205,6 +206,8 @@ Windows 构建还需要 **Rust MSVC 工具链、Visual Studio C++ Build Tools、
 | `npm run validate:release` | 检查版本递增、一致性、重试和安装包校验。 |
 
 Windows 安装包输出到 `src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/`。第一次 Rust 构建可能需要数分钟。
+
+官方更新包需要发布签名密钥。仅本地构建时，可在桌面构建命令后添加 `-- --config src-tauri/tauri.local.conf.json`，关闭签名更新包产出；详见 [签名配置](docs/RELEASE.md#发布签名密钥)。
 
 浏览器交互已覆盖桌面及多种手机视口；真实手机性能与多指硬件操作仍需设备验证。
 

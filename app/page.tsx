@@ -61,6 +61,7 @@ import {
 } from "@/components/ui/combobox";
 import AnatomyScene from "./scene";
 import About from "./about";
+import { useClientUpdate } from "../hooks/use-client-update";
 import {
   DEFAULT_VISIBLE,
   SYSTEMS,
@@ -91,6 +92,7 @@ const ORGAN_SYSTEMS: SystemId[] = [
   "mammary",
 ];
 export default function Home() {
+  const updater = useClientUpdate();
   const [model, setModel] = useState<ModelId>(() => {
     try { return readModel(localStorage, location.search); }
     catch { return readModel(undefined, location.search); }
@@ -915,7 +917,7 @@ export default function Home() {
             setCreditsOpen(true);
           }}
         >
-          <span>{"Sunky"}</span><span aria-hidden="true">·</span>{t("About & acknowledgements")} <ArrowUpRight size={12} />
+          {updater.native && updater.state.update ? <span className="update-badge">{t(updater.state.status === "ready" ? "Restart to update" : "New version available")}</span> : <><span>{"Sunky"}</span><span aria-hidden="true">·</span></>}{t("About & acknowledgements")} <ArrowUpRight size={12} />
         </Button>
       </footer>
       {progress < 100 && !error && (
@@ -1092,7 +1094,7 @@ export default function Home() {
           </div>
         </SheetContent>
       </Sheet>
-      <About locale={locale} open={creditsOpen} onOpenChange={setCreditsOpen} />
+      <About locale={locale} open={creditsOpen} onOpenChange={setCreditsOpen} updater={updater} />
       <Sheet open={about} onOpenChange={setAbout}>
         <SheetContent closeLabel={t("Close")} className="about-sheet glass">
           <div className="eyebrow"><BookOpen size={15} />{t("Learning guide")}</div>

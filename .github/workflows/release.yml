@@ -88,10 +88,17 @@ jobs:
         run: node scripts/release-version.mjs sync "$env:RELEASE_VERSION"
       - run: npm ci
       - run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
-      - run: npm run client:build
+      - run: cargo test --manifest-path src-tauri/Cargo.toml --lib --locked
+      - name: Build signed Windows updater and installer
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: npm run client:build
       - name: Package installer and portable ZIP
         env:
           RELEASE_VERSION: ${{ needs.version.outputs.version }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: node scripts/release-assets.mjs windows
       - uses: actions/upload-artifact@v7
         with:
@@ -126,7 +133,12 @@ jobs:
         run: node scripts/release-version.mjs sync "$RELEASE_VERSION"
       - run: npm ci
       - run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
-      - run: npm run client:build:mac
+      - run: cargo test --manifest-path src-tauri/Cargo.toml --lib --locked
+      - name: Build signed universal macOS updater and DMG
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: npm run client:build:mac
       - name: Verify universal architectures and ad-hoc signature
         shell: bash
         run: |

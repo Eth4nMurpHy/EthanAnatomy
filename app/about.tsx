@@ -1,8 +1,11 @@
 import { ArrowUpRight, Code2, Globe, Heart } from "lucide-react";
+import { useRef } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { text, type Locale } from "../client/i18n";
 import { runtimeInfo } from "../client/platform";
 import { staticAssetUrl } from "./core/static-asset";
+import UpdatePanel from "./update-panel";
+import type { ClientUpdate } from "../hooks/use-client-update";
 
 const tools = [
   ["React", "https://react.dev/"],
@@ -15,24 +18,27 @@ const tools = [
   ["meshoptimizer", "https://github.com/zeux/meshoptimizer"],
 ];
 
-export default function About({ locale, open, onOpenChange }: {
+export default function About({ locale, open, onOpenChange, updater }: {
   locale: Locale;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  updater: ClientUpdate;
 }) {
   const t = (english: string) => text(english, locale);
   const runtime = runtimeInfo();
+  const headingRef = useRef<HTMLHeadingElement>(null);
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent closeLabel={t("Close")} className="about-sheet credits-sheet glass">
+      <SheetContent closeLabel={t("Close")} initialFocus={headingRef} className="about-sheet credits-sheet glass">
         <div className="credits-brand">
           <img src={staticAssetUrl("/branding/256x256.png")} width={56} height={56} alt="" />
           <div><div className="eyebrow">{t("About & acknowledgements")}</div>
-            <SheetTitle className="credits-title">{t("Anatolume")}</SheetTitle>
+            <SheetTitle ref={headingRef} tabIndex={-1} className="credits-title">{t("Anatolume")}</SheetTitle>
           </div>
         </div>
         <SheetDescription>{t("See the body. Understand every layer.")}</SheetDescription>
         <div className="credits-version">{t(runtime.native ? "Offline client" : "Web viewer")}<span>·</span>{runtime.version}</div>
+        {updater.native && <UpdatePanel locale={locale} updater={updater} />}
 
         <section className="author-card" aria-labelledby="author-heading">
           <div className="author-card-heading"><span className="author-monogram" aria-hidden="true">{"S"}</span>

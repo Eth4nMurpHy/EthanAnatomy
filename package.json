@@ -22,11 +22,12 @@
     "validate:models": "node scripts/validate-models.mjs",
     "validate:interactions": "node scripts/validate-interactions.mjs",
     "validate:release": "node scripts/validate-release.mjs",
+    "validate:updater": "node scripts/validate-updater.mjs",
     "ci:check": "node scripts/ci-check.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
-    "@tauri-apps/api": "2.11.0",
+    "@tauri-apps/api": "2.12.2",
     "@tauri-apps/plugin-opener": "2.5.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",

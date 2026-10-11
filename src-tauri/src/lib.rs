@@ -1,7 +1,16 @@
+mod updater;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .manage(updater::UpdateState::default())
+        .invoke_handler(tauri::generate_handler![
+            updater::check_update,
+            updater::install_update,
+            updater::restart_updated_app
+        ])
         .setup(|app| {
             if let Some(window) = app.get_webview_window("main") {
                 if let Some(monitor) = window.current_monitor()? {
