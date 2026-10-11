@@ -940,10 +940,6 @@ export default function Home() {
       </>}
       <footer className="studio-footer">
         <span className={`footer-status ${updater.native ? "" : "is-web"}`}><span className="status-dot" />{updater.native && t("Offline client")}<span className="footer-data">{MODELS[model].source}{" · "}{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span></span>
-        <span>
-          {state.explode > 0.8 ? t("Drag to pan") : t("Drag to orbit")} <b>·</b>{" "}
-          {t("Pinch to zoom")} <b>·</b> {t("Tap to inspect")}
-        </span>
       </footer>
       {progress < 100 && !error && (
         <div className="loading glass" role="status">
