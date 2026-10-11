@@ -34,7 +34,6 @@ import {
   BookOpen,
   Compass,
   Download,
-  EyeOff,
   Heart,
   MousePointer2,
   PanelLeftClose,
@@ -502,12 +501,12 @@ export default function Home() {
           variant="ghost"
           className={`icon-button header-about ${updater.native && updater.state.update ? "has-update" : ""}`}
           aria-label={t("About this atlas")}
-          title={updater.native && updater.state.update ? t(updater.state.status === "ready" ? "Restart to update" : "New version available") : t(privacyMode ? "Privacy mode is on" : "About this atlas")}
+          title={updater.native && updater.state.update ? t(updater.state.status === "ready" ? "Restart to update" : "New version available") : t("About this atlas")}
           onClick={() => {
             setCreditsOpen(true);
           }}
         >
-          {privacyMode ? <EyeOff size={18} /> : <Info size={18} />}
+          <Info size={18} />
         </Button>
       </nav>
       </header>
@@ -940,6 +939,7 @@ export default function Home() {
       </>}
       <footer className="studio-footer">
         <span className={`footer-status ${updater.native ? "" : "is-web"}`}><span className="status-dot" />{updater.native && t("Offline client")}<span className="footer-data">{MODELS[model].source}{" · "}{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span></span>
+        <span className={`footer-privacy ${privacyMode ? "is-active" : ""}`} role="status">{t(privacyMode ? "Privacy mode: on" : "Privacy mode: off")}</span>
       </footer>
       {progress < 100 && !error && (
         <div className="loading glass" role="status">
