@@ -69,7 +69,7 @@ import {
 } from "@/components/ui/combobox";
 import AnatomyScene from "./scene";
 import SystemLayers from "./system-layers";
-import { systemStructures, clearStructureOverrides } from "./core/structure-layers";
+import { systemStructures, clearStructureOverrides, explicitSystemOverrides } from "./core/structure-layers";
 import About from "./about";
 import { useClientUpdate } from "../hooks/use-client-update";
 import {
@@ -305,10 +305,12 @@ export default function Home() {
               : singleSystem
                 ? t("Only {name}", { name: sn(singleSystem) })
                 : t("Custom layers");
-  const applyLayers = (visible: SystemId[]) => {
+  const applyLayers = (visible: SystemId[], explicitSystem?: SystemId) => {
     setDetails(false);
     setChosen(null);
-    setState((s) => ({ ...s, visible, selected: [], isolate: false, focus: 0, partVisibility: {} }));
+    setState((s) => ({ ...s, visible, selected: [], isolate: false, focus: 0,
+      partVisibility: explicitSystem ? explicitSystemOverrides(atlas, explicitSystem, true, hiddenPartIds) : {},
+    }));
   };
   const selectedParts = state.selected.map((id) => parts.get(id)).filter((p) => !!p),
     selected = selectedParts[0],
@@ -392,7 +394,7 @@ export default function Home() {
       isolate: false,
       focus: 0,
       visible: enabled ? [...new Set([...s.visible, id])] : s.visible.filter((x) => x !== id),
-      partVisibility: clearStructureOverrides(s.partVisibility, atlas?.parts.filter((p) => p.system === id).map((p) => p.id) ?? []),
+      partVisibility: explicitSystemOverrides(atlas, id, enabled, hiddenPartIds, s.partVisibility),
     }));
   };
   const toggleStructure = (structure: Concept, enabled: boolean) => {
@@ -631,8 +633,9 @@ export default function Home() {
           )}
         </div>
         <SystemLayers key={model} locale={locale} structures={structuresBySystem} visibleIds={visiblePartIds}
-          ready={progress >= 100 && !error} isOnly={(id) => matchesLayers([id])}
-          onSystem={toggle} onOnly={(id) => applyLayers([id])} onStructure={toggleStructure} onInspect={choose} />
+          ready={progress >= 100 && !error} isOnly={(id) => !state.isolate && visiblePartIds.size > 0 &&
+            (atlas?.parts.every((part) => visiblePartIds.has(part.id) === (part.system === id)) ?? false)}
+          onSystem={toggle} onOnly={(id) => applyLayers([id], id)} onStructure={toggleStructure} onInspect={choose} />
         <div className="panel-foot">
           <span>{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span>
           <Button variant="ghost" onClick={() => applyLayers([])}>
@@ -963,7 +966,7 @@ export default function Home() {
             </TooltipTrigger>
             <TooltipContent className="privacy-status-tooltip" side="top" align="end" sideOffset={10}>
               <strong>{t(privacyMode ? "Privacy mode: on" : "Privacy mode: off")}</strong>
-              <span>{t(privacyMode ? "Sensitive structures are hidden in default views and random exploration. Search still allows explicit viewing." : "Default views and random exploration include all available anatomy.")}</span>
+              <span>{t(privacyMode ? "Sensitive structures are hidden in default views and random exploration. Search or explicit viewing from the list still allows access." : "Default views and random exploration include all available anatomy.")}</span>
               <small>{t("Click to open privacy settings")}</small>
             </TooltipContent>
           </Tooltip>

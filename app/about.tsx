@@ -45,7 +45,7 @@ export default function About({ locale, open, onOpenChange, updater, privacyMode
         <div className="credits-version">{t(runtime.native ? "Offline client" : "Web viewer")}<span>·</span>{runtime.version}</div>
         <section className="privacy-preference" data-targeted={focusPrivacy || undefined} aria-labelledby="privacy-heading">
           <div><h2 id="privacy-heading"><EyeOff size={17} />{t("Privacy mode")}</h2><Switch ref={privacySwitchRef} checked={privacyMode} onCheckedChange={onPrivacyModeChange} aria-labelledby="privacy-heading" aria-describedby="privacy-description" /></div>
-          <p id="privacy-description">{t("Hide male reproductive structures, female breasts and external genitalia in default views and random exploration. Internal female organs remain visible; select a search result to view hidden structures explicitly.")}</p>
+          <p id="privacy-description">{t("Hide male reproductive structures, female breasts and external genitalia in default views and random exploration. Internal female organs remain visible; explicitly open a system or structure from the list, or select a search result, to view hidden structures.")}</p>
         </section>
         {updater.native && <UpdatePanel locale={locale} updater={updater} />}
         {!runtime.native && <a className="credits-download" href={CLIENT_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer">

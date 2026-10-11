@@ -5,7 +5,7 @@ import {PointerTap} from '../app/core/pointer-tap.ts';
 import {atlasTools} from '../app/core/agent-tools.ts';
 import {randomOrganCandidates,pickRandomOrgan} from '../app/core/random-organ.ts';
 import {privacyHiddenParts,isPartVisible,readPrivacyMode,PRIVACY_MODE_STORAGE_KEY} from '../app/core/privacy-mode.ts';
-import {systemStructures,clearStructureOverrides} from '../app/core/structure-layers.ts';
+import {systemStructures,clearStructureOverrides,explicitSystemOverrides} from '../app/core/structure-layers.ts';
 
 for (const file of ['atlas.json', 'atlas-female.json']) {
   const atlas=JSON.parse(await readFile(new URL(`../public/models/${file}`,import.meta.url)));
@@ -30,6 +30,15 @@ for (const file of ['atlas.json', 'atlas-female.json']) {
   assert.deepEqual(privacyHiddenParts(atlas,false),[]);
   const hidden=new Set(privacyHiddenParts(atlas,true));
   const allSystems=new Set(atlas.parts.map(p=>p.system));
+  for (const system of allSystems) {
+    const enabled=explicitSystemOverrides(atlas,system,true,hidden);
+    const systemParts=atlas.parts.filter(p=>p.system===system);
+    assert.ok(systemParts.every(p=>isPartVisible(p,new Set([system]),new Set(),false,hidden,enabled)), 'Explicit system viewing includes protected structures');
+    assert.ok(atlas.parts.filter(p=>p.system!==system).every(p=>!isPartVisible(p,new Set([system]),new Set(),false,hidden,enabled)), 'Only does not reveal other systems');
+    const disabled=explicitSystemOverrides(atlas,system,false,hidden,enabled);
+    assert.ok(systemParts.every(p=>!isPartVisible(p,new Set(),new Set(),false,hidden,disabled)), 'Turning off the system removes privacy exceptions');
+    assert.ok(systemParts.filter(p=>hidden.has(p.id)).every(p=>!isPartVisible(p,allSystems,new Set(),false,hidden,{})), 'Default view still hides private structures after exceptions are cleared');
+  }
   const visibleDefault=atlas.parts.filter(p=>isPartVisible(p,allSystems,new Set(),false,hidden));
   if(model==='male') {
     assert.ok(hidden.size>12,'Privacy also hides genital vessels outside the reproductive system');

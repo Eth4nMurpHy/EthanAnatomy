@@ -1,4 +1,4 @@
-import type { Atlas, Concept, SystemId } from "./anatomy";
+import type { Atlas, Concept, SystemId } from "./anatomy.ts";
 
 // The source data has system membership and concept IDs, but no reliable
 // parent/child organ tree. List its actual structures without inventing one.
@@ -19,5 +19,17 @@ export function systemStructures(atlas: Atlas | null): Map<SystemId, Concept[]> 
 export function clearStructureOverrides(overrides: Readonly<Record<string, boolean>> | undefined, ids: readonly string[]) {
   const next = { ...overrides };
   for (const id of ids) delete next[id];
+  return next;
+}
+
+// A system switch is an explicit viewing request, including its private parts.
+// Only protected parts need overrides; ordinary parts follow the system layer.
+export function explicitSystemOverrides(
+  atlas: Atlas | null, system: SystemId, enabled: boolean,
+  hidden: ReadonlySet<string>, overrides?: Readonly<Record<string, boolean>>,
+) {
+  const ids = atlas?.parts.filter((part) => part.system === system).map((part) => part.id) ?? [];
+  const next = clearStructureOverrides(overrides, ids);
+  if (enabled) for (const id of ids) if (hidden.has(id)) next[id] = true;
   return next;
 }
