@@ -1,6 +1,11 @@
 import * as T from "three";
 import { SYSTEMS } from "../core/anatomy";
 
+// Three.js converts these sRGB colors to the linear space used by the shader.
+// A medium teal separates selected bone without making its surface too dark.
+const selectionColor = new T.Color("#42aaa2");
+const selectionEdgeColor = new T.Color("#7bdccc");
+
 export function createAnatomyMaterial(
   system: string,
   partTexture: T.DataTexture,
@@ -20,6 +25,8 @@ export function createAnatomyMaterial(
     shader.uniforms.partState = { value: partTexture };
     shader.uniforms.selectionState = { value: selectionTexture };
     shader.uniforms.stateWidth = { value: width };
+    shader.uniforms.selectionColor = { value: selectionColor };
+    shader.uniforms.selectionEdgeColor = { value: selectionEdgeColor };
     shader.vertexShader =
       "attribute float partIndex; uniform sampler2D partState; uniform sampler2D selectionState; uniform float stateWidth; varying float partSelected;\n" +
       shader.vertexShader;
@@ -27,10 +34,20 @@ export function createAnatomyMaterial(
       "#include <begin_vertex>",
       "#include <begin_vertex>\nvec2 stateUv = vec2((partIndex + 0.5) / stateWidth, 0.5); vec4 state = texture2D(partState, stateUv); transformed += state.xyz; partSelected = texture2D(selectionState, stateUv).r;",
     );
-    shader.fragmentShader = "varying float partSelected;\n" + shader.fragmentShader;
+    shader.fragmentShader =
+      "varying float partSelected; uniform vec3 selectionColor; uniform vec3 selectionEdgeColor;\n" +
+      shader.fragmentShader;
     shader.fragmentShader = shader.fragmentShader.replace(
       "#include <color_fragment>",
-      "#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.42, 0.85, 0.78), partSelected * 0.75);",
+      "#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, selectionColor, partSelected * 0.90);",
+    );
+    // View-dependent edge light preserves shape without another render pass,
+    // duplicated geometry, or a continuously running highlight animation.
+    shader.fragmentShader = shader.fragmentShader.replace(
+      "#include <opaque_fragment>",
+      `float selectionRim = pow(1.0 - clamp(dot(normal, normalize(vViewPosition)), 0.0, 1.0), 2.0);
+outgoingLight = mix(outgoingLight, outgoingLight * 0.97 + selectionColor * 0.04 + selectionEdgeColor * selectionRim * 0.20, partSelected);
+#include <opaque_fragment>`,
     );
   };
   return m;
