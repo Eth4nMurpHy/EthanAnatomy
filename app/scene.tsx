@@ -386,6 +386,9 @@ export default function AnatomyScene({
     ).normalize();
     const fit = (view: string, extent = 0, transitionTime?: number) => {
       controls.maxDistance = 40;
+      controls.minDistance = 0.07;
+      camera.near = 0.005;
+      camera.updateProjectionMatrix();
       // The scene now occupies the space between the tool panels. Fit its own
       // viewport rather than reserving space for controls inside a full-screen canvas.
       const aspect = camera.aspect,
@@ -662,19 +665,20 @@ export default function AnatomyScene({
             const size = box.getSize(new T.Vector3());
             const w = el.clientWidth, h = el.clientHeight;
             const sceneRect = el.getBoundingClientRect();
-            let left = 16, right = w - 16, top = 16, bottom = h - 16;
+            const margin = Math.min(16, w * 0.04, h * 0.04);
+            let left = margin, right = w - margin, top = margin, bottom = h - margin;
             if (s.inspectorOpen) {
               const sheet = document.querySelector(".detail-sheet")?.getBoundingClientRect();
               if (sheet && sheet.left < sceneRect.right && sheet.right > sceneRect.left && sheet.top < sceneRect.bottom && sheet.bottom > sceneRect.top) {
                 if (innerWidth < 768) {
-                  bottom = Math.max(80, sheet.top - sceneRect.top - 16);
+                  bottom = T.MathUtils.clamp(sheet.top - sceneRect.top - margin, top + 1, bottom);
                 } else {
-                  right = Math.max(140, sheet.left - sceneRect.left - 16);
+                  right = T.MathUtils.clamp(sheet.left - sceneRect.left - margin, left + 1, right);
                 }
               }
             }
-            const availableWidth = Math.max(150, right - left),
-              availableHeight = Math.max(40, bottom - top);
+            const availableWidth = Math.max(1, right - left),
+              availableHeight = Math.max(1, bottom - top);
             const destinationOffset = new T.Vector2(
               w / 2 - (left + right) / 2,
               h / 2 - (top + bottom) / 2,
@@ -686,16 +690,52 @@ export default function AnatomyScene({
             // depth, so a long structure also fits when viewed from the side.
             const horizontal = new T.Vector3().crossVectors(camera.up, direction).normalize();
             const vertical = new T.Vector3().crossVectors(direction, horizontal).normalize();
+            let frameWidth: number, frameHeight: number, frameDepth: number;
             const projectedSize = (axis: T.Vector3) =>
               Math.abs(axis.x) * size.x + Math.abs(axis.y) * size.y + Math.abs(axis.z) * size.z;
+            if (s.isolate) {
+              // Frame each part in camera space instead of projecting a combined
+              // world-space box, which adds empty space around multipart organs.
+              const viewBounds = new T.Box3();
+              const corner = new T.Vector3();
+              const projectedCorner = new T.Vector3();
+              selectedIndices.forEach((i) => {
+                const partBounds = bounds[i];
+                for (let c = 0; c < 8; c++) {
+                  corner.set(
+                    (c & 1 ? partBounds.max.x : partBounds.min.x) + data[i * 4],
+                    (c & 2 ? partBounds.max.y : partBounds.min.y) + data[i * 4 + 1],
+                    (c & 4 ? partBounds.max.z : partBounds.min.z) + data[i * 4 + 2],
+                  );
+                  projectedCorner.set(corner.dot(horizontal), corner.dot(vertical), corner.dot(direction));
+                  viewBounds.expandByPoint(projectedCorner);
+                }
+              });
+              const viewCenter = viewBounds.getCenter(new T.Vector3());
+              const viewSize = viewBounds.getSize(new T.Vector3());
+              center = horizontal.clone().multiplyScalar(viewCenter.x)
+                .addScaledVector(vertical, viewCenter.y).addScaledVector(direction, viewCenter.z);
+              frameWidth = viewSize.x;
+              frameHeight = viewSize.y;
+              frameDepth = viewSize.z;
+              // Tiny structures need a closer clipping plane and zoom limit.
+              camera.near = T.MathUtils.clamp(viewSize.length() * 0.02, 0.0001, 0.005);
+              camera.updateProjectionMatrix();
+            } else {
+              camera.near = 0.005;
+              camera.updateProjectionMatrix();
+              frameWidth = projectedSize(horizontal);
+              frameHeight = projectedSize(vertical);
+              frameDepth = projectedSize(direction);
+            }
             let distance = Math.max(
-              0.07,
+              s.isolate ? camera.near * 2 : 0.07,
               (Math.max(
-                (projectedSize(vertical) * h) / availableHeight,
-                (projectedSize(horizontal) * w) / availableWidth / camera.aspect,
+                (frameHeight * h) / availableHeight,
+                (frameWidth * w) / availableWidth / camera.aspect,
               ) /
                 (2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2)))) *
-                (s.isolate ? 1.35 : 1.7) + projectedSize(direction) / 2,
+                (s.isolate ? 1.22 : 1.7) + frameDepth / 2,
             );
             if (s.focusContext && s.focus && !s.isolate) {
               // Restore context instead of zooming back into the isolated organ.
@@ -707,6 +747,9 @@ export default function AnatomyScene({
                 surroundingView ? surroundingView.position.distanceTo(surroundingView.target) * Math.max(1, surroundingView.aspect / camera.aspect) : 3.6);
             }
             controls.maxDistance = Math.max(40, distance * 2);
+            controls.minDistance = s.isolate
+              ? Math.min(distance, Math.max(camera.near * 2, size.length() * 0.15))
+              : 0.07;
             const destination = center.clone().addScaledVector(direction, distance);
             const offset = new T.Vector2(camera.view?.enabled ? camera.view.offsetX : 0, camera.view?.enabled ? camera.view.offsetY : 0);
             const alreadyCentered = camera.position.distanceTo(destination) <= distance * 0.001 &&
