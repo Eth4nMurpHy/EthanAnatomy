@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Activity, Bone, Brain, ChevronRight, CircleDot, Droplets, Eye, GitBranch, Hand, Heart, Layers3, Network, PersonStanding, Search, Sparkles, Utensils, Wind, type LucideIcon } from "lucide-react";
+import { Activity, Bone, Brain, ChevronRight, CircleDot, Droplets, Eye, Focus, GitBranch, Hand, Heart, Layers3, Network, PersonStanding, Search, Sparkles, Utensils, Wind, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { displayName, systemName, text, type Locale } from "../client/i18n";
@@ -56,12 +56,12 @@ export default function SystemLayers({ locale, structures, visibleIds, ready, is
           <button className="system-name" aria-expanded={open} aria-controls={`system-children-${system.id}`} aria-label={t(open ? "Collapse {name} structures" : "Browse {name} structures", { name })}
             onClick={() => { setExpanded(open ? null : system.id); setQuery(""); setLimit(24); }}>
             <ChevronRight size={12} className="system-chevron" aria-hidden="true" />
-            <span className="system-icon" aria-hidden="true"><Icon size={17} strokeWidth={1.6} /></span>
+            <span className="system-icon" aria-hidden="true"><Icon size={19} strokeWidth={1.6} /></span>
             <span className="system-text"><span className="system-label" title={name}>{name}</span>
               <span className="system-count" title={t("{shown} of {total} pieces visible", { shown, total: ids.length })}>{shown && shown < ids.length ? `${shown}/${ids.length}` : ids.length}</span>
             </span>
           </button>
-          <Button variant="ghost" className="system-only" aria-label={t("Show only {name}", { name })} aria-pressed={isOnly(system.id)} onClick={() => onOnly(system.id)} disabled={!ready}>{t("Only")}</Button>
+          <Button variant="ghost" className="system-only" aria-label={t("Show only {name}", { name })} title={t("Show only {name}", { name })} aria-pressed={isOnly(system.id)} onClick={() => onOnly(system.id)} disabled={!ready}><Focus size={16} aria-hidden="true" /></Button>
           <Switch checked={shown > 0} onCheckedChange={(enabled) => onSystem(system.id, enabled)} aria-label={t("Show {name}", { name })} disabled={!ready} />
         </div>
         {open && <section id={`system-children-${system.id}`} className="system-children" aria-label={t("{name} structures", { name })}>

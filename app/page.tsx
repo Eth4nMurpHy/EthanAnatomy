@@ -586,7 +586,7 @@ export default function Home() {
         <span className="scene-status"><span className="status-dot" />{layerStatus}</span>
       </div>
       <aside className={`workspace-sidebar glass ${panel ? "mobile-open" : ""}`} aria-label={t("Exploration tools")}>
-        <div className="sidebar-head"><span><Compass size={17} />{t("Exploration tools")}</span><button className="mobile-only icon-button" onClick={() => setPanel(null)} aria-label={t("Close exploration tools")}><X size={18} /></button><span className="desktop-only sidebar-subtitle">{t("Explore at your own pace")}</span></div>
+        <div className="sidebar-head"><span title={t("Explore at your own pace")}><Compass size={17} />{t("Exploration tools")}</span><button className="mobile-only icon-button" onClick={() => setPanel(null)} aria-label={t("Close exploration tools")}><X size={18} /></button></div>
         <div className="sidebar-tabs">
           <button className={panel !== "search" ? "active" : ""} aria-pressed={panel !== "search"} onClick={() => setPanel("layers")}><Layers3 size={16} />{t("Systems")}</button>
           <button className={panel === "search" ? "active" : ""} aria-pressed={panel === "search"} onClick={() => setPanel("search")}><Search size={16} />{t("Find a structure")}<kbd>/</kbd></button>
@@ -597,7 +597,19 @@ export default function Home() {
         aria-label={t("Anatomical layers")}
       >
         <div className="panel-heading">
-          <span>{t("Anatomical layers")}</span>
+          <span className="layer-heading-title">
+            {t("Anatomical layers")}
+            <TooltipProvider delay={250}>
+              <Tooltip>
+                <TooltipTrigger render={<Button variant="ghost" className="layer-help-trigger" aria-label={t("Expand a system to browse structures; switches control visibility.")} />}>
+                  <Info size={14} aria-hidden="true" />
+                </TooltipTrigger>
+                <TooltipContent side="right" className="layer-help-tooltip">
+                  {t("Expand a system to browse structures; switches control visibility.")}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </span>
           <Badge
             variant="secondary"
             className="desktop-only small-number"
@@ -612,7 +624,10 @@ export default function Home() {
             aria-pressed={matchesLayers(defaultVisible)}
             onClick={() => applyLayers(defaultVisible)}
           >
-            <PersonStanding size={17} />{t("Whole body")}
+            <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="3.5" r="2" />
+              <path d="M9.5 7.5h5c.9 0 1.6.5 1.9 1.3l2.1 5a1 1 0 0 1-1.8.8L15 11v4l1 6h-2.5L12 16.5 10.5 21H8l1-6v-4l-1.7 3.6a1 1 0 0 1-1.8-.8l2.1-5c.3-.8 1-1.3 1.9-1.3Z" />
+            </svg>{t("Whole body")}
           </Button>
           <Button
             variant="ghost"
@@ -634,7 +649,7 @@ export default function Home() {
             <span>{t("Current layers")}</span>
             <strong>{layerStatus}</strong>
           </p>
-          <p id="layer-help" className="layer-help">
+          <p id="layer-help" className="sr-only">
             {t("Expand a system to browse structures; switches control visibility.")}
           </p>
           {selectedParts.some((p) => !state.visible.includes(p.system)) && !state.isolate && (
