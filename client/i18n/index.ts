@@ -9,6 +9,13 @@ export type Locale = "zh-CN" | "en";
 // Stable keys preserve preferences when upgrading to Anatolume.
 export const LANGUAGE_STORAGE_KEY = "human-atlas.language";
 export const UI_ZH: Record<string, string> = {
+  "Selection highlight": "选中高亮",
+  "Teal": "青绿",
+  "Sky blue": "天蓝",
+  "Lavender": "淡紫",
+  "Amber": "琥珀",
+  "Coral": "珊瑚",
+  "Rose": "玫瑰",
   "Hide current structure": "隐藏当前结构",
   "Hide the selected structure; preserve visibility settings for other structures": "隐藏当前选中结构，保留其他结构的显示状态",
   "Expand a system to browse structures; switches control visibility.": "展开系统查看下级结构，开关控制各项显隐。",

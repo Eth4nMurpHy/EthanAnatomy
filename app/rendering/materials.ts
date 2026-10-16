@@ -1,16 +1,20 @@
 import * as T from "three";
 import { SYSTEMS } from "../core/anatomy";
+import { selectionColorPreset, type SelectionColorId } from "../core/selection-colors";
 
 // Three.js converts these sRGB colors to the linear space used by the shader.
 // A medium teal separates selected bone without making its surface too dark.
-const selectionColor = new T.Color("#42aaa2");
-const selectionEdgeColor = new T.Color("#7bdccc");
+export function createSelectionColors(id?: SelectionColorId) {
+  const preset = selectionColorPreset(id);
+  return { color: new T.Color(preset.color), edge: new T.Color(preset.edge) };
+}
 
 export function createAnatomyMaterial(
   system: string,
   partTexture: T.DataTexture,
   selectionTexture: T.DataTexture,
   width: number,
+  selectionColors = createSelectionColors(),
 ) {
   const m = new T.MeshStandardMaterial({
     color: SYSTEMS.find((s) => s.id === system)?.color ?? "#aebbb8",
@@ -25,8 +29,8 @@ export function createAnatomyMaterial(
     shader.uniforms.partState = { value: partTexture };
     shader.uniforms.selectionState = { value: selectionTexture };
     shader.uniforms.stateWidth = { value: width };
-    shader.uniforms.selectionColor = { value: selectionColor };
-    shader.uniforms.selectionEdgeColor = { value: selectionEdgeColor };
+    shader.uniforms.selectionColor = { value: selectionColors.color };
+    shader.uniforms.selectionEdgeColor = { value: selectionColors.edge };
     shader.vertexShader =
       "attribute float partIndex; uniform sampler2D partState; uniform sampler2D selectionState; uniform float stateWidth; varying float partSelected;\n" +
       shader.vertexShader;

@@ -1,3 +1,5 @@
+import type { SelectionColorId } from "./selection-colors";
+
 export type SystemId =
   | "skeletal"
   | "muscular"
@@ -172,6 +174,7 @@ export interface SceneState {
   explode: number;
   visible: SystemId[];
   selected: string[];
+  selectionColor?: SelectionColorId;
   isolate: boolean;
   view: View;
   rotate: boolean;

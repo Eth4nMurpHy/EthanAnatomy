@@ -1,4 +1,4 @@
-import { ArrowUpRight, Code2, Download, EyeOff, Heart } from "lucide-react";
+import { ArrowUpRight, Check, Code2, Download, EyeOff, Heart, Palette } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useRef } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
@@ -7,6 +7,7 @@ import { CLIENT_DOWNLOAD_URL, runtimeInfo } from "../client/platform";
 import { staticAssetUrl } from "./core/static-asset";
 import UpdatePanel from "./update-panel";
 import type { ClientUpdate } from "../hooks/use-client-update";
+import { SELECTION_COLORS, type SelectionColorId } from "./core/selection-colors";
 
 const tools = [
   ["React", "https://react.dev/"],
@@ -19,7 +20,7 @@ const tools = [
   ["meshoptimizer", "https://github.com/zeux/meshoptimizer"],
 ];
 
-export default function About({ locale, open, onOpenChange, updater, privacyMode, onPrivacyModeChange, focusPrivacy = false }: {
+export default function About({ locale, open, onOpenChange, updater, privacyMode, onPrivacyModeChange, focusPrivacy = false, selectionColor, onSelectionColorChange }: {
   locale: Locale;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -27,6 +28,8 @@ export default function About({ locale, open, onOpenChange, updater, privacyMode
   privacyMode: boolean;
   onPrivacyModeChange: (enabled: boolean) => void;
   focusPrivacy?: boolean;
+  selectionColor: SelectionColorId;
+  onSelectionColorChange: (color: SelectionColorId) => void;
 }) {
   const t = (english: string) => text(english, locale);
   const runtime = runtimeInfo();
@@ -46,6 +49,14 @@ export default function About({ locale, open, onOpenChange, updater, privacyMode
         <section className="privacy-preference" data-targeted={focusPrivacy || undefined} aria-labelledby="privacy-heading">
           <div><h2 id="privacy-heading"><EyeOff size={17} />{t("Privacy mode")}</h2><Switch ref={privacySwitchRef} checked={privacyMode} onCheckedChange={onPrivacyModeChange} aria-labelledby="privacy-heading" aria-describedby="privacy-description" /></div>
           <p id="privacy-description">{t("Hide male reproductive structures, female breasts and external genitalia in default views and random exploration. Internal female organs remain visible; explicitly open a system or structure from the list, or select a search result, to view hidden structures.")}</p>
+        </section>
+        <section className="selection-preference" aria-labelledby="selection-color-heading">
+          <h2 id="selection-color-heading"><Palette size={17} aria-hidden="true" />{t("Selection highlight")}</h2>
+          <div className="selection-color-options" role="group" aria-labelledby="selection-color-heading">
+            {SELECTION_COLORS.map((preset) => <button key={preset.id} type="button" className="selection-color-option" aria-label={t(preset.name)} title={t(preset.name)} aria-pressed={selectionColor === preset.id} onClick={() => onSelectionColorChange(preset.id)}>
+              <span className="selection-color-swatch" style={{ backgroundColor: preset.color }} aria-hidden="true">{selectionColor === preset.id && <Check size={13} strokeWidth={2.5} />}</span>
+            </button>)}
+          </div>
         </section>
         {updater.native && <UpdatePanel locale={locale} updater={updater} />}
         {!runtime.native && <a className="credits-download" href={CLIENT_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer">

@@ -1,4 +1,5 @@
-import { createAnatomyMaterial } from "./rendering/materials";
+import { createAnatomyMaterial, createSelectionColors } from "./rendering/materials";
+import { selectionColorPreset } from "./core/selection-colors";
 import { updateDrawBatches, type DrawBatch } from "./rendering/draw-batches";
 import { useEffect, useRef } from "react";
 import * as T from "three";
@@ -205,9 +206,11 @@ export default function AnatomyScene({
             new T.Vector3().fromArray(p.bounds[1]),
           ),
       );
+    const selectionColors = createSelectionColors(latest.current.selectionColor);
+    let lastSelectionColor = latest.current.selectionColor;
     const contextHighlight = new T.Group();
     const contextHighlightMaterial = new T.MeshBasicMaterial({
-      color: "#6bd5bf", transparent: true, opacity: 0.65,
+      color: selectionColors.edge, transparent: true, opacity: 0.65,
       depthWrite: false, depthFunc: T.GreaterDepth,
     });
     materials.push(contextHighlightMaterial);
@@ -279,7 +282,7 @@ export default function AnatomyScene({
     };
     const mats = new Map(
       SYSTEMS.map((system) => {
-        const material = createAnatomyMaterial(system.id, partTexture, selectionTexture, width);
+        const material = createAnatomyMaterial(system.id, partTexture, selectionTexture, width, selectionColors);
         materials.push(material);
         return [system.id, material];
       }),
@@ -514,6 +517,14 @@ export default function AnatomyScene({
       const dt = lastTime ? Math.min((time - lastTime) / 1000, 0.05) : 1 / 60,
         s = latest.current;
       lastTime = time;
+      if (lastSelectionColor !== s.selectionColor) {
+        const preset = selectionColorPreset(s.selectionColor);
+        selectionColors.color.set(preset.color);
+        selectionColors.edge.set(preset.edge);
+        contextHighlightMaterial.color.copy(selectionColors.edge);
+        lastSelectionColor = s.selectionColor;
+        dirty = true;
+      }
       const changed =
         lastState?.visible !== s.visible ||
         lastState?.selected !== s.selected ||

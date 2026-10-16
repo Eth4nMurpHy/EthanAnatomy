@@ -23,6 +23,7 @@ import { MODELS, MODEL_STORAGE_KEY, defaultLayers, isModelAtlas, readModel, read
 import { anatomySearchIndex, matchedSearchAlias, type SearchEntry } from "./core/anatomy-search";
 import { pickRandomOrgan, randomOrganCandidates } from "./core/random-organ";
 import { isPartVisible, privacyHiddenParts, readPrivacyMode, PRIVACY_MODE_STORAGE_KEY } from "./core/privacy-mode";
+import { readSelectionColor, SELECTION_COLOR_STORAGE_KEY } from "./core/selection-colors";
 import { InputGroupButton } from "@/components/ui/input-group";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -103,6 +104,13 @@ const ORGAN_SYSTEMS: SystemId[] = [
 ];
 export default function Home() {
   const updater = useClientUpdate();
+  const [selectionColor, setSelectionColor] = useState(() => {
+    try { return readSelectionColor(localStorage); } catch { return readSelectionColor(); }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(SELECTION_COLOR_STORAGE_KEY, selectionColor); }
+    catch { /* Color selection remains available without persistent storage. */ }
+  }, [selectionColor]);
   const [showBase, setShowBase] = useState(() => {
     try { return localStorage.getItem("anatolume.showBase") !== "false"; }
     catch { return true; }
@@ -474,6 +482,7 @@ export default function Home() {
           locale={locale}
           state={{
             ...state,
+            selectionColor,
             showBase,
             hiddenParts,
             inspectorOpen: details && selectedParts.length > 0,
@@ -1200,7 +1209,7 @@ export default function Home() {
           </div>
         </SheetContent>
       </Sheet>
-      <About locale={locale} open={creditsOpen} onOpenChange={(open) => { setCreditsOpen(open); if (!open) setFocusPrivacy(false); }} updater={updater} privacyMode={privacyMode} onPrivacyModeChange={changePrivacyMode} focusPrivacy={focusPrivacy} />
+      <About locale={locale} open={creditsOpen} onOpenChange={(open) => { setCreditsOpen(open); if (!open) setFocusPrivacy(false); }} updater={updater} privacyMode={privacyMode} onPrivacyModeChange={changePrivacyMode} focusPrivacy={focusPrivacy} selectionColor={selectionColor} onSelectionColorChange={setSelectionColor} />
       <Sheet open={about} onOpenChange={setAbout}>
         <SheetContent closeLabel={t("Close")} className="about-sheet glass">
           <div className="eyebrow"><BookOpen size={15} />{t("Learning guide")}</div>
