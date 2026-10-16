@@ -737,11 +737,13 @@ export default function AnatomyScene({
       controls.enableRotate = amount < 0.8;
       controls.mouseButtons.LEFT = amount < 0.8 ? T.MOUSE.ROTATE : T.MOUSE.PAN;
       controls.touches.ONE = amount < 0.8 ? T.TOUCH.ROTATE : T.TOUCH.PAN;
+      const baseVisible = s.showBase !== false && amount < 0.5 && !s.isolate;
+      if (platform.visible !== baseVisible) dirty = true;
       ground.visible =
         platform.visible =
         ring.visible =
         innerRing.visible =
-          amount < 0.5 && !s.isolate;
+          baseVisible;
       markers.visible = amount > 0.75;
       const highlightKey = ready && s.focusContext && s.focus && !s.isolate ? selectedKey : "";
       if (highlightKey !== contextHighlightKey) {

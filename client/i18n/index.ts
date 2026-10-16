@@ -194,6 +194,9 @@ export const UI_ZH: Record<string, string> = {
   "Start with a major organ, or search every named structure.":
     "可从主要器官开始，也可输入中文、英文名称或源 ID。",
   "Camera controls": "相机控制",
+  "Base": "底座",
+  "Show base": "显示底座",
+  "Hide base": "隐藏底座",
   "three-quarter view": "四分之三视角",
   "front view": "正面视角",
   "side view": "侧面视角",

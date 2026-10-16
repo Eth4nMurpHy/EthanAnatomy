@@ -160,6 +160,7 @@ export interface Atlas {
 }
 export type View = "three-quarter" | "front" | "back" | "side";
 export interface SceneState {
+  showBase?: boolean;
   hiddenParts?: readonly string[];
   inspectorOpen?: boolean;
   inspectorLayout?: string;

@@ -103,6 +103,14 @@ const ORGAN_SYSTEMS: SystemId[] = [
 ];
 export default function Home() {
   const updater = useClientUpdate();
+  const [showBase, setShowBase] = useState(() => {
+    try { return localStorage.getItem("anatolume.showBase") !== "false"; }
+    catch { return true; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem("anatolume.showBase", String(showBase)); }
+    catch { /* The display setting still works without persistent storage. */ }
+  }, [showBase]);
   const [privacyMode, setPrivacyMode] = useState(() => {
     try { return readPrivacyMode(localStorage); } catch { return false; }
   });
@@ -466,6 +474,7 @@ export default function Home() {
           locale={locale}
           state={{
             ...state,
+            showBase,
             hiddenParts,
             inspectorOpen: details && selectedParts.length > 0,
             inspectorLayout: detailLayout,
@@ -891,6 +900,17 @@ export default function Home() {
         >
           <RotateCcw size={17} />
           <span>{t("Reset view")}</span>
+        </Button>
+        <Button
+          variant="ghost"
+          className={`base-toggle${showBase ? " active" : ""}`}
+          aria-pressed={showBase}
+          aria-label={t(showBase ? "Hide base" : "Show base")}
+          title={t(showBase ? "Hide base" : "Show base")}
+          onClick={() => setShowBase((shown) => !shown)}
+        >
+          {showBase ? <Eye size={16} /> : <EyeOff size={16} />}
+          <span>{t("Base")}</span>
         </Button>
       </nav>
       <div className="scene-caption">

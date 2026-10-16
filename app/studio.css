@@ -351,6 +351,7 @@ kbd { font-size:11px; border:1px solid #dce5df; background:#fff; padding:1px 5px
   .bottom-dock { flex:1; min-width:0; width:auto; }
   .view-controls { order:2; align-self:flex-start; flex-wrap:nowrap; flex-direction:column; gap:1px; overflow-y:auto; max-height:100%; }
   .view-controls button { height:27px; min-height:27px; width:43px; padding:0 5px; }
+  .view-controls .base-toggle span { display:none; }
   .view-controls i { width:25px; height:1px; margin:3px; }
   .rotate-label { display:none; }
   .sidebar-head { padding:10px 16px 8px; }
