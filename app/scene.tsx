@@ -557,7 +557,8 @@ export default function AnatomyScene({
           const shown = isPartVisible(p, visible, selection, s.isolate, hidden, s.partVisibility);
           partVisibility[i] = shown ? 1 : 0;
           data[i * 4 + 3] = shown ? 1 : 0;
-          selectedData[i * 4] = selected ? 255 : 0;
+          // Isolation already identifies the target; retain its anatomical color.
+          selectedData[i * 4] = selected && !s.isolate ? 255 : 0;
           if (shown) {
             activeParts.push(i);
             if (p.system !== "integumentary") hasSolidParts = true;
