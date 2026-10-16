@@ -795,6 +795,34 @@ export default function Home() {
         </section>
       )}
       </aside>
+      {selectedParts.length > 0 && !details && !about && !creditsOpen && (
+        <div
+          className="selection-summary glass"
+          role="group"
+          aria-label={t("Selected structure actions")}
+        >
+          <Button
+            variant="ghost"
+            className="selection-open"
+            onClick={() => {
+              setDetailCompact(false);
+              setDetails(true);
+            }}
+          >
+            <Info size={16} />
+            <span>
+              {dn(chosen?.name)}
+              <small>{t("View details")}</small>
+            </span>
+          </Button>
+          <Button variant="ghost" onClick={returnToOverview}>
+            <ArrowLeft size={15} />
+            {t("Back to overview")}
+          </Button>
+        </div>
+      )}
+      {progress === 100 && visibleCount === 0 && <div className="empty-scene glass"><Layers3 size={30} /><h2>{t("No layers are visible")}</h2><p>{t("Turn on a system, or restore the whole body to keep exploring.")}</p><Button onClick={() => applyLayers(defaultVisible)}>{t("Show whole body")}</Button></div>}
+      <div className="scene-controls">
       <nav className="view-controls glass" aria-label={t("Camera controls")}>
         {(["three-quarter", "front", "side", "back"] as View[]).map((v, i) => (
           <Button
@@ -878,33 +906,6 @@ export default function Home() {
         </span>
         <span className="caption-line" />
       </div>
-      {selectedParts.length > 0 && !details && !about && !creditsOpen && (
-        <div
-          className="selection-summary glass"
-          role="group"
-          aria-label={t("Selected structure actions")}
-        >
-          <Button
-            variant="ghost"
-            className="selection-open"
-            onClick={() => {
-              setDetailCompact(false);
-              setDetails(true);
-            }}
-          >
-            <Info size={16} />
-            <span>
-              {dn(chosen?.name)}
-              <small>{t("View details")}</small>
-            </span>
-          </Button>
-          <Button variant="ghost" onClick={returnToOverview}>
-            <ArrowLeft size={15} />
-            {t("Back to overview")}
-          </Button>
-        </div>
-      )}
-      {progress === 100 && visibleCount === 0 && <div className="empty-scene glass"><Layers3 size={30} /><h2>{t("No layers are visible")}</h2><p>{t("Turn on a system, or restore the whole body to keep exploring.")}</p><Button onClick={() => applyLayers(defaultVisible)}>{t("Show whole body")}</Button></div>}
       <div className="bottom-dock glass">
         <Button
           variant="ghost"
@@ -955,6 +956,7 @@ export default function Home() {
           <RotateCcw size={18} />
           <span>{t("Reset all")}</span>
         </Button>
+      </div>
       </div>
       </>}
       <footer className="studio-footer">
