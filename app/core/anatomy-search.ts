@@ -1,6 +1,5 @@
-import { chineseSearchAliases } from "../../client/content/zh-CN";
-import { displayName, searchText } from "../../client/i18n";
-import { SYSTEMS, type Atlas, type Concept, type SystemId } from "./anatomy";
+import { LOCALES, displayName, searchText, structureAliases, normalizeSearch } from "../../client/i18n/index.ts";
+import { SYSTEMS, type Atlas, type Concept, type SystemId } from "./anatomy.ts";
 
 export interface SearchEntry {
   concept: Concept;
@@ -36,10 +35,10 @@ export function anatomySearchIndex(atlas: Atlas) {
         concept,
         systems: SYSTEMS.filter((system) => systems.has(system.id)).map((system) => system.id),
         side: (left && right) || paired ? "both" : left ? "left" : right ? "right" : null,
-        aliases: chineseSearchAliases(concept.name).split("\n").filter(Boolean),
+        aliases: structureAliases(concept.name),
         searchable: searchText(concept.name, concept.id),
         named:
-          `${concept.name}\n${displayName(concept.name, "zh-CN")}\n${concept.id}`.toLowerCase(),
+          normalizeSearch(`${LOCALES.map(({ id }) => displayName(concept.name, id)).join("\n")}\n${concept.id}`),
       };
       return [concept.id, entry] as const;
     }),
@@ -47,9 +46,9 @@ export function anatomySearchIndex(atlas: Atlas) {
 }
 
 export function matchedSearchAlias(entry: SearchEntry, query: string) {
-  const term = query.toLowerCase().trim();
+  const term = normalizeSearch(query);
   if (!term || entry.named.includes(term)) return undefined;
   return entry.aliases
-    .filter((alias) => alias.includes(term))
+    .filter((alias) => normalizeSearch(alias).includes(term))
     .sort((a, b) => a.length - b.length)[0];
 }

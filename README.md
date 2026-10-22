@@ -12,6 +12,8 @@
 三维人体图谱 · 网页探索与离线客户端<br>
 Interactive 3D anatomy · Web and offline desktop
 
+应用语言 / App languages：简体中文 · English · Español · 日本語 · 한국어
+
 [**简体中文**](#简体中文) · [**English**](#english) · [界面预览 / Preview](#preview)
 
 [![Platforms](https://img.shields.io/badge/Platforms-Web%20%7C%20Windows%20%7C%20macOS-66786e?style=flat-square)](#开始使用)
@@ -102,7 +104,7 @@ Systems are arranged compactly while preserving internal relationships; move the
 | --- | --- |
 | **男女模型** | 页眉切换男性参考模型与女性学习模型，分别保存最近浏览记录。 |
 | **分层浏览** | 全身、骨骼、器官视图；展开系统、筛选下级结构、逐项显隐或仅看某个系统。 |
-| **双语搜索** | 使用中文、英文、俗称或源 ID 查找，如“心脏”“大腿骨”“FMA7088”。 |
+| **多语言搜索** | 中文、英文、西班牙语、日语、韩语界面；使用已收录译名、别名或源 ID 搜索，支持重音省略和全角 ID。 |
 | **结构聚焦** | 单独观察并阅读介绍；平滑定位至周围视图并高亮目标，或在详情中隐藏当前结构。 |
 | **镜头与旋转** | 平滑切换斜视、正面、侧面与背面；自动旋转支持方向和连续速度调节。 |
 | **随机探索** | 右上角入口随机选择完整器官并聚焦；详情中“再换一个”可继续探索。 |
@@ -170,6 +172,8 @@ Systems are arranged compactly while preserving internal relationships; move the
 </details>
 
 ### 模型与许可
+
+新增三种语言已覆盖界面、系统名称与概述、常见器官和主要骨骼；细分结构尚未全量翻译，未核对的名称保留英文。译文尚未经独立专业审校。范围、参考来源与维护规则见 [多语言与术语说明](docs/LOCALIZATION.md)。
 
 | 模型 | 独立网格 | 系统／图层 | 具名概念 |
 | --- | ---: | ---: | ---: |
@@ -242,6 +246,7 @@ Windows 原生构建需要 Rust MSVC、Visual Studio C++ Build Tools、Windows S
 | [发布与更新](docs/RELEASE.md) | 自动版本、全平台发布、签名与故障重试。 |
 | [Cloudflare Pages](docs/CLOUDFLARE_PAGES.md) | 连接 GitHub 构建及部署。 |
 | [女性模型](docs/FEMALE_MODEL.md) | 数据范围、导入与验证。 |
+| [多语言与术语](docs/LOCALIZATION.md) | 五语言范围、命名与别名规则、英文兜底及参考来源。 |
 | [品牌资源](docs/branding/README.md) | 完整 logo、原稿与压缩资源。 |
 | [数据署名](public/ATTRIBUTION.md) | 权利声明、许可与改编记录。 |
 
@@ -286,7 +291,7 @@ Anatolume turns human anatomy into a space for rotating, revealing layers, separ
 | --- | --- |
 | **Male and female models** | Switch between the male reference and female study model, with separate recent browsing histories. |
 | **Layers and structures** | Full-body, bones and organs views; expand systems, filter structures, toggle individual items or show one system only. |
-| **Bilingual search** | Search Chinese or English names, common aliases or source IDs such as “heart”, “心脏” or “FMA7088”. |
+| **Multilingual search** | Chinese, English, Spanish, Japanese and Korean interfaces; search available translated names, aliases or source IDs, including accent-insensitive and full-width input. |
 | **Structure focus** | Isolate a structure and read its introduction; smoothly locate it in context, or hide the current structure from its details panel. |
 | **Camera and rotation** | Smooth transitions between oblique, front, side and back views; auto-rotation with direction and continuous speed controls. |
 | **Random exploration** | Discover and focus on a complete organ; use “Another organ” in the details panel to continue. |
@@ -354,6 +359,8 @@ Left and right refer to **the body's own sides**. See the [client guide](client/
 </details>
 
 ### Models and licensing
+
+The three added languages cover the interface, system names and summaries, common organs and major bones. Detailed structures are not fully translated; unverified names retain the English source label. Translations have not been independently reviewed. See [localization and terminology](docs/LOCALIZATION.md) for scope, references and maintenance rules.
 
 | Model | Meshes | Systems / layers | Named concepts |
 | --- | ---: | ---: | ---: |
@@ -428,6 +435,7 @@ The following supporting guides are currently written in Chinese; the full sourc
 | [Releases and updates](docs/RELEASE.md) | Automatic versions, platform builds, signing and retries. |
 | [Cloudflare Pages](docs/CLOUDFLARE_PAGES.md) | GitHub-connected builds and deployment. |
 | [Female model](docs/FEMALE_MODEL.md) | Scope, import and validation. |
+| [Localization and terminology](docs/LOCALIZATION.md) | Five-language scope, names, aliases, English fallback and references. |
 | [Brand assets](docs/branding/README.md) | Full logo, original artwork and compressed assets. |
 | [Data attribution](public/ATTRIBUTION.md) | Rights-holder credits, licenses and adaptations. |
 

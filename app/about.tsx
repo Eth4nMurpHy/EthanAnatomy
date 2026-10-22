@@ -65,11 +65,17 @@ export default function About({ locale, open, onOpenChange, updater, privacyMode
           <ArrowUpRight size={17} />
         </a>}
 
+        <section className="credits-section" aria-labelledby="terminology-heading">
+          <h2 id="terminology-heading">{t("Terminology & translation")}</h2>
+          <p>{t("Localized names cover common organs and major bones. Unverified names remain in English. Translations have not been independently reviewed; source names and IDs are preserved.")}</p>
+          <a className="credit-text-link" href="https://github.com/isunky/Anatolume/blob/main/docs/LOCALIZATION.md" target="_blank" rel="noreferrer">{t("Full attribution & adaptations")}<ArrowUpRight size={13} /></a>
+        </section>
+
         <section className="author-card" aria-labelledby="author-heading">
           <div className="author-card-heading"><span className="author-monogram" aria-hidden="true">{"S"}</span>
             <div><span className="credits-kicker">{t("Developed & maintained by")}</span><h2 id="author-heading">{"Sunky"}</h2></div>
           </div>
-          <p>{t("Continuing Anatolume with bilingual exploration, a refined interface and offline desktop access.")}</p>
+          <p>{t("Continuing Anatolume with multilingual exploration, a refined interface and offline desktop access.")}</p>
           <a className="author-website" href="https://github.com/isunky/Anatolume" target="_blank" rel="noreferrer"><Code2 size={16} /><span>{"isunky/Anatolume"}</span><ArrowUpRight size={15} /></a>
         </section>
 

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Activity, Bone, Brain, ChevronRight, CircleDot, Droplets, Eye, Focus, GitBranch, Hand, Heart, Layers3, Network, PersonStanding, Search, Sparkles, Utensils, Wind, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { displayName, systemName, text, type Locale } from "../client/i18n";
+import { displayName, systemName, text, searchText, normalizeSearch, type Locale } from "../client/i18n";
 import { SYSTEMS, type Concept, type SystemId } from "./core/anatomy";
 
 interface Props {
@@ -41,7 +41,7 @@ export default function SystemLayers({ locale, structures, visibleIds, ready, is
   }, [expanded, query]);
   const t = (key: string, values: Record<string, string | number> = {}) => text(key, locale, values);
   const children = useMemo(() => (expanded ? structures.get(expanded) ?? [] : [])
-    .filter((c) => `${displayName(c.name, locale)} ${c.name} ${c.id}`.toLowerCase().includes(query.trim().toLowerCase()))
+    .filter((c) => searchText(c.name, c.id).includes(normalizeSearch(query)))
     .sort((a, b) => displayName(a.name, locale).localeCompare(displayName(b.name, locale), locale)), [structures, expanded, query, locale]);
   return <div ref={listRef} className="system-list" aria-describedby="layer-help">
     {SYSTEMS.filter((s) => structures.has(s.id)).map((system) => {

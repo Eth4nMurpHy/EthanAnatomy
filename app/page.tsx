@@ -9,11 +9,13 @@ import {
   text,
   displayName,
   systemName,
-  chineseExplanation,
-  hasChineseExplanation,
   readLocale,
   errorText,
   LANGUAGE_STORAGE_KEY,
+  LOCALES,
+  normalizeSearch,
+  structureExplanation,
+  hasStructureExplanation,
   type Locale,
 } from "../client/i18n";
 import { CLIENT_DOWNLOAD_URL, openExternal, runtimeInfo, setAppTitle } from "../client/platform";
@@ -76,8 +78,6 @@ import { useClientUpdate } from "../hooks/use-client-update";
 import {
   DEFAULT_VISIBLE,
   SYSTEMS,
-  EXPLANATIONS,
-  explanation,
   type Atlas,
   type Concept,
   type SceneState,
@@ -146,7 +146,7 @@ export default function Home() {
   const sn = (system: (typeof SYSTEMS)[number]) => systemName(system.id, system.name, locale);
   useEffect(() => {
     document.documentElement.lang = locale;
-    const title = locale === "zh-CN" ? "层知 · Anatolume — 三维人体图谱" : "Anatolume — 3D Anatomy Explorer";
+    const title = text("Anatolume — 3D Anatomy Explorer", locale);
     void setAppTitle(title).catch(() => { /* The browser title remains available if the native bridge is unavailable. */ });
     try {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, locale);
@@ -344,7 +344,7 @@ export default function Home() {
   };
   const searchResults = useMemo(() => {
     if (!atlas) return { items: [] as Concept[], total: 0 };
-    const term = query.toLowerCase().trim();
+    const term = normalizeSearch(query);
     if (!term) {
       const popular = [
         "heart",
@@ -521,8 +521,7 @@ export default function Home() {
           value={locale}
           onChange={(e) => setLocale(e.target.value as Locale)}
         >
-          <option value="zh-CN">简体中文</option>
-          <option value="en">English</option>
+          {LOCALES.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}
         </select>
       </div>
       <nav className="top-actions" aria-label={t("Explorer panels")}>
@@ -563,9 +562,9 @@ export default function Home() {
               {!updater.native && <a className="guide-button download-button" href={CLIENT_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer"><Download size={18} /><span>{t("Download offline client")}</span></a>}
             </div>
             <div className="home-stats">
-              <div><strong>{atlas?.parts.length.toLocaleString() ?? "—"}</strong><span>{t("Individual structures")}</span></div>
+              <div><strong>{atlas?.parts.length.toLocaleString(locale) ?? "—"}</strong><span>{t("Individual structures")}</span></div>
               <div><strong>{atlas ? activeSystems.length : "—"}</strong><span>{t("Anatomical systems")}</span></div>
-              <div><strong>{atlas?.concepts.length.toLocaleString() ?? "—"}</strong><span>{t("Named concepts")}</span></div>
+              <div><strong>{atlas?.concepts.length.toLocaleString(locale) ?? "—"}</strong><span>{t("Named concepts")}</span></div>
             </div>
             <div className="home-paths">
               <div className="home-section-title"><span>{t("Choose a starting point")}</span><small>{t("One click to discover")}</small></div>
@@ -670,7 +669,7 @@ export default function Home() {
             (atlas?.parts.every((part) => visiblePartIds.has(part.id) === (part.system === id)) ?? false)}
           onSystem={toggle} onOnly={(id) => applyLayers([id], id)} onStructure={toggleStructure} onInspect={choose} />
         <div className="panel-foot">
-          <span>{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span>
+          <span>{t("{count} pieces visible", { count: visibleCount.toLocaleString(locale) })}</span>
           <Button variant="ghost" onClick={() => applyLayers([])}>
             {t("Hide all")}
           </Button>
@@ -785,7 +784,7 @@ export default function Home() {
                             </span>
                           )}
                         </span>
-                        {locale === "zh-CN" && <span className="search-source-name">{c.name}</span>}
+                        {locale !== "en" && dn(c.name) !== c.name && <span className="search-source-name">{c.name}</span>}
                         <span className="search-result-context">
                           <span>{t("Included systems")}</span>
                           {entry?.systems.map((id) => {
@@ -822,7 +821,7 @@ export default function Home() {
             {query
               ? searchResults.total > 80
                 ? t("Showing up to 80 matches. Refine your search to find smaller structures.")
-                : t("Search by Chinese or English name, alias or source ID.")
+                : t("Search by localized or English name, alias or source ID.")
               : t("Start with a major organ, or search every named structure.")}
           </p>
         </section>
@@ -1004,7 +1003,7 @@ export default function Home() {
       </div>
       </>}
       <footer className="studio-footer">
-        <span className={`footer-status ${updater.native ? "" : "is-web"}`}><span className="status-dot" />{updater.native && t("Offline client")}<span className="footer-data">{MODELS[model].source}{" · "}{t("{count} pieces visible", { count: visibleCount.toLocaleString() })}</span></span>
+        <span className={`footer-status ${updater.native ? "" : "is-web"}`}><span className="status-dot" />{updater.native && t("Offline client")}<span className="footer-data">{MODELS[model].source}{" · "}{t("{count} pieces visible", { count: visibleCount.toLocaleString(locale) })}</span></span>
         <TooltipProvider delay={250}>
           <Tooltip disabled={creditsOpen}>
             <TooltipTrigger render={<Button variant="ghost" className={`footer-privacy ${privacyMode ? "is-active" : ""}`} aria-label={t(privacyMode ? "Privacy mode: on" : "Privacy mode: off")} onClick={() => { setFocusPrivacy(true); setCreditsOpen(true); }} />}>
@@ -1026,7 +1025,7 @@ export default function Home() {
             <span>
               {progress}% ·{" "}
               {t("Loading {count} pieces", {
-                count: atlas?.parts.length.toLocaleString() ?? "2,234",
+                count: atlas?.parts.length.toLocaleString(locale) ?? "2,234",
               })}
             </span>
             <div className="loading-track">
@@ -1063,7 +1062,7 @@ export default function Home() {
             <SheetTitle ref={detailTitle} tabIndex={-1} className="structure-title">
               {dn(chosen?.name)}
             </SheetTitle>
-            {locale === "zh-CN" && chosen && <p className="source-name">{chosen.name}</p>}
+            {locale !== "en" && chosen && dn(chosen.name) !== chosen.name && <p className="source-name" title={t("English source name")}>{chosen.name}</p>}
             <div className="detail-mode"><Layers3 size={13} />{state.isolate ? t("Isolated selection") : t("Surrounding anatomy visible")}</div>
             <div className="detail-display-controls">
               <Button
@@ -1095,19 +1094,18 @@ export default function Home() {
           >
             <SheetDescription className="structure-description">
               {chosen && selected
-                ? locale === "zh-CN"
-                  ? chineseExplanation(chosen.name, selected.system, model)
-                  : explanation(chosen.name, selected.system, model)
+                ? structureExplanation(chosen.name, selected.system, model, locale)
                 : ""}
             </SheetDescription>
             {chosen &&
-              !(locale === "zh-CN"
-                ? hasChineseExplanation(chosen.name)
-                : EXPLANATIONS[chosen.name.toLowerCase()]) && (
+              !hasStructureExplanation(chosen.name, locale) && (
                 <span className="context-note">
                   {t("System overview · structure identified from source anatomy")}
                 </span>
               )}
+            {chosen && locale !== "en" && locale !== "zh-CN" && dn(chosen.name) === chosen.name && (
+              <span className="context-note">{t("English source name retained; localized terminology is not yet verified.")}</span>
+            )}
             {locale === "zh-CN" && chosen && chineseStructureKnowledge(chosen.name) && (
               <section className="learning-note" aria-label="观察提示">
                 <h3>观察提示</h3>
@@ -1123,7 +1121,7 @@ export default function Home() {
                 </span>
                 <span>
                   {t("Selected pieces")}
-                  <strong>{state.selected.length.toLocaleString()}</strong>
+                  <strong>{state.selected.length.toLocaleString(locale)}</strong>
                 </span>
               </div>
               {selectedParts.length > 1 && (
@@ -1266,10 +1264,10 @@ export default function Home() {
             <p className="client-edition">
               {t(runtimeInfo().native ? "Offline client" : "Web viewer")} · {runtimeInfo().version}
             </p>
-            <h3>{t("Chinese terminology draft")}</h3>
+            <h3>{t("Terminology & translation")}</h3>
             <p>
               {t(
-                "Chinese names are an offline terminology draft and have not been professionally reviewed. English source names and identifiers are preserved for comparison.",
+                "Localized names cover common organs and major bones. Unverified names remain in English. Translations have not been independently reviewed; source names and IDs are preserved.",
               )}
             </p>
             <p>
@@ -1277,7 +1275,7 @@ export default function Home() {
               <br />
               {t(
                 "{parts} individual meshes and {concepts} named concepts in the current model.",
-                { parts: atlas?.parts.length.toLocaleString() ?? "—", concepts: atlas?.concepts.length.toLocaleString() ?? "—" },
+                { parts: atlas?.parts.length.toLocaleString(locale) ?? "—", concepts: atlas?.concepts.length.toLocaleString(locale) ?? "—" },
               )}
             </p>
             {model === "female" && <p>{t("Derived from BodyParts3D and HRA female anatomy. Proportions and placement are estimated and have not been independently reviewed.")}</p>}

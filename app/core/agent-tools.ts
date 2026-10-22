@@ -1,5 +1,5 @@
 import type { Atlas, Concept } from "./anatomy";
-import { searchText } from "../../client/i18n/index.ts";
+import { searchText, normalizeSearch } from "../../client/i18n/index.ts";
 type Tool = {
   name: string;
   description: string;
@@ -28,7 +28,7 @@ export function atlasTools(atlas: Atlas, inspect: (concept: Concept) => void): T
         const data = record(input);
         if (typeof data.query !== "string" || !data.query.trim())
           throw new Error("A nonempty query is required.");
-        const q = data.query.toLowerCase().trim();
+        const q = normalizeSearch(data.query);
         return atlas.concepts
           .filter((c) => searchText(c.name, c.id).includes(q))
           .slice(0, 30)

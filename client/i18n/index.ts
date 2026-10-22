@@ -1,14 +1,23 @@
 import terms from "./terms.zh-CN.json" with { type: "json" };
 import { chineseStructureKnowledge, chineseSearchAliases } from "../content/zh-CN.ts";
-import type { SystemId } from "../../app/core/anatomy";
+import { explanation, EXPLANATIONS, type SystemId } from "../../app/core/anatomy.ts";
+import { LOCALES, isLocale, normalizeSearch, type Locale } from "./locales.ts";
+import { translatedUI, SINGULAR_UI } from "./ui.translations.ts";
+import { anatomyAliases, localizedAnatomyName, localizedSystemName, localizedExplanation, hasLocalizedExplanation } from "./anatomy.translations.ts";
+export { LOCALES, isLocale, normalizeSearch };
+export type { Locale };
 const normalizedTerms = new Map(
   Object.entries(terms).map(([english, chinese]) => [english.toLowerCase(), chinese]),
 );
 
-export type Locale = "zh-CN" | "en";
 // Stable keys preserve preferences when upgrading to Anatolume.
 export const LANGUAGE_STORAGE_KEY = "human-atlas.language";
 export const UI_ZH: Record<string, string> = {
+  "Anatolume — 3D Anatomy Explorer": "层知 · Anatolume — 三维人体图谱",
+  "Terminology & translation": "术语与翻译",
+  "Localized names cover common organs and major bones. Unverified names remain in English. Translations have not been independently reviewed; source names and IDs are preserved.": "新增语言已覆盖常见器官和主要骨骼，尚未核对的名称保留英文。翻译尚未经独立专业审校，保留英文原名和源 ID 供对照。",
+  "English source name": "英文原名",
+  "English source name retained; localized terminology is not yet verified.": "此结构译名尚未核对，暂保留英文原名。",
   "Selection highlight": "选中高亮",
   "Teal": "青绿",
   "Sky blue": "天蓝",
@@ -88,7 +97,7 @@ export const UI_ZH: Record<string, string> = {
   "About & acknowledgements": "关于与致谢",
   "See the body. Understand every layer.": "看见身体，理解每一层。",
   "Developed & maintained by": "开发与维护",
-  "Continuing Anatolume with bilingual exploration, a refined interface and offline desktop access.": "持续完善层知的中英双语探索、界面交互与离线桌面体验。",
+  "Continuing Anatolume with multilingual exploration, a refined interface and offline desktop access.": "持续完善层知的多语言探索、界面交互与离线桌面体验。",
   "Built on open source": "致敬开源，让知识被看见",
   "Thanks to the creators who share their work. Their code, data and tools make this atlas possible.": "感谢愿意分享的创作者。开放的代码、数据与工具，让这份人体图谱得以呈现。",
   "Original project": "原始项目",
@@ -189,8 +198,8 @@ export const UI_ZH: Record<string, string> = {
   "Left & right": "左 / 右",
   "Select a result to highlight it and open details.": "选择结果：高亮结构并打开详情。",
   "Left and right refer to the body's own sides.": "左右以人体自身为准。",
-  "Search by Chinese or English name, alias or source ID.":
-    "支持中文、英文名称、俗称和源 ID 搜索。",
+  "Search by localized or English name, alias or source ID.":
+    "支持本地化名称、英文原名、别名和源 ID 搜索。",
   "Heart, femur, cranial nerve…": "心脏、股骨、脑神经…",
   "Search named anatomical structures": "搜索有名称的解剖结构",
   "No structures match your search.": "没有找到匹配的结构。",
@@ -399,7 +408,10 @@ export function text(
   locale: Locale,
   values: Record<string, string | number> = {},
 ) {
-  const template = locale === "zh-CN" ? (UI_ZH[english] ?? english) : english;
+  let template = locale === "zh-CN" ? (UI_ZH[english] ?? english)
+    : locale === "en" ? english : translatedUI(english, locale) ?? english;
+  if ((locale === "es" || locale === "en") && Number(values.count) === 1)
+    template = SINGULAR_UI[locale][english] ?? template;
   return template.replace(/\{(\w+)\}/g, (_, name: string) => String(values[name] ?? `{${name}}`));
 }
 export function displayName(english: string, locale: Locale) {
@@ -407,13 +419,25 @@ export function displayName(english: string, locale: Locale) {
     ? ((terms as Record<string, string>)[english] ??
         normalizedTerms.get(english.toLowerCase()) ??
         english)
-    : english;
+    : locale === "en" ? english : localizedAnatomyName(english, locale) ?? english;
 }
 export function searchText(english: string, id: string) {
-  return `${english}\n${displayName(english, "zh-CN")}\n${id}\n${chineseSearchAliases(english)}`.toLowerCase();
+  return normalizeSearch(`${LOCALES.map(({ id: locale }) => displayName(english, locale)).join("\n")}\n${id}\n${chineseSearchAliases(english)}\n${anatomyAliases(english).join("\n")}`);
 }
 export function systemName(id: SystemId, english: string, locale: Locale) {
-  return locale === "zh-CN" ? SYSTEM_ZH[id].name : english;
+  return locale === "zh-CN" ? SYSTEM_ZH[id].name : locale === "en" ? english : localizedSystemName(id, locale);
+}
+export function structureExplanation(name: string, system: SystemId, sex: "male" | "female", locale: Locale) {
+  if (locale === "zh-CN") return chineseExplanation(name, system, sex);
+  if (locale !== "en") return localizedExplanation(name, system, sex, locale);
+  return explanation(name, system, sex);
+}
+export function hasStructureExplanation(name: string, locale: Locale) {
+  return locale === "zh-CN" ? hasChineseExplanation(name)
+    : locale === "en" ? !!EXPLANATIONS[name.toLowerCase()] : hasLocalizedExplanation(name);
+}
+export function structureAliases(name: string) {
+  return [...chineseSearchAliases(name).split("\n"), ...anatomyAliases(name)].filter(Boolean);
 }
 export function chineseExplanation(name: string, system: SystemId, sex: "male" | "female" = "male") {
   return (
@@ -429,7 +453,8 @@ export function hasChineseExplanation(name: string) {
 }
 export function readLocale(storage?: Pick<Storage, "getItem">): Locale {
   try {
-    return storage?.getItem(LANGUAGE_STORAGE_KEY) === "en" ? "en" : "zh-CN";
+    const saved = storage?.getItem(LANGUAGE_STORAGE_KEY);
+    return isLocale(saved) ? saved : "zh-CN";
   } catch {
     return "zh-CN";
   }

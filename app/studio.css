@@ -8,6 +8,11 @@
   --input:#d9e3dd; --ring:#176b58; --radius:.65rem;
 }
 * { box-sizing:border-box; }
+html:lang(ja) { font-family:'Segoe UI','Yu Gothic','Hiragino Kaku Gothic ProN','Meiryo',sans-serif; }
+html:lang(ko) { font-family:'Segoe UI','Malgun Gothic','Apple SD Gothic Neo',sans-serif; word-break:keep-all; }
+html:lang(es) .primary-nav button { white-space:normal; line-height:1.35; }
+html:lang(es) .home-intro h1 { font-size:clamp(30px,3vw,48px); }
+html:lang(es) .home-path strong { overflow-wrap:anywhere; }
 html,body,#root { width:100%; height:100%; margin:0; overflow:hidden; }
 button,input,select { font:inherit; }
 button,a,input { touch-action:manipulation; }
