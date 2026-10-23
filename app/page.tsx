@@ -27,7 +27,7 @@ import { pickRandomOrgan, randomOrganCandidates } from "./core/random-organ";
 import { isPartVisible, privacyHiddenParts, readPrivacyMode, PRIVACY_MODE_STORAGE_KEY } from "./core/privacy-mode";
 import { readSelectionColor, SELECTION_COLOR_STORAGE_KEY } from "./core/selection-colors";
 import { InputGroupButton } from "@/components/ui/input-group";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
   ArrowUpRight,
@@ -70,10 +70,10 @@ import {
   ComboboxItem,
   ComboboxEmpty,
 } from "@/components/ui/combobox";
-import AnatomyScene from "./scene";
-import SystemLayers from "./system-layers";
+const AnatomyScene = lazy(() => import("./scene"));
+const SystemLayers = lazy(() => import("./system-layers"));
 import { systemStructures, clearStructureOverrides, explicitSystemOverrides, hideSelectedStructure } from "./core/structure-layers";
-import About from "./about";
+const About = lazy(() => import("./about"));
 import { useClientUpdate } from "../hooks/use-client-update";
 import {
   DEFAULT_VISIBLE,
@@ -476,7 +476,7 @@ export default function Home() {
   return (
     <main className={`studio mode-${screen} ${panel === "search" ? "is-search" : ""} ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${details && selectedParts.length ? "has-inspector" : ""} ${detailWide ? "inspector-wide" : ""}`} onClick={externalClick}>
       {atlas && (
-        <AnatomyScene
+        <Suspense fallback={null}><AnatomyScene
           key={model}
           atlas={atlas}
           locale={locale}
@@ -494,7 +494,7 @@ export default function Home() {
             if (n === 100) setError("");
           }}
           onError={setError}
-        />
+        /></Suspense>
       )}
       <div className="vignette" />
       <header className="app-header">
@@ -664,10 +664,12 @@ export default function Home() {
             <p className="layer-help">{t("Selected structures remain visible.")}</p>
           )}
         </div>
-        <SystemLayers key={model} locale={locale} structures={structuresBySystem} visibleIds={visiblePartIds}
-          ready={progress >= 100 && !error} isOnly={(id) => !state.isolate && visiblePartIds.size > 0 &&
-            (atlas?.parts.every((part) => visiblePartIds.has(part.id) === (part.system === id)) ?? false)}
-          onSystem={toggle} onOnly={(id) => applyLayers([id], id)} onStructure={toggleStructure} onInspect={choose} />
+        <Suspense fallback={null}>
+          <SystemLayers key={model} locale={locale} structures={structuresBySystem} visibleIds={visiblePartIds}
+            ready={progress >= 100 && !error} isOnly={(id) => !state.isolate && visiblePartIds.size > 0 &&
+              (atlas?.parts.every((part) => visiblePartIds.has(part.id) === (part.system === id)) ?? false)}
+            onSystem={toggle} onOnly={(id) => applyLayers([id], id)} onStructure={toggleStructure} onInspect={choose} />
+        </Suspense>
         <div className="panel-foot">
           <span>{t("{count} pieces visible", { count: visibleCount.toLocaleString(locale) })}</span>
           <Button variant="ghost" onClick={() => applyLayers([])}>
@@ -1207,7 +1209,7 @@ export default function Home() {
           </div>
         </SheetContent>
       </Sheet>
-      <About locale={locale} open={creditsOpen} onOpenChange={(open) => { setCreditsOpen(open); if (!open) setFocusPrivacy(false); }} updater={updater} privacyMode={privacyMode} onPrivacyModeChange={changePrivacyMode} focusPrivacy={focusPrivacy} selectionColor={selectionColor} onSelectionColorChange={setSelectionColor} />
+      <Suspense fallback={null}><About locale={locale} open={creditsOpen} onOpenChange={(open) => { setCreditsOpen(open); if (!open) setFocusPrivacy(false); }} updater={updater} privacyMode={privacyMode} onPrivacyModeChange={changePrivacyMode} focusPrivacy={focusPrivacy} selectionColor={selectionColor} onSelectionColorChange={setSelectionColor} /></Suspense>
       <Sheet open={about} onOpenChange={setAbout}>
         <SheetContent closeLabel={t("Close")} className="about-sheet glass">
           <div className="eyebrow"><BookOpen size={15} />{t("Learning guide")}</div>

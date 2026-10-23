@@ -28,5 +28,15 @@ export default defineConfig(({ mode }) => ({
   resolve: { alias: { "@": path("./") } },
   css: { postcss: { plugins: [tailwindcss()] } },
   server: { host: "127.0.0.1", port: 3016, strictPort: true },
-  build: { outDir: path(mode === "client" ? "./dist-client" : "./dist"), emptyOutDir: true },
+  build: {
+    outDir: path(mode === "client" ? "./dist-client" : "./dist"),
+    emptyOutDir: true,
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [{ name: "three-vendor", test: /node_modules[\\/]three[\\/]/ }],
+        },
+      },
+    },
+  },
 }));
