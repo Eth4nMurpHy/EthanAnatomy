@@ -12,6 +12,16 @@
 
 独立的三栏学习空间：左侧检索与图层，中间三维观察，右侧结构信息与收藏。小屏幕使用抽屉面板。
 
+![新工作区桌面截图](screenshots/workspace-desktop.png)
+
+<details><summary>手机布局截图</summary>
+
+<img src="screenshots/workspace-mobile.png" width="300" alt="新工作区手机布局"/>
+
+</details>
+
+截图来自新工作区的实际运行；模型数据来源与许可见上方声明。
+
 当前提供：
 
 - 男性参考模型 / 女性衍生学习模型切换，模型随安装包提供。
