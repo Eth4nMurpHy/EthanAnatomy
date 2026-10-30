@@ -1,5 +1,7 @@
 # Linux 桌面版
 
+当前项目已进入名称待定的跨平台应用开发阶段，见 [开发路线](DEVELOPMENT.md)。现有预览包和构建文件名仍沿用 Anatolume。开发源码通过 `client/release-channel.ts` 暂停应用内自动更新，正式命名、独立身份及签名配置完成前请采用手动更新。下文的 AppImage 更新能力描述适用于平台支持及此前的 Linux 扩展版本。
+
 Linux 与 Windows、macOS 共享 React / Three.js 界面、男女模型、搜索、语言与本机偏好存储。新增 x86_64 原生客户端及 DEB、AppImage 打包；不需要登录或重新转换模型。
 
 ## 从源码构建

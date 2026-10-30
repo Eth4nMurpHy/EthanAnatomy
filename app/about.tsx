@@ -1,10 +1,9 @@
-import { ArrowUpRight, Check, Code2, Download, EyeOff, Heart, Palette } from "lucide-react";
+import { ArrowUpRight, Check, Code2, Download, EyeOff, Heart, Layers3, Palette } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useRef } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { text, type Locale } from "../client/i18n";
 import { CLIENT_DOWNLOAD_URL, runtimeInfo } from "../client/platform";
-import { staticAssetUrl } from "./core/static-asset";
 import UpdatePanel from "./update-panel";
 import type { ClientUpdate } from "../hooks/use-client-update";
 import { SELECTION_COLORS, type SelectionColorId } from "./core/selection-colors";
@@ -44,7 +43,7 @@ export default function About({ locale, open, onOpenChange, updater, privacyMode
             <SheetDescription>{t("See the body. Understand every layer.")}</SheetDescription>
             <div className="credits-version">{t(runtime.native ? "Offline client" : "Web viewer")}<span>·</span>{runtime.version}</div>
           </div>
-          <div className="credits-logo"><img src={staticAssetUrl("/branding/anatolume-logo.webp")} width={640} height={320} alt="层知 · Anatolume" /></div>
+          <div className="credits-logo development-brand"><Layers3 size={28} aria-hidden="true" /><span>{t("3D atlas")}</span></div>
         </div>
         <section className="privacy-preference" data-targeted={focusPrivacy || undefined} aria-labelledby="privacy-heading">
           <div><h2 id="privacy-heading"><EyeOff size={17} />{t("Privacy mode")}</h2><Switch ref={privacySwitchRef} checked={privacyMode} onCheckedChange={onPrivacyModeChange} aria-labelledby="privacy-heading" aria-describedby="privacy-description" /></div>
@@ -72,16 +71,21 @@ export default function About({ locale, open, onOpenChange, updater, privacyMode
         </section>
 
         <section className="author-card" aria-labelledby="author-heading">
-          <div className="author-card-heading"><span className="author-monogram" aria-hidden="true">{"S"}</span>
-            <div><span className="credits-kicker">{t("Developed & maintained by")}</span><h2 id="author-heading">{"Sunky"}</h2></div>
+          <div className="author-card-heading"><span className="author-monogram" aria-hidden="true">{"E"}</span>
+            <div><span className="credits-kicker">{t("Developed & maintained by")}</span><h2 id="author-heading">{"Eth4nMurpHy"}</h2></div>
           </div>
-          <p>{t("Continuing Anatolume with multilingual exploration, a refined interface and offline desktop access.")}</p>
-          <a className="author-website" href="https://github.com/isunky/Anatolume" target="_blank" rel="noreferrer"><Code2 size={16} /><span>{"isunky/Anatolume"}</span><ArrowUpRight size={15} /></a>
+          <p>{t("Built on open source")}</p>
+          <a className="author-website" href="https://github.com/Eth4nMurpHy/Anatolume_linux" target="_blank" rel="noreferrer"><Code2 size={16} /><span>{"Eth4nMurpHy/Anatolume_linux"}</span><ArrowUpRight size={15} /></a>
         </section>
 
         <section className="credits-section" aria-labelledby="credits-heading">
           <h2 id="credits-heading"><Heart size={17} />{t("Built on open source")}</h2>
           <p>{t("Thanks to the creators who share their work. Their code, data and tools make this atlas possible.")}</p>
+          <div className="credit-card">
+            <div className="credit-card-heading"><span className="credits-kicker">{t("Original project")}</span><span className="credit-license">{"MIT"}</span></div>
+            <a className="credit-project" href="https://github.com/isunky/Anatolume" target="_blank" rel="noreferrer"><strong>{"层知 · Anatolume — isunky (Sunky) & contributors"}</strong><ArrowUpRight size={15} /></a>
+            <p>{t("Continuing Anatolume with multilingual exploration, a refined interface and offline desktop access.")}</p>
+          </div>
           <div className="credit-card">
             <div className="credit-card-heading"><span className="credits-kicker">{t("Original project")}</span><span className="credit-license">{"MIT"}</span></div>
             <a className="credit-project" href="https://github.com/ashemag/human-atlas" target="_blank" rel="noreferrer"><strong>{"Human Atlas"}</strong><ArrowUpRight size={15} /></a>
@@ -111,7 +115,7 @@ export default function About({ locale, open, onOpenChange, updater, privacyMode
           <p>{t("Thank you to every maintainer, contributor and person who shares feedback.")}</p>
         </section>
         <div className="credits-bottom">
-          <a href="https://github.com/isunky/Anatolume" target="_blank" rel="noreferrer"><Code2 size={16} />{t("View source on GitHub")}<ArrowUpRight size={14} /></a>
+          <a href="https://github.com/Eth4nMurpHy/Anatolume_linux" target="_blank" rel="noreferrer"><Code2 size={16} />{t("View source on GitHub")}<ArrowUpRight size={14} /></a>
           <p>{t("Application code: MIT. Anatomy data: CC BY 4.0.")}</p>
         </div>
       </SheetContent>

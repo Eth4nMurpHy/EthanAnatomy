@@ -146,7 +146,7 @@ export default function Home() {
   const sn = (system: (typeof SYSTEMS)[number]) => systemName(system.id, system.name, locale);
   useEffect(() => {
     document.documentElement.lang = locale;
-    const title = text("Anatolume — 3D Anatomy Explorer", locale);
+    const title = text("3D atlas", locale);
     void setAppTitle(title).catch(() => { /* The browser title remains available if the native bridge is unavailable. */ });
     try {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, locale);
@@ -498,8 +498,8 @@ export default function Home() {
       )}
       <div className="vignette" />
       <header className="app-header">
-        <button className="brand" onClick={goHome} aria-label={t("Go to homepage")}>
-          <img className="brand-logo" src={staticAssetUrl("/branding/anatolume-logo.webp")} width={640} height={320} alt="层知 · Anatolume" />
+        <button className="brand development-brand" onClick={goHome} aria-label={t("Go to homepage")}>
+          <Layers3 size={22} aria-hidden="true" /><span>{t("3D atlas")}</span>
         </button>
         <nav className="primary-nav" aria-label={t("Main navigation")}>
           <button className={screen === "home" ? "active" : ""} onClick={goHome} aria-current={screen === "home" ? "page" : undefined}>{t("Home")}</button>

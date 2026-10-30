@@ -2,19 +2,21 @@
 
 # 项目声明 / Project statement
 
-**本仓库仅提供 Anatolume 的 Linux 平台扩展。** 原应用「层知 · Anatolume」由 [isunky（Sunky）及其贡献者](https://github.com/isunky/Anatolume) 开发；Eth4nMurpHy 负责 Linux 兼容性适配、打包、测试和发布流程维护。为构建 Linux 客户端，仓库保留了所需的上游源码与模型数据，并完整保留原作者及数据来源署名。此扩展由社区维护，未经原作者官方背书。代码遵循 MIT，模型数据遵循 CC BY 4.0，详见 [版权与来源声明](NOTICE.md)。
+**本仓库正在开发一款名称待定的跨平台三维人体学习应用。** 项目基于 [isunky（Sunky）及其贡献者开发的 Anatolume](https://github.com/isunky/Anatolume)，由 Eth4nMurpHy 维护后续交互优化与跨平台开发，目标平台为 **Windows、macOS、Linux 和 Web**。正式名称与图标尚未确定，开发界面暂用“三维图谱 / 3D atlas”作为功能描述。上游源码、模型数据、版权及署名继续保留；代码遵循 MIT，模型数据遵循 CC BY 4.0，详见 [版权与来源声明](NOTICE.md)。这是独立维护的衍生应用开发，不表示原作者官方发布或背书。
 
-**This repository only provides Linux platform support for Anatolume.** The original application is developed by [isunky (Sunky) and the upstream contributors](https://github.com/isunky/Anatolume). Eth4nMurpHy maintains Linux compatibility, packaging, tests and release integration. Upstream source and models are retained to build the Linux client, with their credits preserved. This community-maintained extension is not officially endorsed by the upstream author. Code: MIT; anatomy data: CC BY 4.0. See [copyright and attribution](NOTICE.md).
+**This repository develops an independently maintained, unnamed cross-platform 3D anatomy application**, based on [Anatolume by isunky (Sunky) and the upstream contributors](https://github.com/isunky/Anatolume). Eth4nMurpHy maintains further interaction improvements and development for **Windows, macOS, Linux and Web**. The development UI uses the descriptive placeholder “3D atlas”; the final name and artwork are pending. Upstream source, model data and credits are retained. Code: MIT; anatomy data: CC BY 4.0. See [copyright and attribution](NOTICE.md). This is not an official upstream distribution.
+
+开发状态、平台验证范围与后续事项见 [开发路线](docs/DEVELOPMENT.md)。
 
 ---
 
-## Linux 下载与安装 / Linux downloads
+## 现有 Linux 预览包 / Existing Linux previews
 
 **[下载本仓库的 Linux 安装包 → Releases](https://github.com/Eth4nMurpHy/Anatolume_linux/releases)**
 
 [![Linux preview](https://github.com/Eth4nMurpHy/Anatolume_linux/actions/workflows/linux-preview.yml/badge.svg)](https://github.com/Eth4nMurpHy/Anatolume_linux/actions/workflows/linux-preview.yml)
 
-Linux 预览包由本仓库的 GitHub Actions 构建、测试并上传，支持 x86_64。选择最新预览版，在 **Assets** 中下载 `.deb` 或 `.AppImage`；`Source code` 是源码压缩包，不是安装程序。构建尚在运行时，请稍后再查看 Releases。
+这里的安装包来自此前的 Linux 平台扩展阶段，仍使用上游应用名称，并非已命名的新 App。Linux 预览包由本仓库的 GitHub Actions 构建、测试并上传，支持 x86_64。选择最新预览版，在 **Assets** 中下载 `.deb` 或 `.AppImage`；`Source code` 是源码压缩包，不是安装程序。构建尚在运行时，请稍后再查看 Releases。
 
 - **Debian / Ubuntu：** 下载 `.deb` 后，在下载目录运行 `sudo apt install ./Anatolume_1.4.1_amd64.deb`，随后从应用菜单打开 Anatolume。
 - **AppImage：** 下载后执行 `chmod +x Anatolume_1.4.1_amd64.AppImage`，再运行该文件。

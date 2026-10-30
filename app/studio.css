@@ -419,3 +419,9 @@ kbd { font-size:11px; border:1px solid #dce5df; background:#fff; padding:1px 5px
 @container (max-width:480px) {
   .explode-steps,.rotate-label { display:none; }
 }
+
+/* Descriptive development placeholder; the product name and artwork are pending. */
+.brand.development-brand,.credits-logo.development-brand { display:flex; align-items:center; justify-content:center; gap:8px; color:var(--primary); font-weight:600; }
+.brand.development-brand { font-size:14px; }
+.credits-logo.development-brand { aspect-ratio:auto; min-height:64px; font-size:16px; }
+@media(max-width:480px) { .brand.development-brand { gap:5px; font-size:11px; }.brand.development-brand svg { width:18px; } }

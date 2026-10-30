@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import {setTimeout as delay} from 'node:timers/promises';
+import {NATIVE_UPDATES_ENABLED} from '../client/release-channel.ts';
 
 // Start tauri-driver inside an X11/Wayland session before running this script.
 // This tests the embedded desktop assets and IPC, without a Vite server.
@@ -62,7 +63,7 @@ try {
   await waitFor('return /heart/i.test(document.querySelector(".detail-sheet")?.textContent || "")', 'Search result did not open heart details');
   await execute('document.querySelector(".about-nav").click()');
   await waitFor('return !!document.querySelector(".credits-sheet")', 'About panel did not open');
-  assert.equal(await execute('return !!document.querySelector(".update-card")'), process.env.TAURI_EXPECT_APPIMAGE === '1');
+  assert.equal(await execute('return !!document.querySelector(".update-card")'), NATIVE_UPDATES_ENABLED && process.env.TAURI_EXPECT_APPIMAGE === '1');
   console.log('Native search, detail panel and package-specific update controls passed.');
   console.log('Native IPC package restrictions and saved language/model preferences passed.');
 } finally {
