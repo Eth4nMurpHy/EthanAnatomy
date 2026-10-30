@@ -27,6 +27,8 @@ jobs:
       - run: npm ci
       - name: Run tests and build Web, Pages and desktop frontend
         run: npm run ci:check
+      - name: Camera interaction browser regressions
+        run: CHROMIUM_PATH="$(command -v google-chrome)" npm run validate:camera
 
   linux:
     name: Linux native tests and Debian package

@@ -25,7 +25,8 @@
     "validate:updater": "node scripts/validate-updater.mjs",
     "ci:check": "node scripts/ci-check.mjs",
     "client:build:linux": "tauri build --target x86_64-unknown-linux-gnu --bundles deb,appimage",
-    "smoke:linux": "sh scripts/smoke-linux.sh"
+    "smoke:linux": "sh scripts/smoke-linux.sh",
+    "validate:camera": "node scripts/validate-camera-browser.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
@@ -50,6 +51,7 @@
     "@types/three": "0.159.0",
     "@vitejs/plugin-react": "6.0.2",
     "meshoptimizer": "^1.2.0",
+    "playwright-core": "1.64.1",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
     "vite": "8.3.1"

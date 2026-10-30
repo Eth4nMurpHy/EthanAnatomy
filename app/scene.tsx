@@ -429,7 +429,6 @@ export default function AnatomyScene({
     };
     const resize = () => {
       layoutKey = "";
-      lastSelectionFrame = "";
       lastState = null;
       renderer.setPixelRatio(
         Math.min(devicePixelRatio, el.clientWidth < 768 || el.clientHeight < 600 ? 1.5 : 2),
@@ -437,7 +436,8 @@ export default function AnatomyScene({
       camera.aspect = el.clientWidth / el.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(el.clientWidth, el.clientHeight);
-      fit(latest.current.view, amount);
+      // Resizing panels changes projection, not the user's orbit or zoom.
+      dirty = true;
       requestFrame();
     };
     const observer = new ResizeObserver(resize);
@@ -582,7 +582,8 @@ export default function AnatomyScene({
             offsets[i] = cell ? new T.Vector3(cell.x, cell.y + 0.85, 0) : centers[i].clone();
           });
           layoutKey = nextLayoutKey;
-          if (amount > 0.05 && !s.isolate) fit(s.view, amount);
+          // Visibility can repack the scene without resetting the camera.
+          // Explicit explode animation and view commands handle their own fit.
         }
         updateDrawBatches(batches, partVisibility);
         selectionTexture.needsUpdate = true;
@@ -784,9 +785,9 @@ export default function AnatomyScene({
             }
             dirty = true;
           }
-        } else if (lastSelectionFrame) {
-          fit(s.view, amount, viewRequested && !moving ? time : undefined);
         }
+        // Clearing selection (for example by hiding a layer) preserves the pose.
+        // Explicit overview/reset actions already increment the reset counter.
         lastSelectionFrame = selectionFrameKey;
       }
       controls.enableRotate = amount < 0.8;
