@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {chromium} from 'playwright-core';
 import {preview} from 'vite';
-let browser,server;
+let browser,server,page;
 try{
  let url=process.env.SITE_URL;
  if(!url){server=await preview({base:'/EthanAnatomy/',preview:{host:'127.0.0.1',port:0,strictPort:true}});url=`http://127.0.0.1:${server.httpServer.address().port}/EthanAnatomy/`;}
  browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
- const page=await browser.newPage({viewport:{width:1366,height:900},reducedMotion:'reduce'});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ page=await browser.newPage({viewport:{width:1366,height:900},reducedMotion:'reduce'});const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)console.error('HTTP failure:',r.status(),r.url());});page.on('requestfailed',r=>console.error('Network failure:',r.url(),r.failure()?.errorText));
  const ready=async(count)=>{await page.waitForFunction(expected=>{const text=document.querySelector('.library-footer')?.textContent??'';return text.includes('已加载')&&text.replace(/[^0-9]/g,'')===String(expected);},count,{timeout:180000});assert.equal(await page.locator('.load-panel.error').count(),0);assert.ok(await page.locator('.model-viewport canvas').isVisible());};
  await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});await ready(2234);
  assert.equal(await page.title(),'人体学习工作台 · 开发版');
@@ -19,4 +19,4 @@ try{
  assert.deepEqual(errors,[]);
  if(process.env.SCREENSHOT_DIR){fs.mkdirSync(process.env.SCREENSHOT_DIR,{recursive:true});await page.screenshot({path:process.env.SCREENSHOT_DIR+'/deployed-workspace.png'});}
  console.log(`Verified production site: ${url} — both models, rendered canvas, visibility, search/focus, saved bookmark and local attribution.`);
-}finally{await browser?.close();if(server)await new Promise(resolve=>server.httpServer.close(resolve));}
+}catch(error){if(page){console.error('Website state:',(await page.locator('body').innerText()).slice(-6500));if(process.env.SCREENSHOT_DIR){fs.mkdirSync(process.env.SCREENSHOT_DIR,{recursive:true});await page.screenshot({path:process.env.SCREENSHOT_DIR+'/failure.png'});}}throw error;}finally{await browser?.close();if(server)await new Promise(resolve=>server.httpServer.close(resolve));}

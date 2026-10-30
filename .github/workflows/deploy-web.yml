@@ -58,7 +58,14 @@ jobs:
             sleep 5
           done
           grep -q '人体学习工作台' /tmp/deployed-index.html
-          CHROMIUM_PATH="$(command -v google-chrome)" node tests/site-smoke.mjs
+          set +e
+          set -o pipefail
+          CHROMIUM_PATH="$(command -v google-chrome)" node tests/site-smoke.mjs 2>&1 | tee /tmp/site-check.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            python3 -c "import pathlib; s=pathlib.Path('/tmp/site-check.log').read_text()[-6000:]; print('::error title=Website check details::'+s.replace('%','%25').replace('\n','%0A'))"
+            exit "$status"
+          fi
           printf 'Verified online workspace: %s\n' "$SITE_URL" >> "$GITHUB_STEP_SUMMARY"
           printf '::notice title=Website verified::%s — both models and production browser checks passed.\n' "$SITE_URL"
       - uses: actions/upload-artifact@v7
