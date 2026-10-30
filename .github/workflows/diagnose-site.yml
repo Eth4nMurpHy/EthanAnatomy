@@ -1,0 +1,28 @@
+name: Read website test diagnostic
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/diagnose-site.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read the website check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run view 41063901037 --job 124090150266 --log --repo "$GITHUB_REPOSITORY" > /tmp/native-test.log
+          python3 - <<'PY'
+          import re
+          lines=open('/tmp/native-test.log').read().splitlines()
+          selected=[line for line in lines if 'Verify the public website' in line][-25:]
+          selected=[re.sub(r'^\d{4}-\S+\s*','',line.split('\t',2)[-1]) for line in selected]
+          text='\n'.join(selected)[-3500:]
+          text=text.replace('%','%25').replace('\r','%0D').replace('\n','%0A')
+          print('::notice title=Website test diagnostic::'+text)
+          PY
