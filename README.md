@@ -8,6 +8,22 @@
 
 ---
 
+## Linux 下载与安装 / Linux downloads
+
+**[下载本仓库的 Linux 安装包 → Releases](https://github.com/Eth4nMurpHy/Anatolume_linux/releases)**
+
+[![Linux preview](https://github.com/Eth4nMurpHy/Anatolume_linux/actions/workflows/linux-preview.yml/badge.svg)](https://github.com/Eth4nMurpHy/Anatolume_linux/actions/workflows/linux-preview.yml)
+
+Linux 预览包由本仓库的 GitHub Actions 构建、测试并上传，支持 x86_64。选择最新预览版，在 **Assets** 中下载 `.deb` 或 `.AppImage`；`Source code` 是源码压缩包，不是安装程序。构建尚在运行时，请稍后再查看 Releases。
+
+- **Debian / Ubuntu：** 下载 `.deb` 后，在下载目录运行 `sudo apt install ./Anatolume_1.4.1_amd64.deb`，随后从应用菜单打开 Anatolume。
+- **AppImage：** 下载后执行 `chmod +x Anatolume_1.4.1_amd64.AppImage`，再运行该文件。
+- **校验与说明：** 发布附件包含 `SHA256SUMS`、许可证及来源声明；系统依赖、FUSE 与兼容性说明见 [Linux 使用指南](docs/LINUX.md)。
+
+Download Linux packages from **this repository's Releases**, then expand **Assets** and select `.deb` or `.AppImage`. The source-code archives are not installers. Packages are built and tested by GitHub Actions; see the Linux guide for requirements and limitations.
+
+---
+
 ## 原应用介绍 / About the original application
 
 <div align="center">
