@@ -1,0 +1,107 @@
+name: Build and publish Linux preview
+run-name: Linux preview from ${{ github.sha }}
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/linux-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linux-preview-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build Linux packages and upload to Releases
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    env:
+      CARGO_BUILD_JOBS: '2'
+      APPIMAGE_EXTRACT_AND_RUN: '1'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - name: Install Linux build and desktop test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libayatana-appindicator3-dev librsvg2-dev patchelf libfuse2 xvfb xauth dbus-x11 webkit2gtk-driver libgl1-mesa-dri
+      - run: npm ci
+      - run: npm run ci:check
+      - run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
+      - run: cargo test --manifest-path src-tauri/Cargo.toml --lib --locked
+      - name: Build DEB and AppImage without a private signing key
+        run: npm run client:build:linux -- --config src-tauri/tauri.local.conf.json -- --locked
+      - name: Test native application from the Debian package
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          WEBKIT_DISABLE_DMABUF_RENDERER: '1'
+        run: |
+          cargo install tauri-driver --locked
+          version="$(node -p 'require("./package.json").version')"
+          unpacked="$(mktemp -d)"
+          dpkg-deb --extract "src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/Anatolume_${version}_amd64.deb" "$unpacked"
+          TAURI_APP_PATH="$unpacked/usr/bin/anatolume" xvfb-run -a dbus-run-session -- npm run smoke:linux
+      - name: Collect packages, notices and checksums
+        id: assets
+        run: |
+          version="$(node -p 'require("./package.json").version')"
+          mkdir -p linux-preview-assets
+          cp "src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/Anatolume_${version}_amd64.deb" linux-preview-assets/
+          cp "src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage/Anatolume_${version}_amd64.AppImage" linux-preview-assets/
+          cp LICENSE NOTICE.md public/ATTRIBUTION.md linux-preview-assets/
+          (cd linux-preview-assets && sha256sum -- *.deb *.AppImage > SHA256SUMS)
+          printf 'tag=linux-v%s-preview.%s\n' "$version" "$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"
+          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
+      - name: Retain packages as workflow artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Anatolume-Linux-${{ steps.assets.outputs.version }}
+          path: linux-preview-assets/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+      - name: Publish Linux preview release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.assets.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.assets.outputs.version }}
+        run: |
+          cat > /tmp/linux-preview-notes.md <<'NOTES'
+          本仓库仅提供 Anatolume 的社区 Linux 平台扩展。原应用由 isunky（Sunky）及其贡献者开发，原作者、模型来源和许可证均予以保留，详见附件 NOTICE.md。
+
+          ### 下载与安装
+          - Debian/Ubuntu x86_64：下载 .deb，运行 sudo apt install ./Anatolume_*_amd64.deb，然后从应用菜单启动 Anatolume。
+          - 其他兼容的 x86_64 发行版：下载 .AppImage，赋予执行权限后运行。缺少 FUSE 时可用 --appimage-extract 解压，再运行 squashfs-root/AppRun。
+          - SHA256SUMS 提供安装包校验值。模型已随包提供，支持离线浏览。
+
+          ### 验证与限制
+          由 GitHub Actions 在 Ubuntu 22.04 上从本次提交构建，发布前运行前端检查、Rust 测试与 DEB 原生桌面烟雾测试。其他发行版、物理 GPU/Wayland、ARM64 与生产签名自动更新未验证。本预览版请使用手动下载安装方式更新。
+
+          应用代码采用 MIT 许可；模型数据采用 CC BY 4.0；第三方组件保留各自许可。本应用用于教育与探索，不用于临床决策。
+          NOTES
+          printf '\nSource commit: %s\nBuild: %s/%s/actions/runs/%s\n' "$GITHUB_SHA" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" >> /tmp/linux-preview-notes.md
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'This workflow run already published its preview; keeping the existing release.'
+          else
+            gh release create "$RELEASE_TAG" linux-preview-assets/* \
+              --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+              --title "Anatolume ${RELEASE_VERSION} — Linux 预览版" \
+              --prerelease --notes-file /tmp/linux-preview-notes.md
+          fi
+          printf 'Download: https://github.com/%s/releases/tag/%s\n' "$GITHUB_REPOSITORY" "$RELEASE_TAG" >> "$GITHUB_STEP_SUMMARY"

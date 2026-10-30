@@ -88,3 +88,7 @@ CI 在 Ubuntu 22.04 上执行原生测试、构建 DEB，并从安装包解包�
 ## English
 
 Linux x86_64 packages share the existing offline anatomy viewer. Build on Ubuntu 22.04 with Node 24, stable Rust and the dependencies listed above. Use `npm run client:build:linux -- --config src-tauri/tauri.local.conf.json -- --locked` for local DEB and AppImage builds without a signing key. DEB requires WebKitGTK 4.1 from the distribution. AppImage needs a compatible graphics session and FUSE 2, or explicit extraction. Only mounted AppImages support signed self-updates; DEB and extracted binaries use manual installation. Configure your own updater endpoint, public key and signing secrets before publishing from a fork.
+
+## Linux 预览包下载
+
+前往 [本仓库 Releases](https://github.com/Eth4nMurpHy/Anatolume_linux/releases) 下载 Linux DEB 或 AppImage。`Build and publish Linux preview` 工作流在 GitHub 内构建、验证并上传预览包，无需维护者提供私有签名密钥。修改该工作流并推送到 main 会自动触发，也可在 Actions 中手动运行。每次发布都附带源码提交、构建链接、版权声明及 SHA256 校验值。正式的跨平台签名发布仍使用原有发布流程。
