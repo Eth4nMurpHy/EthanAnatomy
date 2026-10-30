@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Anatolume",
-  "version": "1.4.1",
-  "identifier": "io.github.isunky.humanatlas",
+  "productName": "Anatomy Workspace Dev",
+  "version": "0.1.0",
+  "identifier": "io.github.eth4nmurphy.anatomyworkspace.dev",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://127.0.0.1:3016",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "3D Anatomy — Development",
+        "title": "人体学习工作台 · 开发版",
         "width": 1280,
         "height": 800,
         "minWidth": 960,
@@ -27,11 +27,9 @@
   },
   "bundle": {
     "active": true,
-    "targets": [
-      "nsis"
-    ],
-    "publisher": "Sunky",
-    "shortDescription": "Offline bilingual 3D anatomy explorer",
+    "targets": ["nsis"],
+    "publisher": "Eth4nMurpHy",
+    "shortDescription": "An independently developed anatomy learning workspace",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -50,25 +48,10 @@
       },
       "nsis": {
         "installMode": "currentUser",
-        "languages": [
-          "SimpChinese",
-          "English"
-        ],
+        "languages": ["SimpChinese", "English"],
         "displayLanguageSelector": true
       }
     },
-    "createUpdaterArtifacts": true
-  },
-  "plugins": {
-    "updater": {
-      "endpoints": [
-        "https://github.com/isunky/Anatolume/releases/latest/download/latest.json"
-      ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk4QkI1M0NFMEJCRDY3QkIKUldTN1o3MEx6bE83bUNpUzUwOU5oankxR3A5TDFmV09uRlVzQVI0c3pNNXlGUW4rMzhHTXp1dTYK",
-      "requireSignedVersion": true,
-      "windows": {
-        "installMode": "passive"
-      }
-    }
+    "createUpdaterArtifacts": false
   }
 }

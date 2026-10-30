@@ -1,17 +1,15 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "bundle": {
-    "targets": [
-      "deb",
-      "appimage"
-    ],
+    "targets": ["deb", "appimage"],
     "linux": {
       "deb": {
-        "depends": [
-          "libwebkit2gtk-4.1-0",
-          "libgtk-3-0"
-        ],
-        "section": "education"
+        "section": "education",
+        "files": {
+          "/usr/share/doc/anatomy-workspace/LICENSE": "../LICENSE",
+          "/usr/share/doc/anatomy-workspace/NOTICE.md": "../NOTICE.md",
+          "/usr/share/doc/anatomy-workspace/ATTRIBUTION.md": "../public/ATTRIBUTION.md"
+        }
       },
       "appimage": {
         "bundleMediaFramework": false
