@@ -49,6 +49,16 @@ npm run ci:check
 CHROMIUM_PATH=/usr/bin/chromium npm run test:browser
 ```
 
+## 部署网页版（GitHub Pages）
+
+仓库已包含 `Deploy workspace website` 工作流：构建静态网站，发布 GitHub Pages，并用真实浏览器检查线上模型、搜索与收藏。首次启用 Pages 需要仓库管理员完成一次设置；Actions 的默认令牌不能代替管理员开启新站点。
+
+1. 打开 [仓库 Pages 设置](https://github.com/Eth4nMurpHy/EthanAnatomy/settings/pages)。
+2. 在 **Build and deployment → Source** 中选择 **GitHub Actions**。
+3. 在 Actions 中重跑 `Deploy workspace website`，或手动运行该工作流。部署成功后的真实网址会显示在运行摘要与仓库 Deployments 中。
+
+之后修改工作区代码并推送到 `main`，工作流会自动更新网站。不需要额外服务账号、个人令牌或云环境网络修改。网页版收藏保存在当前浏览器中，不与桌面版自动同步。
+
 ## 桌面开发
 
 安装 Rust stable 和 Tauri 2 对应平台依赖后运行 `npm run client:dev`。Linux 需要 WebKitGTK 4.1 / GTK 3；Windows 需要 MSVC / Windows SDK / WebView2；macOS 需要 Xcode Command Line Tools。
