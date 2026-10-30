@@ -1,8 +1,12 @@
-# 版权、来源与衍生项目声明 / Copyright and attribution notice
+# Linux 平台扩展与版权声明 / Linux platform extension and attribution notice
 
 ## 本仓库的性质
 
-[Eth4nMurpHy/Anatolume_linux](https://github.com/Eth4nMurpHy/Anatolume_linux) 是基于 [isunky/Anatolume](https://github.com/isunky/Anatolume) 的非官方 Linux 适配项目，由 Eth4nMurpHy 维护。本仓库不是原作者的官方 Linux 发布渠道，也不表示原作者或数据提供方对本仓库的认可、赞助或担保。
+**本仓库仅提供原应用 Anatolume 的 Linux 平台扩展。** 原应用「层知 · Anatolume」由 [isunky（Sunky）及其贡献者](https://github.com/isunky/Anatolume) 开发；[Eth4nMurpHy/Anatolume_linux](https://github.com/Eth4nMurpHy/Anatolume_linux) 的维护范围为 Linux 兼容性适配、DEB/AppImage 打包、测试与发布流程。
+
+这里的“Linux 平台扩展”指在原有应用基础上增加 Linux 支持。仓库保留构建 Linux 客户端所需的上游源码与模型数据，应用的原始设计、核心功能及既有内容继续署名原作者和相应贡献者。原版介绍及其他平台支持请以 [原作者仓库](https://github.com/isunky/Anatolume) 为准。
+
+本扩展由社区维护，不表示原作者或数据提供方的官方发布、认可、赞助或担保。
 
 本声明依据上游提交 [`6b489fe242f26c3d215592f03970178d8fe3a2f7`](https://github.com/isunky/Anatolume/tree/6b489fe242f26c3d215592f03970178d8fe3a2f7) 的许可证、README、数据署名与品牌资源说明整理，核对日期为 2026-10-30。
 
@@ -38,7 +42,11 @@ React、Three.js、Tauri 及其他第三方组件仍适用各自许可证。本�
 
 ## English
 
-[Eth4nMurpHy/Anatolume_linux](https://github.com/Eth4nMurpHy/Anatolume_linux) is an **unofficial Linux adaptation** of [isunky/Anatolume](https://github.com/isunky/Anatolume), maintained by Eth4nMurpHy. It is not the upstream author's official Linux distribution and does not imply endorsement, sponsorship or warranty by the upstream authors or data providers.
+**This repository only provides Linux platform support for the original Anatolume application.** Anatolume is developed by [isunky (Sunky) and the upstream contributors](https://github.com/isunky/Anatolume). Eth4nMurpHy maintains Linux compatibility, DEB/AppImage packaging, tests and release integration in [Anatolume_linux](https://github.com/Eth4nMurpHy/Anatolume_linux).
+
+“Linux platform extension” means adding Linux support to the existing application. The repository retains upstream source and models needed to build the Linux client. The original design, core features and existing content remain credited to their respective authors and contributors. Refer to the [upstream repository](https://github.com/isunky/Anatolume) for the original application and other platforms.
+
+This is a community-maintained extension and does not imply official publication, endorsement, sponsorship or warranty by upstream authors or data providers.
 
 This notice was checked on 2026-10-30 against upstream commit [`6b489fe242f26c3d215592f03970178d8fe3a2f7`](https://github.com/isunky/Anatolume/tree/6b489fe242f26c3d215592f03970178d8fe3a2f7).
 

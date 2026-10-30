@@ -1,14 +1,14 @@
 <a name="readme-top"></a>
 
-> **非官方 Linux 适配仓库**：由 Eth4nMurpHy 基于 [isunky/Anatolume](https://github.com/isunky/Anatolume) 维护。应用代码遵循 MIT，模型数据遵循 CC BY 4.0；原作者及数据来源署名予以保留。详见 [版权与来源声明](NOTICE.md)。
+> **本仓库仅提供 Anatolume 的 Linux 平台扩展。** 原应用「层知 · Anatolume」由 [isunky（Sunky）及其贡献者](https://github.com/isunky/Anatolume) 开发；Eth4nMurpHy 负责 Linux 兼容性适配、打包、测试和发布流程维护。为构建 Linux 客户端，仓库保留了所需的上游源码与模型数据，并完整保留原作者及数据来源署名。此扩展由社区维护，未经原作者官方背书。代码遵循 MIT，模型数据遵循 CC BY 4.0，详见 [版权与来源声明](NOTICE.md)。
 >
-> **Unofficial Linux adaptation** maintained by Eth4nMurpHy, based on [isunky/Anatolume](https://github.com/isunky/Anatolume). Code: MIT; anatomy data: CC BY 4.0. Upstream credits are retained. See [copyright and attribution](NOTICE.md).
+> **This repository only provides Linux platform support for Anatolume.** The original application is developed by [isunky (Sunky) and the upstream contributors](https://github.com/isunky/Anatolume). Eth4nMurpHy maintains Linux compatibility, packaging, tests and release integration. Upstream source and models are retained to build the Linux client, with their credits preserved. This community-maintained extension is not officially endorsed by the upstream author. Code: MIT; anatomy data: CC BY 4.0. See [copyright and attribution](NOTICE.md).
 
 <div align="center">
 
 <img src="docs/branding/anatolume-logo-v1.png" width="360" alt="层知 · Anatolume 中英文主品牌标志 / Bilingual brand logo">
 
-# 层知 · Anatolume
+# 层知 · Anatolume — Linux 平台扩展
 
 **看见身体，理解每一层。**<br>
 *See the body. Understand every layer.*
