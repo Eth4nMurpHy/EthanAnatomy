@@ -12,4 +12,4 @@ for(const name of Object.keys(manifest.dependencies)){
  else notices.push(`License: ${pkg.license??'See package repository'}; ${typeof pkg.repository==='object'?pkg.repository.url:pkg.repository??''}`);
  notices.push('');
 }
-fs.writeFileSync('public/legal/THIRD_PARTY.txt',notices.join('\n'));
+fs.writeFileSync('public/legal/THIRD_PARTY.txt',notices.join('\n').trimEnd()+'\n');
