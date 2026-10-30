@@ -1,0 +1,66 @@
+name: Verify workspace release checksums
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-release.yml'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Workspace release tag
+        default: workspace-v0.1.0-preview.2
+        required: true
+  workflow_run:
+    workflows: ['Build and publish new workspace']
+    types: [completed]
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+      - name: Download and verify the actual released files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_TAG: ${{ inputs.tag || 'workspace-v0.1.0-preview.2' }}
+          SOURCE_RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+        run: |
+          tag="$REQUESTED_TAG"
+          if [ "$GITHUB_EVENT_NAME" = workflow_run ]; then
+            version="$(node -p 'require("./package.json").version')"
+            tag="workspace-v${version}-preview.${SOURCE_RUN_NUMBER}"
+          fi
+          mkdir -p /tmp/workspace-release-verify
+          gh release download "$tag" --repo "$GITHUB_REPOSITORY" --dir /tmp/workspace-release-verify
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,re
+          root=Path('/tmp/workspace-release-verify')
+          manifest=root/'SHA256SUMS'
+          verified=[]
+          for line in manifest.read_text().splitlines():
+              match=re.fullmatch(r'([0-9a-f]{64})  (.+)',line)
+              if not match: raise RuntimeError('Invalid checksum manifest entry')
+              expected,name=match.groups()
+              if Path(name).name!=name: raise RuntimeError('Unexpected checksum path')
+              actual=next((root/candidate for candidate in [name,name.replace(' ','.')] if (root/candidate).is_file()),None)
+              if actual is None: raise RuntimeError('Missing release asset: '+name)
+              checksum=hashlib.sha256()
+              with actual.open('rb') as stream:
+                  for block in iter(lambda:stream.read(1024*1024),b''): checksum.update(block)
+              if checksum.hexdigest()!=expected: raise RuntimeError('Checksum mismatch: '+actual.name)
+              verified.append(expected+'  '+actual.name)
+              print('Verified:',actual.name)
+          if len(verified)!=5: raise RuntimeError('Expected five application packages')
+          manifest.write_text('\n'.join(verified)+'\n')
+          PY
+          (cd /tmp/workspace-release-verify && sha256sum --check SHA256SUMS)
+          gh release upload "$tag" /tmp/workspace-release-verify/SHA256SUMS --repo "$GITHUB_REPOSITORY" --clobber
+          printf 'Verified all five package hashes against actual downloaded release assets; normalized filenames only.\n' >> "$GITHUB_STEP_SUMMARY"
