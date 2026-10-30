@@ -58,7 +58,7 @@ export default function About({ locale, open, onOpenChange, updater, privacyMode
             </button>)}
           </div>
         </section>
-        {updater.native && <UpdatePanel locale={locale} updater={updater} />}
+        {updater.supported && <UpdatePanel locale={locale} updater={updater} />}
         {!runtime.native && <a className="credits-download" href={CLIENT_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer">
           <span className="credits-download-icon"><Download size={20} /></span>
           <span><strong>{t("Download offline client")}</strong></span>

@@ -4,6 +4,8 @@ use std::sync::{
     Mutex,
 };
 use std::time::Duration;
+#[cfg(target_os = "linux")]
+use tauri::Manager;
 use tauri::{ipc::Channel, AppHandle, State};
 use tauri_plugin_updater::{Update, UpdaterExt};
 
@@ -57,12 +59,30 @@ fn portable_executable() -> Option<std::path::PathBuf> {
     (value.get("edition")?.as_str()? == "portable").then_some(executable)
 }
 
+// Linux's updater can replace an AppImage, but cannot manage distro packages.
+#[tauri::command]
+pub fn updates_supported(app: AppHandle) -> bool {
+    #[cfg(target_os = "linux")]
+    {
+        app.env().appimage.is_some()
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        let _ = app;
+        true
+    }
+}
+
 #[tauri::command]
 pub async fn check_update(
     app: AppHandle,
     state: State<'_, UpdateState>,
 ) -> Result<Option<UpdateInfo>, String> {
+    if !updates_supported(app.clone()) {
+        return Err("unsupported_package".into());
+    }
     let _operation = state.begin()?;
+    #[allow(unused_mut)]
     let mut builder = app.updater_builder().timeout(Duration::from_secs(20));
     #[cfg(windows)]
     if let Some(executable) = portable_executable() {
@@ -94,9 +114,13 @@ pub async fn check_update(
 
 #[tauri::command]
 pub async fn install_update(
+    app: AppHandle,
     state: State<'_, UpdateState>,
     progress: Channel<Progress>,
 ) -> Result<(), String> {
+    if !updates_supported(app) {
+        return Err("unsupported_package".into());
+    }
     let _operation = state.begin()?;
     let update = state
         .pending

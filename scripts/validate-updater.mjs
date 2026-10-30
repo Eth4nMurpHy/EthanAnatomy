@@ -73,6 +73,6 @@ assert.equal(config.plugins.updater.requireSignedVersion, true);
 assert.deepEqual(config.plugins.updater.endpoints, ['https://github.com/isunky/Anatolume/releases/latest/download/latest.json']);
 assert.match(Buffer.from(config.plugins.updater.pubkey, 'base64').toString(), /untrusted comment:.*public key/);
 const capabilities = JSON.parse(fs.readFileSync(new URL('../src-tauri/capabilities/main.json', import.meta.url), 'utf8'));
-for (const name of ['allow-check-update', 'allow-install-update', 'allow-restart-updated-app']) assert.ok(capabilities.permissions.includes(name));
+for (const name of ['allow-updates-supported', 'allow-check-update', 'allow-install-update', 'allow-restart-updated-app']) assert.ok(capabilities.permissions.includes(name));
 assert.ok(!capabilities.permissions.includes('updater:default'), 'The frontend cannot supply arbitrary updater targets or keys');
 console.log('Verified update detection, concurrent actions, download/install/restart retries, signed-version policy and fixed endpoint.');

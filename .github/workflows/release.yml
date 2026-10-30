@@ -160,6 +160,52 @@ jobs:
           compression-level: 0
           retention-days: 30
 
+  linux:
+    name: Linux x64 DEB and AppImage
+    needs: [version, checks]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - name: Install Linux desktop dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+      - name: Apply planned version
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: node scripts/release-version.mjs sync "$RELEASE_VERSION"
+      - run: npm ci
+      - run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
+      - run: cargo test --manifest-path src-tauri/Cargo.toml --lib --locked
+      - name: Build Linux packages and signed AppImage updater
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPIMAGE_EXTRACT_AND_RUN: '1'
+        run: npm run client:build:linux -- -- --locked
+      - name: Collect Linux release assets
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: node scripts/release-assets.mjs linux
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-Linux-${{ needs.version.outputs.version }}
+          path: release-assets/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+
   web:
     name: Web archive and Pages artifact
     needs: [version, checks]
@@ -198,7 +244,7 @@ jobs:
   release:
     name: Publish complete multiplatform release
     if: needs.version.outputs.release == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
-    needs: [version, checks, windows, macos, web]
+    needs: [version, checks, windows, macos, linux, web]
     outputs:
       published: ${{ steps.publish.outputs.published }}
     runs-on: ubuntu-latest

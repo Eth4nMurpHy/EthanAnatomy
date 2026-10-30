@@ -9,10 +9,11 @@ import {parseVersion, readVersions, repositoryRoot} from './release-version.mjs'
 import {generateUpdateNotes} from './release-notes.mjs';
 import {verifyUpdaterSignature} from './updater-signature.mjs';
 
-const platforms = ['windows', 'macos', 'web'];
+const platforms = ['windows', 'macos', 'linux', 'web'];
 export const assetNames = version => ({
   windows: [`Anatolume_${version}_x64-setup.exe`, `Anatolume_${version}_Windows-x64-portable.zip`, `Anatolume_${version}_x64-setup.exe.sig`, `Anatolume_${version}_Windows-x64-portable.zip.sig`],
   macos: [`Anatolume_${version}_macOS-universal.dmg`, `Anatolume_${version}_macOS-universal.app.tar.gz`, `Anatolume_${version}_macOS-universal.app.tar.gz.sig`],
+  linux: [`Anatolume_${version}_amd64.deb`, `Anatolume_${version}_amd64.AppImage`, `Anatolume_${version}_amd64.AppImage.sig`],
   web: [`Anatolume_${version}_Web.zip`],
 });
 const digest = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
@@ -65,6 +66,11 @@ export function prepareAssets({platform, version, source, runUrl, root = reposit
     const application = path.join(root, 'src-tauri/target/universal-apple-darwin/release/bundle/macos/Anatolume.app.tar.gz');
     fs.copyFileSync(application, path.join(directory, names[1]));
     fs.copyFileSync(application + '.sig', path.join(directory, names[2]));
+  } else if (platform === 'linux') {
+    const bundle = path.join(root, 'src-tauri/target/x86_64-unknown-linux-gnu/release/bundle');
+    fs.copyFileSync(path.join(bundle, 'deb', names[0]), path.join(directory, names[0]));
+    fs.copyFileSync(path.join(bundle, 'appimage', names[1]), path.join(directory, names[1]));
+    fs.copyFileSync(path.join(bundle, 'appimage', names[2]), path.join(directory, names[2]));
   } else {
     const dist = path.join(root, 'dist');
     assert.ok(fs.existsSync(path.join(dist, 'index.html')), 'Web build is missing');
@@ -117,6 +123,7 @@ export function updaterPlatforms(version, directory, runUrl, pubkey) {
   return {
     'windows-x86_64': target(names.windows[0], names.windows[2]),
     'windows-x86_64-portable': target(names.windows[1], names.windows[3]),
+    'linux-x86_64': target(names.linux[1], names.linux[2]),
     'darwin-x86_64': target(names.macos[1], names.macos[2]),
     'darwin-aarch64': target(names.macos[1], names.macos[2]),
   };
@@ -132,14 +139,15 @@ export function combineAssets({version, directory, source, root = repositoryRoot
   const checksums = [...receipts.flatMap(receipt => receipt.assets.map(asset => `${asset.sha256}  ${asset.name}`)), `${digest(path.join(directory, 'latest.json'))}  latest.json`].join('\n') + '\n';
   fs.writeFileSync(path.join(directory, 'SHA256SUMS'), checksums);
   fs.writeFileSync(path.join(directory, 'BUILD-REPORT.md'), [
-    `# Anatolume ${version} · Windows / macOS / Web`, '',
+    `# Anatolume ${version} · Windows / macOS / Linux / Web`, '',
     `- Version: ${version}`, `- Source commit: ${receipts[0].source}`, `- Workflow: ${receipts[0].runUrl}`, '',
     'All platforms passed core checks and were built from the same source and version.', '',
     '| Platform | Package | Requirements |', '| --- | --- | --- |',
     '| Windows x64 installer | NSIS EXE | WebView2; bootstrapper downloads a missing runtime |',
     '| Windows x64 portable | ZIP with embedded models and EXE | Existing WebView2; settings use the local user profile |',
-    '| Desktop updates | Signed installer / portable ZIP / universal app.tar.gz + latest.json | Verified signatures bound to the version; portable stays portable |',
+    '| Desktop updates | Signed installer / portable ZIP / universal app.tar.gz / AppImage + latest.json | Verified signatures bound to the version; portable stays portable |',
     '| macOS universal | DMG; Intel x64 + Apple Silicon arm64 | macOS 11+; ad-hoc signed, not Apple notarized |',
+    '| Linux x64 | DEB / AppImage | WebKitGTK 4.1 for DEB; AppImage requires FUSE 2 or extraction; only AppImage self-updates |',
     '| Web | Static ZIP + GitHub Pages | Serve via HTTP/HTTPS; root or subdirectory supported |', '',
     'Desktop models are bundled offline. Update artifacts are signed; Windows has no Authenticode signing and macOS uses ad-hoc signing.',
     'Chinese terminology is an unreviewed draft. CI builds do not substitute for real-device testing.', '',

@@ -7,6 +7,7 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(updater::UpdateState::default())
         .invoke_handler(tauri::generate_handler![
+            updater::updates_supported,
             updater::check_update,
             updater::install_update,
             updater::restart_updated_app

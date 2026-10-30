@@ -27,3 +27,37 @@ jobs:
       - run: npm ci
       - name: Run tests and build Web, Pages and desktop frontend
         run: npm run ci:check
+
+  linux:
+    name: Linux native tests and Debian package
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libayatana-appindicator3-dev librsvg2-dev patchelf xvfb xauth dbus-x11 webkit2gtk-driver libgl1-mesa-dri
+      - run: npm ci
+      - run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
+      - run: npm run build:client
+      - run: cargo test --manifest-path src-tauri/Cargo.toml --lib --locked
+      - run: npm run tauri -- build --target x86_64-unknown-linux-gnu --bundles deb --config src-tauri/tauri.local.conf.json -- --locked
+      - name: Smoke test installed Linux desktop assets
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          WEBKIT_DISABLE_DMABUF_RENDERER: '1'
+        run: |
+          cargo install tauri-driver --locked
+          package="src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/Anatolume_$(node -p 'require("./package.json").version')_amd64.deb"
+          unpacked="$(mktemp -d)"
+          dpkg-deb --extract "$package" "$unpacked"
+          TAURI_APP_PATH="$unpacked/usr/bin/anatolume" xvfb-run -a dbus-run-session -- npm run smoke:linux

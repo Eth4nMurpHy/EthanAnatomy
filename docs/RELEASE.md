@@ -4,7 +4,7 @@ CI 和发布由两个独立的 GitHub Actions 工作流负责：推送代码时�
 
 ## CI：提交时自动运行
 
-工作流：[Continuous integration](../.github/workflows/ci.yml)。推送任意分支或更新 PR 后自动运行类型、术语、模型和交互检查，以及 Web、Cloudflare Pages 和桌面前端构建。CI 不修改版本号、不构建桌面安装包、不创建标签或 GitHub Release。
+工作流：[Continuous integration](../.github/workflows/ci.yml)。推送任意分支或更新 PR 后自动运行类型、术语、模型和交互检查，以及 Web、Cloudflare Pages 和桌面前端构建。Linux 作业另执行 Rust 原生测试、DEB 构建和桌面烟雾测试。CI 不修改版本号、不创建标签或 GitHub Release。
 
 ## 发布：手动启动完整流程
 
@@ -26,7 +26,7 @@ gh workflow run release.yml --repo isunky/Anatolume --ref main -f bump=minor
 发布按顺序自动完成：
 
 1. 根据项目版本、完整标签历史和所选增幅，规划一个版本，并同步 npm、Tauri 与 Rust 的五个版本文件。
-2. 运行完整检查，构建 Windows x64 安装版和便携版、macOS universal DMG，以及 Web 静态 ZIP。
+2. 运行完整检查，构建 Windows x64 安装版和便携版、macOS universal DMG、Linux x64 DEB/AppImage，以及 Web 静态 ZIP。
 3. 签名桌面更新包，校验产物的源码、签名和版本，生成 `latest.json` 更新清单、SHA256 校验清单和构建报告。
 4. 在 Release notes 中列出上一个版本以来的提交摘要，并附完整变更链接。发布说明简短标明各平台下载包、数据许可与签名状况。
 5. 一次性推送版本提交和 `vX.Y.Z` 标签；所有资源上传成功后才公开 GitHub Release。
@@ -41,9 +41,11 @@ gh workflow run release.yml --repo isunky/Anatolume --ref main -f bump=minor
 | `Anatolume_X.Y.Z_x64-setup.exe` | Windows x64 安装版；缺少 WebView2 时联网下载运行时 |
 | `Anatolume_X.Y.Z_Windows-x64-portable.zip` | Windows 便携版；解压后运行，需已安装 WebView2 |
 | `Anatolume_X.Y.Z_macOS-universal.dmg` | macOS 11+，兼容 Intel 和 Apple Silicon |
+| `Anatolume_X.Y.Z_amd64.deb` | Linux x64 Debian/Ubuntu 安装包 |
+| `Anatolume_X.Y.Z_amd64.AppImage` | Linux x64 AppImage，支持签名更新 |
 | `Anatolume_X.Y.Z_Web.zip` | Web 静态部署包，支持根目录和子目录 |
 | `Anatolume_X.Y.Z_macOS-universal.app.tar.gz` | macOS 应用内更新包，兼容 Intel 和 Apple Silicon |
-| `*.sig` | Windows 安装包、便携 ZIP 和 macOS 更新包的签名；包含签名保护的版本号 |
+| `*.sig` | Windows 安装包、便携 ZIP 、macOS 更新包和 Linux AppImage 的签名；包含签名保护的版本号 |
 | `latest.json` | 客户端更新清单：版本、简洁更新内容和各平台签名、下载地址 |
 | `SHA256SUMS` | 发布包、签名和更新清单的 SHA256 校验值 |
 | `BUILD-REPORT.md` | 发布版本、源码、平台和校验信息 |
@@ -91,3 +93,7 @@ npm run ci:check
 ```
 
 普通本地 `npm run client:build` 使用仓库中已同步的版本，不会创建标签或发布。
+
+## Linux 发布
+
+发布工作流额外在 Ubuntu 22.04 构建 Linux x64 DEB 与签名 AppImage，随其他平台一起校验并发布。`latest.json` 的 `linux-x86_64` 目标仅指向 AppImage；DEB 使用包管理器手动更新。详见 [Linux 指南](LINUX.md)。

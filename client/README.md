@@ -85,11 +85,15 @@ npm run ci:check
 cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
 ```
 
-GitHub Actions 将 CI 检查与版本发布分开。每次推送分支或更新 PR 都会自动运行 CI：执行 `ci:check`，构建 Web、Pages 和桌面前端；不会更改版本、构建安装包或发布。需要发布时，在 GitHub Actions 手动启动 `Manual version, build and release`，选择 main 与 patch/minor/major。工作流会规划并同步版本，运行完整检查，构建 Windows 安装包/便携 ZIP、macOS 通用 DMG 和 Web ZIP，核验版本、源码与 SHA256，随后更新版本提交、创建标签和 GitHub Release，并部署 Web 到 GitHub Pages。Release notes 列出上个版本以来的提交摘要，并附完整比较链接。`0.x` 为测试版。PR 更新会取消过时 CI；发布不会被新 CI 取消，过时源码也不能覆盖新的 main。规则与重试说明见 [自动版本与发布指南](../docs/RELEASE.md)。模型解压兼容原生 DecompressionStream 与 fflate 回退，拒绝截断和错误长度数据。
+GitHub Actions 将 CI 检查与版本发布分开。每次推送分支或更新 PR 都会自动运行 CI：执行 `ci:check`，构建 Web、Pages 和桌面前端；另执行 Linux 原生测试、DEB 构建和桌面烟雾测试；不会更改版本或发布。需要发布时，在 GitHub Actions 手动启动 `Manual version, build and release`，选择 main 与 patch/minor/major。工作流会规划并同步版本，运行完整检查，构建 Windows 安装包/便携 ZIP、macOS 通用 DMG、Linux DEB/AppImage 和 Web ZIP，核验版本、源码与 SHA256，随后更新版本提交、创建标签和 GitHub Release，并部署 Web 到 GitHub Pages。Release notes 列出上个版本以来的提交摘要，并附完整比较链接。`0.x` 为测试版。PR 更新会取消过时 CI；发布不会被新 CI 取消，过时源码也不能覆盖新的 main。规则与重试说明见 [自动版本与发布指南](../docs/RELEASE.md)。模型解压兼容原生 DecompressionStream 与 fflate 回退，拒绝截断和错误长度数据。
 
 显隐变化会压紧对应批次的绘制索引，隐藏系统不提交三角形；隔离模式仅提交选中结构，分解视图的点标记也仅绘制可见零件。选中的隐藏系统零件仍按原有规则显示。索引只在批次可见集合变化时更新，分解动画不重复上传索引。为支持恢复显示，每个批次在 CPU 保留一份原始索引；切换系统减少绘制工作，但不释放已加载模型的显存。
 
 CPU 调度按需运行：静止且相机阻尼结束后停止请求动画帧，交互、状态修改、窗口变化和分块加载会唤醒；页面隐藏时暂停。爆炸动画缓存可见零件集合与系统展开方向，仅更新可见零件的位置，选择纹理只在选择/显隐变化时上传。屏幕拾取范围在指针需要时计算并缓存，相机或位置变化后失效。
+
+## Linux
+
+支持 x86_64 DEB 与 AppImage；安装依赖、构建、更新限制及验证步骤见 [Linux 桌面指南](../docs/LINUX.md)。
 
 ## macOS 与其他平台
 

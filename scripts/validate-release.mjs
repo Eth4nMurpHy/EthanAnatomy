@@ -102,8 +102,14 @@ try {
   fs.writeFileSync(root + '/LICENSE', 'Fixture license');
   fs.writeFileSync(root + '/dist/index.html', '<html>Fixture Web build</html>');
   fs.writeFileSync(root + '/dist/models/atlas.json', '{}');
+  const linuxBundle = path.join(root, 'src-tauri/target/x86_64-unknown-linux-gnu/release/bundle');
+  fs.mkdirSync(linuxBundle + '/deb', {recursive: true});
+  fs.mkdirSync(linuxBundle + '/appimage', {recursive: true});
+  fs.writeFileSync(linuxBundle + `/deb/Anatolume_${version}_amd64.deb`, 'Fixture Debian package');
+  fs.writeFileSync(linuxBundle + `/appimage/Anatolume_${version}_amd64.AppImage`, 'Fixture AppImage');
+  sign(linuxBundle + `/appimage/Anatolume_${version}_amd64.AppImage`);
   const options = {version, directory, root, source, runUrl: 'https://github.com/example/project/actions/runs/100', sign};
-  for (const platform of ['windows', 'macos', 'web']) prepareAssets({...options, platform});
+  for (const platform of ['windows', 'macos', 'linux', 'web']) prepareAssets({...options, platform});
   assert.deepEqual(combineAssets(options), [...Object.values(assetNames(version)).flat(), 'latest.json', 'SHA256SUMS', 'BUILD-REPORT.md']);
   const portable = unzipSync(fs.readFileSync(path.join(directory, assetNames(version).windows[1])));
   assert.equal(strFromU8(portable['Anatolume.exe']), 'Fixture portable executable');
@@ -128,12 +134,15 @@ try {
   changedKeyLines[1] = changedKey.toString('base64');
   assert.throws(() => verifyUpdaterSignature(portableBytes, portableSignature, Buffer.from(changedKeyLines.join('\n')).toString('base64'), version), /artifact signature/);
   assert.equal(latest.platforms['darwin-aarch64'].url, latest.platforms['darwin-x86_64'].url);
+  assert.ok(latest.platforms['linux-x86_64'].url.endsWith('.AppImage'));
+  verifyUpdaterSignature(fs.readFileSync(path.join(directory, assetNames(version).linux[1])), latest.platforms['linux-x86_64'].signature, pubkey, version);
   assert.ok(latest.platforms['windows-x86_64-portable'].url.endsWith('.zip'));
   assert.ok(latest.platforms['windows-x86_64'].url.endsWith('setup.exe'));
   for (const invalid of [
     {...latest, version: '99.0.0'},
     {...latest, platforms: {...latest.platforms, 'windows-x86_64-portable': latest.platforms['windows-x86_64']}},
     {...latest, platforms: {...latest.platforms, 'darwin-aarch64': {...latest.platforms['darwin-aarch64'], url: 'http://untrusted.invalid/update'}}},
+    {...latest, platforms: {...latest.platforms, 'linux-x86_64': latest.platforms['windows-x86_64']}},
     {...latest, notes: ''},
   ]) {
     fs.writeFileSync(latestPath, JSON.stringify(invalid));
@@ -145,9 +154,9 @@ try {
   assert.equal(JSON.parse(strFromU8(web['version.json'])).version, version);
   assert.equal(JSON.parse(strFromU8(web['version.json'])).source, source);
   assert.ok(strFromU8(web['README-WEB.txt']).includes('HTTP/HTTPS'));
-  for (const platform of ['windows', 'macos', 'web']) prepareAssets({...options, platform});
+  for (const platform of ['windows', 'macos', 'linux', 'web']) prepareAssets({...options, platform});
   combineAssets(options);
-  assert.equal(verifyAssets(version, directory, source, root).length, 11, 'Repeated preparation preserves valid assets');
+  assert.equal(verifyAssets(version, directory, source, root).length, 14, 'Repeated preparation preserves valid assets');
   const receiptPath = path.join(directory, 'macos.json');
   const originalReceipt = fs.readFileSync(receiptPath, 'utf8');
   const receipt = JSON.parse(originalReceipt);

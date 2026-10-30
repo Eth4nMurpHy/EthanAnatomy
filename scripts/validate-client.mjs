@@ -41,6 +41,9 @@ assert.equal(config.version, manifest.version);
 assert.equal(readVersions(), manifest.version);
 assert.equal(config.build.frontendDist, '../dist-client');
 assert.deepEqual(config.bundle.targets, ['nsis']);
+const linux = JSON.parse(fs.readFileSync(new URL('src-tauri/tauri.linux.conf.json', root), 'utf8'));
+assert.deepEqual(linux.bundle.targets, ['deb', 'appimage']);
+assert.ok(linux.bundle.linux.deb.depends.includes('libwebkit2gtk-4.1-0'));
 const capability = JSON.parse(fs.readFileSync(new URL('src-tauri/capabilities/main.json', root), 'utf8'));
 const linkPermission = capability.permissions.find(permission => permission.identifier === 'opener:allow-open-url');
 const aboutSource = fs.readFileSync(new URL('app/about.tsx', root), 'utf8');
@@ -49,4 +52,4 @@ for (const url of aboutLinks) {
   assert.ok(linkPermission.allow.some(({url: allowed}) => allowed.endsWith('*') ? url.startsWith(allowed.slice(0,-1)) : url === new URL(allowed).href), `About link blocked by native permissions: ${url}`);
 }
 console.log(`Verified ${aboutLinks.size} author and credit links are available in the native client.`);
-console.log(`Verified native/fallback gzip decoding, error cases, ${modelChunks} offline model chunks and Windows bundle configuration.`);
+console.log(`Verified native/fallback gzip decoding, error cases, ${modelChunks} offline model chunks and Windows and Linux bundle configuration.`);

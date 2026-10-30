@@ -16,7 +16,7 @@ Interactive 3D anatomy · Web and offline desktop
 
 [**简体中文**](#简体中文) · [**English**](#english) · [界面预览 / Preview](#preview)
 
-[![Platforms](https://img.shields.io/badge/Platforms-Web%20%7C%20Windows%20%7C%20macOS-66786e?style=flat-square)](#开始使用)
+[![Platforms](https://img.shields.io/badge/Platforms-Web%20%7C%20Windows%20%7C%20macOS%20%7C%20Linux-66786e?style=flat-square)](#开始使用)
 [![CI](https://github.com/isunky/Anatolume/actions/workflows/ci.yml/badge.svg)](https://github.com/isunky/Anatolume/actions/workflows/ci.yml)
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-66786e?style=flat-square)](LICENSE)
 [![Data: CC BY 4.0](https://img.shields.io/badge/Data-CC_BY_4.0-66786e?style=flat-square)](public/ATTRIBUTION.md)
@@ -123,6 +123,7 @@ Systems are arranged compactly while preserving internal relationships; move the
 | Windows x64 安装版 | `Anatolume_<版本号>_x64-setup.exe` | 安装后从开始菜单启动。 |
 | Windows x64 便携版 | `Anatolume_<版本号>_Windows-x64-portable.zip` | 解压后运行 `Anatolume.exe`。 |
 | macOS 通用版 | `Anatolume_<版本号>_macOS-universal.dmg` | macOS 11+，支持 Intel 与 Apple Silicon。 |
+| Linux x64 | `Anatolume_<版本号>_amd64.deb` / `.AppImage` | Ubuntu 22.04+ 或兼容发行版，详见 [Linux 指南](docs/LINUX.md)。 |
 | Web 部署包 | `Anatolume_<版本号>_Web.zip` | 包含页面与模型，通过 HTTP/HTTPS 部署。 |
 
 手机可直接使用网页版，目前没有 Android 安装包。历史版本可能使用应用更名前的文件名。
@@ -223,9 +224,12 @@ npm run dev
 | `npm run build:client` | 客户端前端，输出 `dist-client/`。 |
 | `npm run client:dev` | 启动桌面开发模式。 |
 | `npm run client:build` | Windows x64 NSIS 安装包。 |
+| `npm run client:build:linux` | Linux x64 DEB 与 AppImage / Linux x64 DEB and AppImage. |
 | `npm run client:build:mac` | 在 macOS 构建通用 DMG。 |
 | `npm run ci:check` | 类型、双语、模型、交互及构建检查。 |
 | `npm run validate:release` | 版本与发布流程校验。 |
+
+Linux 依赖、构建与安装见 [Linux 桌面指南](docs/LINUX.md)。
 
 Windows 原生构建需要 Rust MSVC、Visual Studio C++ Build Tools、Windows SDK 与 WebView2。本地不生成签名更新包时，使用 `npm run client:build -- --config src-tauri/tauri.local.conf.json`；macOS 使用同样配置参数。详情见 [发布签名说明](docs/RELEASE.md#发布签名密钥)。
 
@@ -310,6 +314,7 @@ Anatolume turns human anatomy into a space for rotating, revealing layers, separ
 | Windows x64 installer | `Anatolume_<version>_x64-setup.exe` | Install, then launch from the Start menu. |
 | Windows x64 portable | `Anatolume_<version>_Windows-x64-portable.zip` | Extract and run `Anatolume.exe`. |
 | macOS universal | `Anatolume_<version>_macOS-universal.dmg` | macOS 11+, for Intel and Apple Silicon. |
+| Linux x64 | `Anatolume_<version>_amd64.deb` / `.AppImage` | Ubuntu 22.04+ or compatible distributions; see the [Linux guide](docs/LINUX.md). |
 | Web deployment | `Anatolume_<version>_Web.zip` | Includes pages and models; serve over HTTP/HTTPS. |
 
 Phones can use the web app; no Android package is currently provided. Older releases may use the application's previous name.
@@ -410,9 +415,12 @@ Local address: <http://127.0.0.1:3016/>. The development server binds to localho
 | `npm run build:client` | Desktop frontend, output in `dist-client/`. |
 | `npm run client:dev` | Desktop development mode. |
 | `npm run client:build` | Windows x64 NSIS installer. |
+| `npm run client:build:linux` | Linux x64 DEB 与 AppImage / Linux x64 DEB and AppImage. |
 | `npm run client:build:mac` | Build a universal DMG on macOS. |
 | `npm run ci:check` | Types, bilingual content, models, interactions and builds. |
 | `npm run validate:release` | Version and release workflow validation. |
+
+Linux prerequisites, local unsigned builds and package installation are documented in the [Linux guide](docs/LINUX.md).
 
 Native Windows builds require Rust MSVC, Visual Studio C++ Build Tools, Windows SDK and WebView2. For local builds without signed update artifacts, use `npm run client:build -- --config src-tauri/tauri.local.conf.json`; the same configuration argument applies to the macOS command. See [signing configuration](docs/RELEASE.md#发布签名密钥).
 
@@ -420,7 +428,7 @@ Native Windows builds require Rust MSVC, Visual Studio C++ Build Tools, Windows 
 
 - **Static hosting:** Serve `dist/` at a root or subpath; Web ZIP needs HTTP/HTTPS. Vercel configuration is in [vercel.json](vercel.json).
 - **Cloudflare Pages:** Connect the repository's `main` branch, use `npm ci && npm run build:pages`, output `dist`, and set `SKIP_DEPENDENCY_INSTALL=1`. See the [configuration guide](docs/CLOUDFLARE_PAGES.md).
-- **CI:** Pushes and PRs run checks plus Web, Pages and desktop frontend builds, without changing versions or creating releases.
+- **CI:** Pushes and PRs run checks plus Web, Pages and desktop frontend builds, plus Linux native tests, a DEB build and desktop smoke tests, without changing versions or creating releases.
 - **Manual release:** Choose `patch / minor / major` to synchronize versions, build all platforms, sign update packages, publish a Release and deploy GitHub Pages. Release notes summarize the changes directly. `0.x` is marked as pre-release; versions from `1.x` are stable.
 
 ### Documentation

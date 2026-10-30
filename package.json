@@ -23,7 +23,9 @@
     "validate:interactions": "node scripts/validate-interactions.mjs",
     "validate:release": "node scripts/validate-release.mjs",
     "validate:updater": "node scripts/validate-updater.mjs",
-    "ci:check": "node scripts/ci-check.mjs"
+    "ci:check": "node scripts/ci-check.mjs",
+    "client:build:linux": "tauri build --target x86_64-unknown-linux-gnu --bundles deb,appimage",
+    "smoke:linux": "sh scripts/smoke-linux.sh"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

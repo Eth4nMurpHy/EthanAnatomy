@@ -1,6 +1,8 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
 import type { UpdateBridge, UpdateProgress } from "../updates/controller";
 
+export const updatesSupported = (): Promise<boolean> => invoke("updates_supported");
+
 export const nativeUpdateBridge: UpdateBridge = {
   check: () => invoke("check_update"),
   install: async onProgress => {

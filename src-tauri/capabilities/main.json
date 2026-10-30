@@ -6,6 +6,7 @@
   "permissions": [
     "core:default",
     "core:window:allow-set-title",
+    "allow-updates-supported",
     "allow-check-update",
     "allow-install-update",
     "allow-restart-updated-app",
