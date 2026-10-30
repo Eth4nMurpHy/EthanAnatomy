@@ -5,7 +5,7 @@ on:
     paths-ignore:
       - '.github/workflows/diagnose-native.yml'
       - 'screenshots/**'
-      - 'legacy/**' 
+      - 'legacy/**'
   pull_request:
 permissions:
   contents: read

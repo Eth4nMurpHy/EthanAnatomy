@@ -24,7 +24,8 @@ async function wait(script, message) {
     if (await run(script)) return;
     await delay(300);
   }
-  throw Error(message);
+  const observed = await run('return {title:document.title,model:document.querySelector(".model-picker select")?.value,footer:document.querySelector(".library-footer")?.textContent,error:document.querySelector(".load-panel.error")?.textContent}');
+  throw Error(message + ": " + JSON.stringify(observed));
 }
 try {
   const app = process.env.TAURI_APP_PATH;
@@ -73,7 +74,7 @@ try {
     'const select=document.querySelector(".model-picker select");select.value="female";select.dispatchEvent(new Event("change",{bubbles:true}));',
   );
   await wait(
-    'return document.querySelector(".model-picker select")?.value==="female" && document.querySelector(".library-footer")?.textContent.includes("2,245")',
+    'return document.querySelector(".model-picker select")?.value==="female" && document.querySelector(".library-footer")?.textContent.replace(/[^0-9]/g, "") === "2245"',
     "Native female model failed to load",
   );
   assert.ok(

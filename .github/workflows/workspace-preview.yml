@@ -58,6 +58,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
+          cache-on-failure: true
       - if: runner.os == 'Linux'
         run: |
           sudo apt-get update
@@ -77,7 +78,16 @@ jobs:
           unpacked="$(mktemp -d)"
           package="$(find src-tauri/target -path '*/bundle/deb/Anatomy Workspace Dev_0.1.0_*.deb' -type f -print -quit)"
           dpkg-deb --extract "$package" "$unpacked"
-          TAURI_APP_PATH="$unpacked/usr/bin/anatomy-workspace" xvfb-run -a dbus-run-session -- sh tools/native-smoke.sh
+          if ! TAURI_APP_PATH="$unpacked/usr/bin/anatomy-workspace" xvfb-run -a dbus-run-session -- sh tools/native-smoke.sh > /tmp/workspace-native-test.log 2>&1; then
+            cat /tmp/workspace-native-test.log
+            python3 - <<'PY_DIAG'
+          import re
+          text=open('/tmp/workspace-native-test.log').read()[-3500:]
+          print('::error title=Native workspace state::'+text.replace('%','%25').replace('\r','%0D').replace('\n','%0A'))
+          PY_DIAG
+            exit 1
+          fi
+          cat /tmp/workspace-native-test.log
       - if: runner.os == 'macOS'
         name: Verify universal macOS bundle
         shell: bash
