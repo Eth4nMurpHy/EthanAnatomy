@@ -37,10 +37,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check && npm test && npm run build:pages
-      - name: Configure and enable GitHub Pages
+      - name: Configure the enabled GitHub Pages site
         uses: actions/configure-pages@v5
         with:
-          enablement: true
+          enablement: false
       - name: Upload static website
         uses: actions/upload-pages-artifact@v5
         with:
