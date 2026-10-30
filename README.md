@@ -33,6 +33,8 @@
 
 ## 使用与下载
 
+**[直接打开网页版](https://eth4nmurphy.github.io/EthanAnatomy/)**，无需安装。线上男女模型与主要操作已通过浏览器验证。
+
 [GitHub Releases](https://github.com/Eth4nMurpHy/EthanAnatomy/releases) 中以 **Workspace** 开头的开发预览属于新应用；早先以 Anatolume 命名的 Linux 预览属于旧移植阶段。新预览由 GitHub Actions 构建后上传。
 
 Web ZIP 需要通过 HTTP/HTTPS 提供，不能直接双击 `index.html`。本地开发需要 Node.js 24：
