@@ -1,5 +1,9 @@
 <a name="readme-top"></a>
 
+> **非官方 Linux 适配仓库**：由 Eth4nMurpHy 基于 [isunky/Anatolume](https://github.com/isunky/Anatolume) 维护。应用代码遵循 MIT，模型数据遵循 CC BY 4.0；原作者及数据来源署名予以保留。详见 [版权与来源声明](NOTICE.md)。
+>
+> **Unofficial Linux adaptation** maintained by Eth4nMurpHy, based on [isunky/Anatolume](https://github.com/isunky/Anatolume). Code: MIT; anatomy data: CC BY 4.0. Upstream credits are retained. See [copyright and attribution](NOTICE.md).
+
 <div align="center">
 
 <img src="docs/branding/anatolume-logo-v1.png" width="360" alt="层知 · Anatolume 中英文主品牌标志 / Bilingual brand logo">
@@ -268,6 +272,7 @@ Windows 原生构建需要 Rust MSVC、Visual Studio C++ Build Tools、Windows S
 
 层知基于开源代码和开放解剖数据继续开发。感谢原作者、数据贡献者及工具维护者。
 
+- **上游应用：** 感谢 [isunky（Sunky）及 Anatolume 贡献者](https://github.com/isunky/Anatolume) 提供三维人体图谱、多语言探索界面与离线客户端。本仓库在其基础上增加 Linux 适配，详见 [版权与来源声明](NOTICE.md)。
 - **代码基础：** 感谢 [ashemag](https://github.com/ashemag) 的 [Human Atlas](https://github.com/ashemag/human-atlas)。本项目继续完善双语、探索交互与离线客户端，保留原项目的 MIT 版权和许可声明。
 - **BodyParts3D：** 感谢 [The Database Center for Life Science](https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html) 提供模型、英文名称与结构关系，采用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。
 - **女性衍生模型：** 感谢 [PrejudiceNeutrino](https://github.com/PrejudiceNeutrino) 分享 [Human Atlas Enhanced](https://github.com/PrejudiceNeutrino/human-atlas-enhanced) 及改编记录；本仓库保留其源标识、几何与配准记录。
@@ -461,6 +466,7 @@ Model processing is documented in the [architecture guide](docs/PROJECT_STRUCTUR
 
 Anatolume builds on open-source software and open anatomy data. Thank you to the original authors, data contributors and tool maintainers.
 
+- **Upstream application:** [isunky (Sunky) and the Anatolume contributors](https://github.com/isunky/Anatolume), for the anatomy viewer, multilingual exploration interface and offline client. This repository adds Linux support; see [copyright and attribution](NOTICE.md).
 - **Code foundation:** [Human Atlas](https://github.com/ashemag/human-atlas) by [ashemag](https://github.com/ashemag). Anatolume extends its bilingual experience, exploration interactions and offline client, retaining the original MIT copyright and license notices.
 - **BodyParts3D:** [The Database Center for Life Science](https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html), providing models, English names and structure relationships under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 - **Female derived model:** [PrejudiceNeutrino](https://github.com/PrejudiceNeutrino) for sharing [Human Atlas Enhanced](https://github.com/PrejudiceNeutrino/human-atlas-enhanced) and adaptation records. Source identifiers, geometry and registration records are retained.
