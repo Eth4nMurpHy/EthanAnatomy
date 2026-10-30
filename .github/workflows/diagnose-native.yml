@@ -20,8 +20,9 @@ jobs:
           python3 - <<'PY'
           import re
           lines=open('/tmp/native-test.log').read().splitlines()
-          selected=[line for line in lines if 'Exercise the packaged native workspace' in line][-65:]
-          text='\n'.join(selected)
+          selected=[line for line in lines if 'Exercise the packaged native workspace' in line][-25:]
+          selected=[re.sub(r'^\d{4}-\S+\s*','',line.split('\t',2)[-1]) for line in selected]
+          text='\n'.join(selected)[-3500:]
           text=text.replace('%','%25').replace('\r','%0D').replace('\n','%0A')
           print('::notice title=Native client test diagnostic::'+text)
           PY

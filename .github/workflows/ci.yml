@@ -2,6 +2,10 @@ name: Workspace checks
 on:
   push:
     branches: ["**"]
+    paths-ignore:
+      - '.github/workflows/diagnose-native.yml'
+      - 'screenshots/**'
+      - 'legacy/**' 
   pull_request:
 permissions:
   contents: read
