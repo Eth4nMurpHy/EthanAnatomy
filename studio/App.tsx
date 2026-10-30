@@ -737,7 +737,7 @@ export default function App() {
               className="text-link"
               onClick={() =>
                 void external(
-                  "https://github.com/Eth4nMurpHy/Anatolume_linux",
+                  "https://github.com/Eth4nMurpHy/EthanAnatomy",
                 ).catch(() => {})
               }
             >
